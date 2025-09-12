@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborative Puzzle Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        
+        .game-header {
+            margin-bottom: 2rem;
+        }
+        
+        .game-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        
+        .info-item {
+            text-align: center;
+        }
+        
+        .info-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .info-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+        
+        .puzzle-container {
+            position: relative;
+            margin: 2rem auto;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+        }
+        
+        .puzzle-grid {
+            display: grid;
+            gap: 2px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+            padding: 2px;
+        }
+        
+        .puzzle-piece {
+            aspect-ratio: 1;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+            position: relative;
+        }
+        
+        .puzzle-piece:hover {
+            transform: scale(1.05);
+            background: linear-gradient(135deg, #5a67d8, #6b46c1);
+            box-shadow: 0 4px 12px rgba(255, 255, 255, 0.3);
+        }
+        
+        .puzzle-piece.empty {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            cursor: default;
+        }
+        
+        .puzzle-piece.empty:hover {
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .puzzle-piece.highlight {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            color: #333;
+            animation: glow 1s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { box-shadow: 0 0 5px rgba(255, 215, 0, 0.5); }
+            to { box-shadow: 0 0 20px rgba(255, 215, 0, 0.8); }
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .difficulty-selector {
+            margin-bottom: 1rem;
+        }
+        
+        .difficulty-btn {
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #FFD700;
+        }
+        
+        .hint-system {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .ai-hint {
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+        
+        .celebration {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+        }
+        
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFD700;
+            animation: confetti-fall 3s ease-out forwards;
+        }
+        
+        @keyframes confetti-fall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FFD700, #FFA500);
+            transition: width 0.3s ease;
+            border-radius: 4px;
+        }
+        
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 1rem;
+            }
+            
+            .game-header h1 {
+                font-size: 2rem;
+            }
+            
+            .puzzle-piece {
+                font-size: 1.2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🧩 Collaborative Puzzle Challenge</h1>
+            <p>Work with AI hints to solve the sliding number puzzle</p>
+        </div>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn" onclick="setDifficulty(3)">🟢 3×3</button>
+            <button class="difficulty-btn active" onclick="setDifficulty(4)">🟡 4×4</button>
+            <button class="difficulty-btn" onclick="setDifficulty(5)">🔴 5×5</button>
+        </div>
+        
+        <div class="game-info">
+            <div class="info-item">
+                <div class="info-value" id="moveCount">0</div>
+                <div class="info-label">Moves</div>
+            </div>
+            <div class="info-item">
+                <div class="info-value" id="timeElapsed">00:00</div>
+                <div class="info-label">Time</div>
+            </div>
+            <div class="info-item">
+                <div class="info-value" id="hintsUsed">0</div>
+                <div class="info-label">AI Hints</div>
+            </div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+        </div>
+        
+        <div class="hint-system" id="hintSystem">
+            <div class="ai-hint" id="aiHint">
+                🤖 "Let's solve this puzzle together! Click on a number next to the empty space to move it."
+            </div>
+        </div>
+        
+        <div class="puzzle-container">
+            <div class="puzzle-grid" id="puzzleGrid">
+                <!-- Puzzle pieces will be generated by JavaScript -->
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn btn-primary" onclick="newGame()">🎮 New Game</button>
+            <button class="btn btn-secondary" onclick="shufflePuzzle()">🔀 Shuffle</button>
+            <button class="btn btn-success" onclick="getHint()">💡 AI Hint</button>
+        </div>
+    </div>
+
+    <script>
+        class CollaborativePuzzle {
+            constructor() {
+                this.size = 4;
+                this.board = [];
+                this.emptyPos = { row: this.size - 1, col: this.size - 1 };
+                this.moves = 0;
+                this.startTime = null;
+                this.hintsUsed = 0;
+                this.timer = null;
+                this.isComplete = false;
+                
+                this.aiHints = [
+                    "Try to get the numbers in the top row in order first!",
+                    "Focus on placing smaller numbers before larger ones.",
+                    "The empty space is your key - use it strategically!",
+                    "Work column by column from left to right.",
+                    "Don't worry about making more moves - focus on the strategy!",
+                    "Sometimes you need to move pieces away to bring others closer.",
+                    "The corner pieces are often the trickiest - save them for last!",
+                    "Try to create space by moving pieces to the edges.",
+                    "Linear thinking helps - solve one row at a time!",
+                    "Practice makes perfect - each game teaches you new patterns!"
+                ];
+                
+                this.initializeGame();
+            }
+            
+            initializeGame() {
+                this.createSolvedBoard();
+                this.shufflePuzzle();
+                this.updateDisplay();
+                this.startTimer();
+            }
+            
+            createSolvedBoard() {
+                this.board = [];
+                for (let row = 0; row < this.size; row++) {
+                    this.board[row] = [];
+                    for (let col = 0; col < this.size; col++) {
+                        const num = row * this.size + col + 1;
+                        this.board[row][col] = num === this.size * this.size ? 0 : num;
+                    }
+                }
+                this.emptyPos = { row: this.size - 1, col: this.size - 1 };
+            }
+            
+            shufflePuzzle() {
+                // Perform random valid moves to ensure solvability
+                const moves = 1000;
+                for (let i = 0; i < moves; i++) {
+                    const validMoves = this.getValidMoves();
+                    if (validMoves.length > 0) {
+                        const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+                        this.makeMove(randomMove.row, randomMove.col, false);
+                    }
+                }
+                this.moves = 0;
+                this.hintsUsed = 0;
+                this.isComplete = false;
+                this.updateDisplay();
+            }
+            
+            getValidMoves() {
+                const moves = [];
+                const directions = [
+                    { row: -1, col: 0 }, { row: 1, col: 0 },
+                    { row: 0, col: -1 }, { row: 0, col: 1 }
+                ];
+                
+                for (const dir of directions) {
+                    const newRow = this.emptyPos.row + dir.row;
+                    const newCol = this.emptyPos.col + dir.col;
+                    
+                    if (newRow >= 0 && newRow < this.size && newCol >= 0 && newCol < this.size) {
+                        moves.push({ row: newRow, col: newCol });
+                    }
+                }
+                
+                return moves;
+            }
+            
+            makeMove(row, col, countMove = true) {
+                // Check if the move is valid (adjacent to empty space)
+                const rowDiff = Math.abs(row - this.emptyPos.row);
+                const colDiff = Math.abs(col - this.emptyPos.col);
+                
+                if ((rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1)) {
+                    // Swap the piece with the empty space
+                    this.board[this.emptyPos.row][this.emptyPos.col] = this.board[row][col];
+                    this.board[row][col] = 0;
+                    this.emptyPos = { row, col };
+                    
+                    if (countMove) {
+                        this.moves++;
+                        this.updateMoveCount();
+                        
+                        if (this.checkWin()) {
+                            this.handleWin();
+                        } else {
+                            this.updateProgress();
+                            this.giveEncouragement();
+                        }
+                    }
+                    
+                    this.updateBoard();
+                    return true;
+                }
+                return false;
+            }
+            
+            checkWin() {
+                for (let row = 0; row < this.size; row++) {
+                    for (let col = 0; col < this.size; col++) {
+                        const expectedValue = row * this.size + col + 1;
+                        if (row === this.size - 1 && col === this.size - 1) {
+                            // Last position should be empty (0)
+                            if (this.board[row][col] !== 0) return false;
+                        } else {
+                            if (this.board[row][col] !== expectedValue) return false;
+                        }
+                    }
+                }
+                return true;
+            }
+            
+            handleWin() {
+                this.isComplete = true;
+                clearInterval(this.timer);
+                
+                const timeText = document.getElementById('timeElapsed').textContent;
+                this.showCelebration();
+                
+                setTimeout(() => {
+                    document.getElementById('aiHint').innerHTML = 
+                        `🎉 <strong>Congratulations!</strong> You solved it in ${this.moves} moves and ${timeText}! 
+                         ${this.hintsUsed === 0 ? "Amazing! You did it without any hints!" : 
+                         `You used ${this.hintsUsed} AI hints - great collaboration!`}`;
+                }, 1000);
+                
+                // Update progress to 100%
+                document.getElementById('progressFill').style.width = '100%';
+            }
+            
+            updateProgress() {
+                // Calculate progress based on correctly placed pieces
+                let correctPieces = 0;
+                const totalPieces = this.size * this.size - 1; // Exclude empty space
+                
+                for (let row = 0; row < this.size; row++) {
+                    for (let col = 0; col < this.size; col++) {
+                        if (row === this.size - 1 && col === this.size - 1) continue; // Skip empty position
+                        
+                        const expectedValue = row * this.size + col + 1;
+                        if (this.board[row][col] === expectedValue) {
+                            correctPieces++;
+                        }
+                    }
+                }
+                
+                const progress = (correctPieces / totalPieces) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+            }
+            
+            showCelebration() {
+                const celebration = document.createElement('div');
+                celebration.className = 'celebration';
+                document.body.appendChild(celebration);
+                
+                // Create confetti
+                for (let i = 0; i < 100; i++) {
+                    setTimeout(() => {
+                        const confetti = document.createElement('div');
+                        confetti.className = 'confetti';
+                        confetti.style.left = Math.random() * 100 + '%';
+                        confetti.style.background = ['#FFD700', '#FFA500', '#FF6B6B', '#4ECDC4', '#45B7D1'][Math.floor(Math.random() * 5)];
+                        confetti.style.animationDelay = Math.random() * 0.5 + 's';
+                        celebration.appendChild(confetti);
+                        
+                        setTimeout(() => confetti.remove(), 3000);
+                    }, i * 30);
+                }
+                
+                setTimeout(() => celebration.remove(), 5000);
+            }
+            
+            giveEncouragement() {
+                if (this.moves % 10 === 0 && this.moves > 0) {
+                    const encouragements = [
+                        "You're making great progress! Keep going! 💪",
+                        "Nice moves! You're getting the hang of this! 🎯",
+                        "Excellent strategy! I can see the pattern forming! 🧠",
+                        "You're doing amazing! The solution is getting closer! ⭐",
+                        "Fantastic! Your problem-solving skills are impressive! 🌟"
+                    ];
+                    
+                    const encouragement = encouragements[Math.floor(Math.random() * encouragements.length)];
+                    document.getElementById('aiHint').innerHTML = `🤖 "${encouragement}"`;
+                }
+            }
+            
+            getHint() {
+                this.hintsUsed++;
+                document.getElementById('hintsUsed').textContent = this.hintsUsed;
+                
+                // Find the best move using A* algorithm (simplified)
+                const bestMove = this.findBestMove();
+                
+                if (bestMove) {
+                    // Highlight the suggested piece
+                    const pieces = document.querySelectorAll('.puzzle-piece');
+                    pieces.forEach(piece => piece.classList.remove('highlight'));
+                    
+                    const pieceIndex = bestMove.row * this.size + bestMove.col;
+                    pieces[pieceIndex].classList.add('highlight');
+                    
+                    setTimeout(() => {
+                        pieces[pieceIndex].classList.remove('highlight');
+                    }, 3000);
+                    
+                    const randomHint = this.aiHints[Math.floor(Math.random() * this.aiHints.length)];
+                    document.getElementById('aiHint').innerHTML = 
+                        `🤖 "I suggest moving the piece at position (${bestMove.row + 1}, ${bestMove.col + 1}). ${randomHint}"`;
+                } else {
+                    const randomHint = this.aiHints[Math.floor(Math.random() * this.aiHints.length)];
+                    document.getElementById('aiHint').innerHTML = `🤖 "${randomHint}"`;
+                }
+            }
+            
+            findBestMove() {
+                const validMoves = this.getValidMoves();
+                if (validMoves.length === 0) return null;
+                
+                let bestMove = null;
+                let bestScore = -1;
+                
+                for (const move of validMoves) {
+                    // Simulate the move
+                    const originalEmpty = { ...this.emptyPos };
+                    const originalValue = this.board[move.row][move.col];
+                    
+                    this.makeMove(move.row, move.col, false);
+                    const score = this.evaluatePosition();
+                    
+                    // Undo the move
+                    this.board[originalEmpty.row][originalEmpty.col] = originalValue;
+                    this.board[move.row][move.col] = 0;
+                    this.emptyPos = originalEmpty;
+                    
+                    if (score > bestScore) {
+                        bestScore = score;
+                        bestMove = move;
+                    }
+                }
+                
+                return bestMove;
+            }
+            
+            evaluatePosition() {
+                let score = 0;
+                
+                for (let row = 0; row < this.size; row++) {
+                    for (let col = 0; col < this.size; col++) {
+                        if (this.board[row][col] === 0) continue;
+                        
+                        const expectedValue = row * this.size + col + 1;
+                        if (this.board[row][col] === expectedValue) {
+                            score += 10; // Bonus for correct position
+                        } else {
+                            // Calculate Manhattan distance to correct position
+                            const targetRow = Math.floor((this.board[row][col] - 1) / this.size);
+                            const targetCol = (this.board[row][col] - 1) % this.size;
+                            const distance = Math.abs(row - targetRow) + Math.abs(col - targetCol);
+                            score -= distance; // Penalty for distance from correct position
+                        }
+                    }
+                }
+                
+                return score;
+            }
+            
+            updateBoard() {
+                const grid = document.getElementById('puzzleGrid');
+                grid.style.gridTemplateColumns = `repeat(${this.size}, 1fr)`;
+                grid.innerHTML = '';
+                
+                for (let row = 0; row < this.size; row++) {
+                    for (let col = 0; col < this.size; col++) {
+                        const piece = document.createElement('div');
+                        piece.className = 'puzzle-piece';
+                        
+                        if (this.board[row][col] === 0) {
+                            piece.className += ' empty';
+                        } else {
+                            piece.textContent = this.board[row][col];
+                            piece.addEventListener('click', () => {
+                                if (!this.isComplete) {
+                                    this.makeMove(row, col);
+                                }
+                            });
+                        }
+                        
+                        grid.appendChild(piece);
+                    }
+                }
+            }
+            
+            updateDisplay() {
+                this.updateBoard();
+                this.updateMoveCount();
+                this.updateProgress();
+            }
+            
+            updateMoveCount() {
+                document.getElementById('moveCount').textContent = this.moves;
+            }
+            
+            startTimer() {
+                this.startTime = Date.now();
+                this.timer = setInterval(() => {
+                    const elapsed = Date.now() - this.startTime;
+                    const minutes = Math.floor(elapsed / 60000);
+                    const seconds = Math.floor((elapsed % 60000) / 1000);
+                    document.getElementById('timeElapsed').textContent = 
+                        `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                }, 1000);
+            }
+            
+            newGame() {
+                if (this.timer) clearInterval(this.timer);
+                this.moves = 0;
+                this.hintsUsed = 0;
+                this.isComplete = false;
+                
+                document.getElementById('moveCount').textContent = '0';
+                document.getElementById('hintsUsed').textContent = '0';
+                document.getElementById('aiHint').innerHTML = 
+                    '🤖 "Fresh start! Let\'s solve this puzzle together. Remember, I\'m here to help!"';
+                
+                this.shufflePuzzle();
+                this.startTimer();
+            }
+            
+            setDifficulty(size) {
+                this.size = size;
+                if (this.timer) clearInterval(this.timer);
+                
+                // Update difficulty buttons
+                document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                this.createSolvedBoard();
+                this.newGame();
+            }
+        }
+        
+        // Initialize game
+        let game;
+        window.addEventListener('load', () => {
+            game = new CollaborativePuzzle();
+        });
+        
+        // Global functions for button clicks
+        function newGame() {
+            game.newGame();
+        }
+        
+        function shufflePuzzle() {
+            game.shufflePuzzle();
+        }
+        
+        function getHint() {
+            game.getHint();
+        }
+        
+        function setDifficulty(size) {
+            game.setDifficulty(size);
+        }
+    </script>
+</body>
+</html>
