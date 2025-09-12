@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Collaborative Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background: linear-gradient(45deg, #FF6B6B, #4ECDC4);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .game-container {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            max-width: 500px;
+        }
+        canvas {
+            border: 3px solid #333;
+            border-radius: 10px;
+            background: #f0f0f0;
+        }
+        button {
+            background: #FF6B6B;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 10px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background: #FF5252;
+        }
+        #score {
+            font-size: 24px;
+            font-weight: bold;
+            color: #333;
+            margin: 15px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>🎮 Collaborative Game</h1>
+        <p>Let's build a game together!</p>
+        
+        <canvas id="gameCanvas" width="400" height="300"></canvas>
+        
+        <div id="score">Score: 0</div>
+        
+        <button onclick="startGame()">Start Game</button>
+        <button onclick="resetGame()">Reset</button>
+        
+        <p><em>Click on the canvas to interact!</em></p>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        let score = 0;
+        let gameRunning = false;
+        let circles = [];
+
+        // Simple click-the-circle game template
+        function startGame() {
+            gameRunning = true;
+            score = 0;
+            circles = [];
+            updateScore();
+            createCircle();
+            
+            // Create new circles every 2 seconds
+            gameInterval = setInterval(() => {
+                if (gameRunning) {
+                    createCircle();
+                }
+            }, 2000);
+        }
+
+        function resetGame() {
+            gameRunning = false;
+            score = 0;
+            circles = [];
+            clearInterval(gameInterval);
+            updateScore();
+            clearCanvas();
+        }
+
+        function createCircle() {
+            const circle = {
+                x: Math.random() * (canvas.width - 50) + 25,
+                y: Math.random() * (canvas.height - 50) + 25,
+                radius: 25,
+                color: `hsl(${Math.random() * 360}, 70%, 60%)`
+            };
+            circles.push(circle);
+            drawCircle(circle);
+            
+            // Remove circle after 3 seconds if not clicked
+            setTimeout(() => {
+                const index = circles.indexOf(circle);
+                if (index > -1) {
+                    circles.splice(index, 1);
+                    redrawCanvas();
+                }
+            }, 3000);
+        }
+
+        function drawCircle(circle) {
+            ctx.beginPath();
+            ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+            ctx.fillStyle = circle.color;
+            ctx.fill();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function clearCanvas() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        }
+
+        function redrawCanvas() {
+            clearCanvas();
+            circles.forEach(drawCircle);
+        }
+
+        function updateScore() {
+            document.getElementById('score').textContent = `Score: ${score}`;
+        }
+
+        // Handle clicks on canvas
+        canvas.addEventListener('click', (e) => {
+            if (!gameRunning) return;
+            
+            const rect = canvas.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const clickY = e.clientY - rect.top;
+            
+            // Check if click hit any circle
+            for (let i = circles.length - 1; i >= 0; i--) {
+                const circle = circles[i];
+                const distance = Math.sqrt(
+                    Math.pow(clickX - circle.x, 2) + 
+                    Math.pow(clickY - circle.y, 2)
+                );
+                
+                if (distance <= circle.radius) {
+                    // Hit!
+                    score += 10;
+                    circles.splice(i, 1);
+                    updateScore();
+                    redrawCanvas();
+                    break;
+                }
+            }
+        });
+
+        // Initial setup
+        clearCanvas();
+        ctx.fillStyle = '#ddd';
+        ctx.font = '20px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('Click Start Game to begin!', canvas.width/2, canvas.height/2);
+    </script>
+</body>
+</html>
