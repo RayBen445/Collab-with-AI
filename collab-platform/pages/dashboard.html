@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Collab-with-AI</title>
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+    <div id="status-bar">
+        <div id="time"></div>
+        <div id="date"></div>
+        <div id="battery"></div>
+    </div>
+    <div class="dashboard-container">
+        <header class="dashboard-header">
+            <h1>Dashboard</h1>
+            <nav>
+                <a href="#" class="btn-logout">Logout</a>
+            </nav>
+        </header>
+        <main class="dashboard-main">
+            <h2>Welcome, User!</h2>
+            <p>This is your main dashboard. Future projects and collaboration tools will appear here.</p>
+            <div class="dashboard-widgets">
+                <div class="widget">
+                    <h3>My Projects</h3>
+                    <p>No projects yet.</p>
+                </div>
+                <div class="widget">
+                    <h3>Recent Activity</h3>
+                    <p>No recent activity.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../js/script.js"></script>
+    <div id="low-battery-notification" class="notification hidden">
+        <p>Your battery is running low. Please connect your device to a power source.</p>
+        <button id="dismiss-notification">&times;</button>
+    </div>
+</body>
+</html>
