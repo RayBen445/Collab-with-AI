@@ -32,6 +32,56 @@
             flex-direction: column;
         }
         
+        .auth-required {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .auth-modal {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            margin: 20px;
+        }
+        
+        .auth-modal h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .auth-modal p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .auth-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .auth-btn:hover {
+            transform: translateY(-2px);
+        }
+        
         .sidebar-header {
             padding: 20px;
             border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -682,6 +732,22 @@
                         <span class="nav-icon">📈</span>
                         AI Analytics
                     </div>
+                    <div class="nav-item" onclick="window.open('gamification.html', '_blank')">
+                        <span class="nav-icon">🎮</span>
+                        Gamification
+                    </div>
+                    <div class="nav-item" onclick="window.open('advanced-ai.html', '_blank')">
+                        <span class="nav-icon">🤖</span>
+                        Advanced AI
+                    </div>
+                    <div class="nav-item" onclick="window.open('design-prototyping.html', '_blank')">
+                        <span class="nav-icon">🎨</span>
+                        Design Tools
+                    </div>
+                    <div class="nav-item" onclick="window.open('financial-management.html', '_blank')">
+                        <span class="nav-icon">💰</span>
+                        Finance
+                    </div>
                 </div>
                 
                 <div class="nav-section">
@@ -714,6 +780,9 @@
                         🔔
                         <span class="notification-badge">3</span>
                     </div>
+                    <button class="btn" onclick="logout()" style="background: rgba(232, 67, 147, 0.1); color: #e84393; border: 1px solid rgba(232, 67, 147, 0.3);">
+                        🚪 Logout
+                    </button>
                 </div>
             </div>
             
@@ -1223,10 +1292,92 @@
             }
         });
         
+        // Authentication System
+        class AuthenticationManager {
+            constructor() {
+                this.checkAuthentication();
+            }
+            
+            checkAuthentication() {
+                const user = localStorage.getItem('collaborationUser');
+                if (!user) {
+                    this.redirectToLogin();
+                    return false;
+                }
+                
+                const userData = JSON.parse(user);
+                this.loadUserProfile(userData);
+                return true;
+            }
+            
+            redirectToLogin() {
+                window.location.href = 'login.html';
+            }
+            
+            loadUserProfile(userData) {
+                // Update user profile in sidebar
+                const userNameElement = document.querySelector('.user-name');
+                const userEmailElement = document.querySelector('.user-email');
+                
+                if (userNameElement) {
+                    userNameElement.textContent = userData.email.split('@')[0];
+                }
+                if (userEmailElement) {
+                    userEmailElement.textContent = userData.email;
+                }
+                
+                // Add admin badge if user is admin
+                if (userData.isAdmin) {
+                    const adminBadge = document.createElement('span');
+                    adminBadge.style.cssText = `
+                        background: linear-gradient(135deg, #00b894, #55a3ff);
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 15px;
+                        font-size: 0.8rem;
+                        margin-left: 10px;
+                    `;
+                    adminBadge.textContent = 'Admin';
+                    userEmailElement.appendChild(adminBadge);
+                    
+                    // Add admin dashboard access
+                    const adminNav = document.createElement('div');
+                    adminNav.className = 'nav-item';
+                    adminNav.onclick = () => window.open('admin-dashboard.html', '_blank');
+                    adminNav.innerHTML = `
+                        <span class="nav-icon">🛡️</span>
+                        Admin Dashboard
+                    `;
+                    
+                    // Add to AI Tools section
+                    const aiSection = document.querySelector('.nav-section:nth-child(3)');
+                    if (aiSection) {
+                        aiSection.appendChild(adminNav);
+                    }
+                }
+            }
+            
+            logout() {
+                localStorage.removeItem('collaborationUser');
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // Add logout functionality
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('collaborationUser');
+                window.location.href = 'login.html';
+            }
+        }
+        
         // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
+            // Initialize authentication first
+            const authManager = new AuthenticationManager();
+            
             console.log('🤖 AI-Human Collaboration Platform initialized');
-            console.log('Features loaded: Dashboard, Projects, Tasks, Chat, AI Assistant');
+            console.log('Features loaded: Dashboard, Projects, Tasks, Chat, AI Assistant, Advanced Features');
         });
     </script>
 </body>

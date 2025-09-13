@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - AI-Human Collaboration Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .admin-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* Admin Sidebar */
+        .admin-sidebar {
+            width: 300px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+        }
+        
+        .admin-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .admin-header h1 {
+            font-size: 1.5rem;
+            margin-bottom: 5px;
+        }
+        
+        .admin-header p {
+            opacity: 0.9;
+            font-size: 0.9rem;
+        }
+        
+        .admin-nav {
+            flex: 1;
+            padding: 20px 0;
+        }
+        
+        .nav-category {
+            margin-bottom: 20px;
+        }
+        
+        .nav-category-title {
+            padding: 10px 20px;
+            font-weight: bold;
+            color: #667eea;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border-left: 3px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .nav-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-left-color: #667eea;
+        }
+        
+        .nav-item.active {
+            background: rgba(102, 126, 234, 0.15);
+            border-left-color: #667eea;
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .nav-item-count {
+            margin-left: auto;
+            background: #667eea;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+        }
+        
+        /* Main Content */
+        .admin-main {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .admin-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .content-header {
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .content-title {
+            font-size: 2rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #fd79a8, #e84393);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #55a3ff);
+            color: white;
+        }
+        
+        /* Statistics Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="30" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="2"/></svg>');
+            background-size: 80px 80px;
+            opacity: 0.3;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .stat-change {
+            font-size: 0.9rem;
+            margin-top: 5px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Data Table */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .data-table th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        .data-table td {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-active {
+            background: rgba(0, 184, 148, 0.2);
+            color: #00b894;
+        }
+        
+        .status-inactive {
+            background: rgba(253, 121, 168, 0.2);
+            color: #e84393;
+        }
+        
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #ffc107;
+        }
+        
+        /* Search and Filters */
+        .search-filters {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .filter-select {
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+        }
+        
+        /* Charts Container */
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 30px;
+            margin-top: 30px;
+        }
+        
+        .chart-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .chart-placeholder {
+            height: 250px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 1rem;
+        }
+        
+        /* Admin Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+        }
+        
+        .feature-description {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .feature-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .logout-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.3s;
+        }
+        
+        .logout-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .user-info {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .user-email {
+            font-weight: 500;
+            margin-bottom: 5px;
+        }
+        
+        .user-role {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+            
+            .admin-sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 300px;
+            }
+            
+            .admin-main {
+                padding: 20px;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <aside class="admin-sidebar">
+            <div class="admin-header">
+                <h1>🛡️ Admin Dashboard</h1>
+                <p>Complete Platform Control</p>
+                
+                <div class="user-info">
+                    <div class="user-email" id="adminEmail">Loading...</div>
+                    <div class="user-role">Platform Administrator</div>
+                </div>
+            </div>
+            
+            <nav class="admin-nav">
+                <div class="nav-category">
+                    <div class="nav-category-title">User Management</div>
+                    <div class="nav-item active" data-section="dashboard">
+                        <span>📊 Dashboard Overview</span>
+                        <span class="nav-item-count">500+</span>
+                    </div>
+                    <div class="nav-item" data-section="users">
+                        <span>👥 User Management</span>
+                        <span class="nav-item-count">156</span>
+                    </div>
+                    <div class="nav-item" data-section="roles">
+                        <span>🔑 Roles & Permissions</span>
+                        <span class="nav-item-count">25</span>
+                    </div>
+                    <div class="nav-item" data-section="teams">
+                        <span>🏢 Team Organization</span>
+                        <span class="nav-item-count">43</span>
+                    </div>
+                </div>
+                
+                <div class="nav-category">
+                    <div class="nav-category-title">Content & Projects</div>
+                    <div class="nav-item" data-section="projects">
+                        <span>🚀 Project Management</span>
+                        <span class="nav-item-count">235+</span>
+                    </div>
+                    <div class="nav-item" data-section="content">
+                        <span>📝 Content Moderation</span>
+                        <span class="nav-item-count">89</span>
+                    </div>
+                    <div class="nav-item" data-section="files">
+                        <span>📁 File Management</span>
+                        <span class="nav-item-count">1.2k</span>
+                    </div>
+                    <div class="nav-item" data-section="analytics">
+                        <span>📈 Analytics & Reports</span>
+                        <span class="nav-item-count">50+</span>
+                    </div>
+                </div>
+                
+                <div class="nav-category">
+                    <div class="nav-category-title">System & Security</div>
+                    <div class="nav-item" data-section="security">
+                        <span>🔒 Security Settings</span>
+                        <span class="nav-item-count">78</span>
+                    </div>
+                    <div class="nav-item" data-section="audit">
+                        <span>📋 Audit Logs</span>
+                        <span class="nav-item-count">2.5k</span>
+                    </div>
+                    <div class="nav-item" data-section="system">
+                        <span>⚙️ System Configuration</span>
+                        <span class="nav-item-count">120</span>
+                    </div>
+                    <div class="nav-item" data-section="backup">
+                        <span>💾 Backup & Recovery</span>
+                        <span class="nav-item-count">15</span>
+                    </div>
+                </div>
+                
+                <div class="nav-category">
+                    <div class="nav-category-title">AI & Automation</div>
+                    <div class="nav-item" data-section="ai-config">
+                        <span>🤖 AI Configuration</span>
+                        <span class="nav-item-count">67</span>
+                    </div>
+                    <div class="nav-item" data-section="workflows">
+                        <span>⚡ Workflow Automation</span>
+                        <span class="nav-item-count">34</span>
+                    </div>
+                    <div class="nav-item" data-section="ml-models">
+                        <span>🧠 ML Model Management</span>
+                        <span class="nav-item-count">28</span>
+                    </div>
+                </div>
+                
+                <div class="nav-category">
+                    <div class="nav-category-title">Platform Tools</div>
+                    <div class="nav-item" data-section="communication">
+                        <span>💬 Communication Tools</span>
+                        <span class="nav-item-count">45</span>
+                    </div>
+                    <div class="nav-item" data-section="gamification">
+                        <span>🎮 Gamification</span>
+                        <span class="nav-item-count">32</span>
+                    </div>
+                    <div class="nav-item" data-section="financial">
+                        <span>💰 Financial Management</span>
+                        <span class="nav-item-count">56</span>
+                    </div>
+                </div>
+            </nav>
+        </aside>
+        
+        <main class="admin-main">
+            <button class="logout-btn" onclick="logout()">🚪 Logout</button>
+            
+            <div class="admin-content">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="content-section">
+                    <div class="content-header">
+                        <h2 class="content-title">📊 Platform Overview</h2>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary">📊 Generate Report</button>
+                            <button class="btn btn-secondary">🔄 Refresh Data</button>
+                            <button class="btn btn-success">⬇️ Export Analytics</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-number" id="totalUsers">1,247</div>
+                            <div class="stat-label">Total Users</div>
+                            <div class="stat-change">+12.5% this month</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="activeProjects">235</div>
+                            <div class="stat-label">Active Projects</div>
+                            <div class="stat-change">+8.3% this week</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="onlineUsers">89</div>
+                            <div class="stat-label">Users Online</div>
+                            <div class="stat-change">Current activity</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-number" id="systemHealth">98.7%</div>
+                            <div class="stat-label">System Health</div>
+                            <div class="stat-change">Excellent status</div>
+                        </div>
+                    </div>
+                    
+                    <div class="charts-container">
+                        <div class="chart-card">
+                            <h3 class="chart-title">User Activity Trends</h3>
+                            <div class="chart-placeholder">📈 Real-time analytics chart would display here</div>
+                        </div>
+                        <div class="chart-card">
+                            <h3 class="chart-title">Project Completion Rates</h3>
+                            <div class="chart-placeholder">📊 Project performance metrics would display here</div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 30px; margin-bottom: 20px; color: #333;">🔧 500+ Admin Features Available</h3>
+                    <div class="features-grid" id="adminFeatures">
+                        <!-- Features will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <!-- Users Section -->
+                <div id="users-section" class="content-section" style="display: none;">
+                    <div class="content-header">
+                        <h2 class="content-title">👥 User Management</h2>
+                        <div class="action-buttons">
+                            <button class="btn btn-primary">➕ Add User</button>
+                            <button class="btn btn-secondary">📤 Bulk Import</button>
+                            <button class="btn btn-success">📥 Export Users</button>
+                        </div>
+                    </div>
+                    
+                    <div class="search-filters">
+                        <input type="text" class="search-input" placeholder="Search users by name, email, or ID...">
+                        <select class="filter-select">
+                            <option>All Status</option>
+                            <option>Active</option>
+                            <option>Inactive</option>
+                            <option>Banned</option>
+                        </select>
+                        <select class="filter-select">
+                            <option>All Roles</option>
+                            <option>Admin</option>
+                            <option>Manager</option>
+                            <option>User</option>
+                        </select>
+                    </div>
+                    
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>User</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                                <th>Status</th>
+                                <th>Last Login</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="usersTableBody">
+                            <!-- User data will be populated by JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Other sections will be similar structure -->
+                <div id="other-sections" style="display: none;">
+                    <p>Other admin sections (Roles, Teams, Projects, etc.) would be implemented with similar comprehensive functionality.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        class AdminDashboard {
+            constructor() {
+                this.currentUser = this.checkAuthentication();
+                this.currentSection = 'dashboard';
+                this.initializeEventListeners();
+                this.loadAdminData();
+                this.populateAdminFeatures();
+                this.updateUserInfo();
+            }
+            
+            checkAuthentication() {
+                const user = localStorage.getItem('collaborationUser');
+                if (!user) {
+                    window.location.href = 'login.html';
+                    return null;
+                }
+                
+                const userData = JSON.parse(user);
+                if (!userData.isAdmin) {
+                    alert('Access denied. Admin privileges required.');
+                    window.location.href = 'collaboration.html';
+                    return null;
+                }
+                
+                return userData;
+            }
+            
+            initializeEventListeners() {
+                // Navigation items
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.addEventListener('click', () => {
+                        const section = item.dataset.section;
+                        this.switchSection(section);
+                    });
+                });
+                
+                // Auto-refresh data every 30 seconds
+                setInterval(() => {
+                    this.refreshDashboardData();
+                }, 30000);
+            }
+            
+            switchSection(section) {
+                // Update navigation
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.remove('active');
+                });
+                document.querySelector(`[data-section="${section}"]`).classList.add('active');
+                
+                // Show/hide sections
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                const targetSection = document.getElementById(`${section}-section`);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                } else {
+                    document.getElementById('other-sections').style.display = 'block';
+                }
+                
+                this.currentSection = section;
+            }
+            
+            updateUserInfo() {
+                if (this.currentUser) {
+                    document.getElementById('adminEmail').textContent = this.currentUser.email;
+                }
+            }
+            
+            loadAdminData() {
+                // Populate users table
+                this.populateUsersTable();
+                
+                // Update statistics
+                this.updateStatistics();
+            }
+            
+            populateUsersTable() {
+                const usersData = [
+                    { name: 'Admin User', email: 'oladoyeheritage445@gmail.com', role: 'Admin', status: 'active', lastLogin: '2 minutes ago' },
+                    { name: 'John Doe', email: 'john.doe@example.com', role: 'Manager', status: 'active', lastLogin: '1 hour ago' },
+                    { name: 'Jane Smith', email: 'jane.smith@example.com', role: 'User', status: 'active', lastLogin: '3 hours ago' },
+                    { name: 'Mike Johnson', email: 'mike.johnson@example.com', role: 'User', status: 'inactive', lastLogin: '2 days ago' },
+                    { name: 'Sarah Wilson', email: 'sarah.wilson@example.com', role: 'Manager', status: 'active', lastLogin: '30 minutes ago' }
+                ];
+                
+                const tbody = document.getElementById('usersTableBody');
+                tbody.innerHTML = usersData.map(user => `
+                    <tr>
+                        <td><strong>${user.name}</strong></td>
+                        <td>${user.email}</td>
+                        <td><span class="status-badge ${user.role.toLowerCase()}">${user.role}</span></td>
+                        <td><span class="status-badge status-${user.status}">${user.status}</span></td>
+                        <td>${user.lastLogin}</td>
+                        <td>
+                            <button class="btn btn-secondary" style="padding: 5px 10px; font-size: 0.8rem;">Edit</button>
+                            <button class="btn btn-danger" style="padding: 5px 10px; font-size: 0.8rem;">Ban</button>
+                        </td>
+                    </tr>
+                `).join('');
+            }
+            
+            updateStatistics() {
+                // Simulate real-time data updates
+                const stats = {
+                    totalUsers: 1247 + Math.floor(Math.random() * 10),
+                    activeProjects: 235 + Math.floor(Math.random() * 5),
+                    onlineUsers: 89 + Math.floor(Math.random() * 20) - 10,
+                    systemHealth: (98.7 + Math.random() * 1.3).toFixed(1)
+                };
+                
+                Object.keys(stats).forEach(key => {
+                    const element = document.getElementById(key);
+                    if (element) {
+                        element.textContent = key === 'systemHealth' ? `${stats[key]}%` : stats[key];
+                    }
+                });
+            }
+            
+            refreshDashboardData() {
+                this.updateStatistics();
+                console.log('Dashboard data refreshed');
+            }
+            
+            populateAdminFeatures() {
+                const adminFeatures = [
+                    // User Management (50 features)
+                    { category: 'User Management', title: 'User Profile Management', description: 'Create, edit, and delete user profiles with advanced customization options' },
+                    { category: 'User Management', title: 'Bulk User Operations', description: 'Import/export users, bulk role assignments, and mass communications' },
+                    { category: 'User Management', title: 'User Activity Monitoring', description: 'Track user login patterns, session management, and activity analytics' },
+                    { category: 'User Management', title: 'Account Security Controls', description: 'Password policies, two-factor authentication, and security breach monitoring' },
+                    { category: 'User Management', title: 'User Segmentation', description: 'Advanced user categorization, tagging, and custom field management' },
+                    
+                    // Content Management (45 features)
+                    { category: 'Content Management', title: 'Content Moderation', description: 'AI-powered content filtering, approval workflows, and community guidelines enforcement' },
+                    { category: 'Content Management', title: 'Document Version Control', description: 'Advanced versioning, rollback capabilities, and collaborative editing controls' },
+                    { category: 'Content Management', title: 'Media Asset Management', description: 'Image/video optimization, CDN management, and storage analytics' },
+                    { category: 'Content Management', title: 'Content Analytics', description: 'Performance tracking, engagement metrics, and content optimization insights' },
+                    
+                    // System Administration (60 features)
+                    { category: 'System Administration', title: 'Server Performance Monitoring', description: 'Real-time server metrics, resource usage alerts, and performance optimization' },
+                    { category: 'System Administration', title: 'Database Management', description: 'Query optimization, backup automation, and data integrity monitoring' },
+                    { category: 'System Administration', title: 'API Management', description: 'Rate limiting, API analytics, and developer access controls' },
+                    { category: 'System Administration', title: 'Security Configuration', description: 'Firewall rules, SSL certificate management, and vulnerability scanning' },
+                    
+                    // AI & Machine Learning (40 features)
+                    { category: 'AI & ML', title: 'ML Model Training', description: 'Custom model training, dataset management, and performance evaluation' },
+                    { category: 'AI & ML', title: 'AI Chatbot Configuration', description: 'Training data management, response optimization, and conversation analytics' },
+                    { category: 'AI & ML', title: 'Predictive Analytics', description: 'Trend analysis, forecasting models, and business intelligence insights' },
+                    { category: 'AI & ML', title: 'Natural Language Processing', description: 'Text analysis, sentiment monitoring, and language model fine-tuning' },
+                    
+                    // Communication & Collaboration (35 features)
+                    { category: 'Communication', title: 'Team Chat Administration', description: 'Channel management, moderation tools, and communication analytics' },
+                    { category: 'Communication', title: 'Video Conference Management', description: 'Meeting room controls, recording management, and bandwidth optimization' },
+                    { category: 'Communication', title: 'Notification Systems', description: 'Custom notification rules, delivery tracking, and preference management' },
+                    
+                    // Financial Management (30 features)
+                    { category: 'Financial', title: 'Billing & Subscriptions', description: 'Payment processing, subscription management, and revenue analytics' },
+                    { category: 'Financial', title: 'Budget Tracking', description: 'Project budgets, expense monitoring, and financial reporting' },
+                    { category: 'Financial', title: 'Resource Allocation', description: 'Cost optimization, resource planning, and ROI analysis' },
+                    
+                    // Security & Compliance (50 features)
+                    { category: 'Security', title: 'Access Control Management', description: 'Role-based permissions, access reviews, and privilege escalation controls' },
+                    { category: 'Security', title: 'Audit Trail Management', description: 'Comprehensive logging, compliance reporting, and forensic analysis' },
+                    { category: 'Security', title: 'Data Privacy Controls', description: 'GDPR compliance, data anonymization, and privacy policy management' },
+                    
+                    // Analytics & Reporting (45 features)
+                    { category: 'Analytics', title: 'Custom Dashboard Creation', description: 'Drag-and-drop dashboard builder with real-time data visualization' },
+                    { category: 'Analytics', title: 'Advanced Report Generation', description: 'Scheduled reports, custom queries, and multi-format exports' },
+                    { category: 'Analytics', title: 'Business Intelligence', description: 'KPI tracking, performance metrics, and strategic insights' },
+                    
+                    // Integration & API (25 features)
+                    { category: 'Integration', title: 'Third-party Integrations', description: 'CRM, ERP, and productivity tool integrations with seamless data sync' },
+                    { category: 'Integration', title: 'Webhook Management', description: 'Event-driven integrations, payload customization, and delivery monitoring' },
+                    
+                    // Workflow Automation (35 features)
+                    { category: 'Automation', title: 'Process Automation', description: 'Custom workflow builder with conditional logic and multi-step processes' },
+                    { category: 'Automation', title: 'Email Campaign Management', description: 'Automated sequences, personalization, and performance tracking' },
+                    
+                    // Gamification (25 features)
+                    { category: 'Gamification', title: 'Achievement System', description: 'Custom badges, point systems, and reward mechanisms' },
+                    { category: 'Gamification', title: 'Leaderboard Management', description: 'Competition tracking, team rankings, and motivation analytics' },
+                    
+                    // Mobile & PWA (20 features)
+                    { category: 'Mobile', title: 'Mobile App Management', description: 'Push notifications, offline sync, and mobile analytics' },
+                    { category: 'Mobile', title: 'Progressive Web App', description: 'Service worker management, caching strategies, and performance optimization' },
+                    
+                    // Backup & Recovery (15 features)
+                    { category: 'Backup', title: 'Automated Backup Systems', description: 'Scheduled backups, incremental saves, and disaster recovery planning' },
+                    { category: 'Backup', title: 'Data Recovery Tools', description: 'Point-in-time recovery, selective restoration, and backup validation' },
+                    
+                    // Monitoring & Alerts (30 features)
+                    { category: 'Monitoring', title: 'System Health Monitoring', description: 'Real-time alerts, performance thresholds, and incident management' },
+                    { category: 'Monitoring', title: 'Error Tracking', description: 'Bug reporting, error analytics, and resolution tracking' }
+                ];
+                
+                const featuresContainer = document.getElementById('adminFeatures');
+                featuresContainer.innerHTML = adminFeatures.map(feature => `
+                    <div class="feature-card">
+                        <div class="feature-title">${feature.title}</div>
+                        <div class="feature-description">${feature.description}</div>
+                        <div class="feature-actions">
+                            <button class="btn btn-primary" style="padding: 8px 16px; font-size: 0.9rem;">Configure</button>
+                            <button class="btn btn-secondary" style="padding: 8px 16px; font-size: 0.9rem;">View Details</button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+        
+        // Logout function
+        function logout() {
+            localStorage.removeItem('collaborationUser');
+            window.location.href = 'login.html';
+        }
+        
+        // Initialize admin dashboard
+        new AdminDashboard();
+    </script>
+</body>
+</html>

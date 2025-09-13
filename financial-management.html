@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Management - AI-Human Collaboration Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .finance-container {
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .finance-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 25px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            margin-bottom: 20px;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .card-icon {
+            font-size: 1.5rem;
+            padding: 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            color: white;
+        }
+        
+        .card-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+            font-weight: 500;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #333;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #00b894, #55a3ff);
+            color: white;
+        }
+        
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* Budget Overview */
+        .budget-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .budget-metric {
+            text-align: center;
+            padding: 15px;
+            background: rgba(102, 126, 234, 0.1);
+            border-radius: 10px;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .metric-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+        
+        .metric-label {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e6ed;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 15px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            position: relative;
+        }
+        
+        .progress-success { background: linear-gradient(135deg, #00b894, #55a3ff); }
+        .progress-warning { background: linear-gradient(135deg, #ffc107, #ff8806); }
+        .progress-danger { background: linear-gradient(135deg, #fd79a8, #e84393); }
+        
+        /* Expense Tracking */
+        .expense-list {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .expense-item {
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .expense-item:last-child {
+            border-bottom: none;
+        }
+        
+        .expense-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .expense-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+        
+        .expense-details h4 {
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .expense-details p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .expense-amount {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        
+        .amount-positive { color: #00b894; }
+        .amount-negative { color: #e84393; }
+        
+        /* Resource Allocation */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .resource-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border: 2px solid #f0f0f0;
+            transition: all 0.3s;
+        }
+        
+        .resource-item:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+        
+        .resource-header {
+            display: flex;
+            align-items: center;
+            justify-content: between;
+            margin-bottom: 10px;
+        }
+        
+        .resource-name {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .resource-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-available { background: rgba(0, 184, 148, 0.2); color: #00b894; }
+        .status-busy { background: rgba(255, 193, 7, 0.2); color: #ffc107; }
+        .status-overloaded { background: rgba(232, 67, 147, 0.2); color: #e84393; }
+        
+        .resource-details {
+            font-size: 0.9rem;
+            color: #666;
+        }
+        
+        /* Charts Placeholder */
+        .chart-container {
+            height: 200px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #6c757d;
+            font-size: 1rem;
+            margin: 15px 0;
+        }
+        
+        /* Forms */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-label {
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-input {
+            padding: 10px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .form-select {
+            padding: 10px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 1rem;
+            background: white;
+            cursor: pointer;
+        }
+        
+        .form-submit {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s;
+            margin-top: 15px;
+        }
+        
+        .form-submit:hover {
+            transform: translateY(-2px);
+        }
+        
+        /* AI Insights */
+        .ai-insights {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .ai-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .insight-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .insight-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .insight-text {
+            color: #333;
+            line-height: 1.5;
+        }
+        
+        .insight-impact {
+            color: #00b894;
+            font-weight: 500;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+        
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .budget-overview {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="finance-container">
+        <div class="header">
+            <h1>💰 Financial Management</h1>
+            <p>Smart budgeting, expense tracking, and resource allocation with AI insights</p>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="collaboration.html" class="nav-btn">🏠 Dashboard</a>
+            <a href="advanced-ai.html" class="nav-btn">🤖 AI Features</a>
+            <a href="design-prototyping.html" class="nav-btn">🎨 Design Tools</a>
+            <a href="gamification.html" class="nav-btn">🎮 Gamification</a>
+        </div>
+        
+        <div class="dashboard-grid">
+            <!-- Budget Overview -->
+            <div class="finance-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">📊</span>
+                        Budget Overview
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-primary" onclick="financeManager.refreshBudget()">🔄</button>
+                        <button class="action-btn btn-secondary" onclick="financeManager.exportBudget()">📤</button>
+                    </div>
+                </div>
+                
+                <div class="budget-overview">
+                    <div class="budget-metric">
+                        <div class="metric-value" id="totalBudget">$125,000</div>
+                        <div class="metric-label">Total Budget</div>
+                    </div>
+                    <div class="budget-metric">
+                        <div class="metric-value" id="spentAmount">$78,450</div>
+                        <div class="metric-label">Spent</div>
+                    </div>
+                    <div class="budget-metric">
+                        <div class="metric-value" id="remainingAmount">$46,550</div>
+                        <div class="metric-label">Remaining</div>
+                    </div>
+                </div>
+                
+                <div>
+                    <div style="display: flex; justify-content: between; margin-bottom: 8px;">
+                        <span>Budget Utilization</span>
+                        <span id="budgetPercentage">62.8%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-warning" style="width: 62.8%"></div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    📈 Budget allocation chart would display here
+                </div>
+            </div>
+            
+            <!-- Expense Tracking -->
+            <div class="finance-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">💳</span>
+                        Recent Expenses
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-success" onclick="financeManager.addExpense()">➕</button>
+                        <button class="action-btn btn-secondary" onclick="financeManager.viewAllExpenses()">📋</button>
+                    </div>
+                </div>
+                
+                <div class="expense-list" id="expenseList">
+                    <!-- Expenses populated by JavaScript -->
+                </div>
+            </div>
+            
+            <!-- Resource Allocation -->
+            <div class="finance-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">👥</span>
+                        Resource Allocation
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-primary" onclick="financeManager.optimizeResources()">⚡</button>
+                        <button class="action-btn btn-secondary" onclick="financeManager.viewResources()">👁️</button>
+                    </div>
+                </div>
+                
+                <div class="resource-grid" id="resourceGrid">
+                    <!-- Resources populated by JavaScript -->
+                </div>
+                
+                <div style="margin-top: 20px;">
+                    <div style="display: flex; justify-content: between; margin-bottom: 8px;">
+                        <span>Resource Efficiency</span>
+                        <span>87.3%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill progress-success" style="width: 87.3%"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- AI Financial Insights -->
+            <div class="finance-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">🤖</span>
+                        AI Financial Insights
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-primary" onclick="financeManager.generateInsights()">🔮</button>
+                    </div>
+                </div>
+                
+                <div class="ai-insights">
+                    <div class="ai-title">
+                        <span>🎯</span>
+                        <span>Smart Recommendations</span>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-text">
+                            Consider reallocating 15% of marketing budget to development team to accelerate feature delivery.
+                        </div>
+                        <div class="insight-impact">Potential impact: +$12,000 revenue increase</div>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-text">
+                            Current project timeline suggests budget overrun of 8%. Recommend resource optimization.
+                        </div>
+                        <div class="insight-impact">Potential savings: $6,500</div>
+                    </div>
+                    <div class="insight-item">
+                        <div class="insight-text">
+                            Q4 spending pattern shows 23% efficiency improvement opportunity in operational costs.
+                        </div>
+                        <div class="insight-impact">Potential savings: $18,750</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="finance-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">⚡</span>
+                        Quick Actions
+                    </div>
+                </div>
+                
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Expense Type</label>
+                        <select class="form-select" id="expenseType">
+                            <option>Office Supplies</option>
+                            <option>Software License</option>
+                            <option>Team Lunch</option>
+                            <option>Marketing</option>
+                            <option>Equipment</option>
+                            <option>Travel</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Amount ($)</label>
+                        <input type="number" class="form-input" id="expenseAmount" placeholder="0.00">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-input" id="expenseDescription" placeholder="Brief description">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Project</label>
+                        <select class="form-select" id="expenseProject">
+                            <option>AI Integration</option>
+                            <option>Collaboration Platform</option>
+                            <option>Mobile App</option>
+                            <option>Data Analytics</option>
+                            <option>General Operations</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="form-submit" onclick="financeManager.submitExpense()">
+                    💰 Add Expense
+                </button>
+            </div>
+            
+            <!-- Financial Reports -->
+            <div class="finance-card">
+                <div class="card-header">
+                    <div class="card-title">
+                        <span class="card-icon">📈</span>
+                        Financial Reports
+                    </div>
+                    <div class="card-actions">
+                        <button class="action-btn btn-success" onclick="financeManager.generateReport()">📊</button>
+                    </div>
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <h4 style="color: #333; margin-bottom: 15px;">Monthly Performance</h4>
+                    <div class="budget-overview">
+                        <div class="budget-metric">
+                            <div class="metric-value">$32,150</div>
+                            <div class="metric-label">This Month</div>
+                        </div>
+                        <div class="budget-metric">
+                            <div class="metric-value">+12.3%</div>
+                            <div class="metric-label">vs Last Month</div>
+                        </div>
+                        <div class="budget-metric">
+                            <div class="metric-value">4.2</div>
+                            <div class="metric-label">ROI Ratio</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chart-container">
+                    📊 Monthly spending trends chart would display here
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-top: 15px;">
+                    <button class="action-btn btn-primary" style="flex: 1;">📥 Download PDF</button>
+                    <button class="action-btn btn-secondary" style="flex: 1;">📧 Email Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class FinancialManager {
+            constructor() {
+                this.expenses = [
+                    { id: 1, type: 'Software License', amount: -299, description: 'Adobe Creative Suite', project: 'Design Team', date: '2024-01-15', icon: '💻', color: '#667eea' },
+                    { id: 2, type: 'Team Lunch', amount: -145, description: 'Sprint celebration', project: 'General', date: '2024-01-14', icon: '🍕', color: '#00b894' },
+                    { id: 3, type: 'Equipment', amount: -1250, description: 'Development laptops', project: 'AI Integration', date: '2024-01-12', icon: '💻', color: '#e84393' },
+                    { id: 4, type: 'Revenue', amount: 5000, description: 'Client payment received', project: 'Collaboration Platform', date: '2024-01-10', icon: '💰', color: '#00b894' },
+                    { id: 5, type: 'Marketing', amount: -850, description: 'Social media ads', project: 'Marketing', date: '2024-01-08', icon: '📢', color: '#ffc107' }
+                ];
+                
+                this.resources = [
+                    { id: 1, name: 'Development Team', status: 'busy', allocation: 85, cost: 12000, project: 'AI Integration' },
+                    { id: 2, name: 'Design Team', status: 'available', allocation: 60, cost: 8000, project: 'UI/UX Redesign' },
+                    { id: 3, name: 'QA Team', status: 'available', allocation: 45, cost: 6000, project: 'Testing' },
+                    { id: 4, name: 'DevOps Team', status: 'overloaded', allocation: 95, cost: 10000, project: 'Infrastructure' },
+                    { id: 5, name: 'Marketing Team', status: 'busy', allocation: 70, cost: 9000, project: 'Campaign Launch' }
+                ];
+                
+                this.populateExpenses();
+                this.populateResources();
+                this.updateBudgetMetrics();
+            }
+            
+            populateExpenses() {
+                const expenseList = document.getElementById('expenseList');
+                expenseList.innerHTML = this.expenses.map(expense => `
+                    <div class="expense-item">
+                        <div class="expense-info">
+                            <div class="expense-icon" style="background: ${expense.color}20; color: ${expense.color};">
+                                ${expense.icon}
+                            </div>
+                            <div class="expense-details">
+                                <h4>${expense.description}</h4>
+                                <p>${expense.project} • ${expense.date}</p>
+                            </div>
+                        </div>
+                        <div class="expense-amount ${expense.amount > 0 ? 'amount-positive' : 'amount-negative'}">
+                            ${expense.amount > 0 ? '+' : ''}$${Math.abs(expense.amount).toLocaleString()}
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            populateResources() {
+                const resourceGrid = document.getElementById('resourceGrid');
+                resourceGrid.innerHTML = this.resources.map(resource => `
+                    <div class="resource-item">
+                        <div class="resource-header">
+                            <div class="resource-name">${resource.name}</div>
+                            <div class="resource-status status-${resource.status}">${resource.status}</div>
+                        </div>
+                        <div class="resource-details">
+                            <div style="margin-bottom: 8px;">Allocation: ${resource.allocation}%</div>
+                            <div style="margin-bottom: 8px;">Monthly Cost: $${resource.cost.toLocaleString()}</div>
+                            <div>Project: ${resource.project}</div>
+                        </div>
+                        <div class="progress-bar" style="margin-top: 10px;">
+                            <div class="progress-fill ${resource.allocation > 90 ? 'progress-danger' : resource.allocation > 70 ? 'progress-warning' : 'progress-success'}" 
+                                 style="width: ${resource.allocation}%"></div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            updateBudgetMetrics() {
+                const totalBudget = 125000;
+                const spentAmount = this.expenses.reduce((sum, expense) => 
+                    sum + (expense.amount < 0 ? Math.abs(expense.amount) : 0), 0);
+                const remaining = totalBudget - spentAmount;
+                const percentage = ((spentAmount / totalBudget) * 100).toFixed(1);
+                
+                document.getElementById('totalBudget').textContent = `$${totalBudget.toLocaleString()}`;
+                document.getElementById('spentAmount').textContent = `$${spentAmount.toLocaleString()}`;
+                document.getElementById('remainingAmount').textContent = `$${remaining.toLocaleString()}`;
+                document.getElementById('budgetPercentage').textContent = `${percentage}%`;
+                
+                // Update progress bar
+                const progressBar = document.querySelector('.progress-fill');
+                progressBar.style.width = `${percentage}%`;
+                progressBar.className = `progress-fill ${percentage > 80 ? 'progress-danger' : percentage > 60 ? 'progress-warning' : 'progress-success'}`;
+            }
+            
+            addExpense() {
+                this.showNotification('➕ Opening expense form...', 'info');
+                // Focus on the expense form
+                document.getElementById('expenseAmount').focus();
+            }
+            
+            submitExpense() {
+                const type = document.getElementById('expenseType').value;
+                const amount = parseFloat(document.getElementById('expenseAmount').value);
+                const description = document.getElementById('expenseDescription').value;
+                const project = document.getElementById('expenseProject').value;
+                
+                if (!amount || !description) {
+                    this.showNotification('⚠️ Please fill in all required fields', 'warning');
+                    return;
+                }
+                
+                const newExpense = {
+                    id: this.expenses.length + 1,
+                    type: type,
+                    amount: -amount,
+                    description: description,
+                    project: project,
+                    date: new Date().toISOString().split('T')[0],
+                    icon: this.getExpenseIcon(type),
+                    color: this.getExpenseColor(type)
+                };
+                
+                this.expenses.unshift(newExpense);
+                this.populateExpenses();
+                this.updateBudgetMetrics();
+                
+                // Clear form
+                document.getElementById('expenseAmount').value = '';
+                document.getElementById('expenseDescription').value = '';
+                
+                this.showNotification(`💰 Expense added: $${amount} for ${description}`, 'success');
+            }
+            
+            getExpenseIcon(type) {
+                const icons = {
+                    'Office Supplies': '📎',
+                    'Software License': '💻',
+                    'Team Lunch': '🍕',
+                    'Marketing': '📢',
+                    'Equipment': '💻',
+                    'Travel': '✈️'
+                };
+                return icons[type] || '💰';
+            }
+            
+            getExpenseColor(type) {
+                const colors = {
+                    'Office Supplies': '#6c757d',
+                    'Software License': '#667eea',
+                    'Team Lunch': '#00b894',
+                    'Marketing': '#ffc107',
+                    'Equipment': '#e84393',
+                    'Travel': '#17a2b8'
+                };
+                return colors[type] || '#667eea';
+            }
+            
+            optimizeResources() {
+                this.showNotification('⚡ AI is analyzing resource allocation...', 'info');
+                
+                setTimeout(() => {
+                    // Simulate AI optimization
+                    this.resources.forEach(resource => {
+                        if (resource.status === 'overloaded') {
+                            resource.allocation = Math.max(resource.allocation - 15, 70);
+                            resource.status = resource.allocation > 85 ? 'busy' : 'available';
+                        }
+                    });
+                    
+                    this.populateResources();
+                    this.showNotification('🎯 Resources optimized! Efficiency improved by 12%', 'success');
+                }, 2000);
+            }
+            
+            generateInsights() {
+                this.showNotification('🤖 AI is generating new financial insights...', 'info');
+                
+                setTimeout(() => {
+                    const insights = [
+                        'Identified 18% cost reduction opportunity in cloud infrastructure',
+                        'Recommend shifting 10% budget from marketing to R&D for Q2',
+                        'Team productivity metrics suggest 25% ROI improvement potential'
+                    ];
+                    
+                    const randomInsight = insights[Math.floor(Math.random() * insights.length)];
+                    this.showNotification(`💡 New insight: ${randomInsight}`, 'success');
+                }, 1500);
+            }
+            
+            refreshBudget() {
+                this.showNotification('🔄 Refreshing budget data...', 'info');
+                
+                setTimeout(() => {
+                    // Simulate data refresh with small variations
+                    this.expenses.forEach(expense => {
+                        if (Math.random() > 0.8) {
+                            expense.amount += Math.floor(Math.random() * 20) - 10;
+                        }
+                    });
+                    
+                    this.populateExpenses();
+                    this.updateBudgetMetrics();
+                    this.showNotification('✅ Budget data refreshed', 'success');
+                }, 1000);
+            }
+            
+            exportBudget() {
+                this.showNotification('📤 Exporting budget report...', 'info');
+                
+                setTimeout(() => {
+                    // Simulate export
+                    const formats = ['PDF', 'Excel', 'CSV'];
+                    const format = formats[Math.floor(Math.random() * formats.length)];
+                    this.showNotification(`📊 Budget exported as ${format} file`, 'success');
+                }, 1000);
+            }
+            
+            viewAllExpenses() {
+                this.showNotification('📋 Loading detailed expense view...', 'info');
+            }
+            
+            viewResources() {
+                this.showNotification('👁️ Opening resource management dashboard...', 'info');
+            }
+            
+            generateReport() {
+                this.showNotification('📊 Generating comprehensive financial report...', 'info');
+                
+                setTimeout(() => {
+                    this.showNotification('📈 Financial report generated successfully!', 'success');
+                }, 2000);
+            }
+            
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? 'linear-gradient(135deg, #00b894, #55a3ff)' : 
+                                   type === 'warning' ? 'linear-gradient(135deg, #ffc107, #ff8806)' :
+                                   type === 'info' ? 'linear-gradient(135deg, #667eea, #764ba2)' : 
+                                   'linear-gradient(135deg, #fd79a8, #e84393)'};
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 10px;
+                    font-weight: 500;
+                    z-index: 1000;
+                    animation: slideIn 0.5s ease;
+                    max-width: 350px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.5s ease';
+                    setTimeout(() => notification.remove(), 500);
+                }, 4000);
+            }
+        }
+        
+        // CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize financial manager
+        const financeManager = new FinancialManager();
+    </script>
+</body>
+</html>
