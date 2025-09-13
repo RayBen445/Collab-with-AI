@@ -297,7 +297,7 @@
             </div>
             <div class="form-group">
                 <label for="signUpPassword">Password</label>
-                <input type="password" id="signUpPassword" required placeholder="Enter password (must be 'professor')">
+                <input type="password" id="signUpPassword" required placeholder="Enter authorized password">
                 <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
                     Don't have the authorized password? <a href="password-request.html" style="color: #667eea; text-decoration: none;">Request access from admin</a>
                 </div>
@@ -496,7 +496,7 @@
                 
                 // If not professor password and Firebase is not available, show message
                 if (typeof firebase === 'undefined') {
-                    showMessage('Firebase authentication service is not available in this environment. Use "professor" as password for universal access.', 'error');
+                    showMessage('Firebase authentication service is not available in this environment. Please use the authorized password for universal access.', 'error');
                 } else {
                     // Firebase is available but this handler shouldn't interfere with Firebase auth
                     console.log('Firebase available, letting Firebase handler take over');

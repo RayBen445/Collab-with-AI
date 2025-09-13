@@ -1132,7 +1132,7 @@
                 requests[requestIndex].processedDate = new Date().toISOString();
                 localStorage.setItem('passwordRequests', JSON.stringify(requests));
                 
-                alert('Request approved! You should email the user the password: "professor"');
+                alert('Request approved! You should email the user the authorized access password.');
                 loadPasswordRequests();
             }
         }
@@ -1157,7 +1157,7 @@
 
 Your request for access to the AI-Human Collaboration Platform has been approved.
 
-Your access password is: professor
+Your access password is: [CONTACT_ADMIN_FOR_PASSWORD]
 
 You can now login at: ${window.location.origin}/login.html
 
