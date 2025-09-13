@@ -1115,8 +1115,8 @@
                                     </div>
                                 </div>
                                 <div class="project-actions">
-                                    <button class="btn-small btn-primary">Open</button>
-                                    <button class="btn-small btn-outline">Share</button>
+                                    <button class="btn-small btn-primary" onclick="openProjectWorkspace(this)">Open</button>
+                                    <button class="btn-small btn-outline" onclick="shareProjectLink(this)">Share</button>
                                 </div>
                             </div>
                             
@@ -1147,8 +1147,8 @@
                                     </div>
                                 </div>
                                 <div class="project-actions">
-                                    <button class="btn-small btn-primary">Open</button>
-                                    <button class="btn-small btn-outline">Share</button>
+                                    <button class="btn-small btn-primary" onclick="openProjectWorkspace(this)">Open</button>
+                                    <button class="btn-small btn-outline" onclick="shareProjectLink(this)">Share</button>
                                 </div>
                             </div>
                             
@@ -1181,8 +1181,8 @@
                                     </div>
                                 </div>
                                 <div class="project-actions">
-                                    <button class="btn-small btn-primary">Open</button>
-                                    <button class="btn-small btn-outline">Share</button>
+                                    <button class="btn-small btn-primary" onclick="openProjectWorkspace(this)">Open</button>
+                                    <button class="btn-small btn-outline" onclick="shareProjectLink(this)">Share</button>
                                 </div>
                             </div>
                         </div>
@@ -2482,6 +2482,231 @@
                 localStorage.setItem('collaborationTeamSpaces', JSON.stringify(teamSpaces));
                 closeModal();
             });
+        }
+        
+        // Project action functions for collaboration platform
+        function openProjectWorkspace(buttonElement) {
+            const projectCard = buttonElement.closest('.project-card');
+            const projectTitle = projectCard.querySelector('.project-title').textContent;
+            
+            // Create a modal with project workspace
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3>🚀 ${projectTitle} - Project Workspace</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <h4>📁 Project Files</h4>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                    <div class="file-item">📄 README.md</div>
+                                    <div class="file-item">📄 index.html</div>
+                                    <div class="file-item">📄 styles.css</div>
+                                    <div class="file-item">📄 script.js</div>
+                                </div>
+                                <button class="btn btn-sm btn-outline">📤 Upload Files</button>
+                            </div>
+                            <div>
+                                <h4>✅ Active Tasks</h4>
+                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                                    <div class="task-item">🔄 Update documentation</div>
+                                    <div class="task-item">✅ Fix responsive design</div>
+                                    <div class="task-item">🔄 Add test coverage</div>
+                                    <div class="task-item">📋 Code review</div>
+                                </div>
+                                <button class="btn btn-sm btn-outline">➕ Add Task</button>
+                            </div>
+                        </div>
+                        <div style="margin-top: 20px;">
+                            <h4>💬 Team Chat</h4>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 15px; height: 200px; overflow-y: auto;">
+                                <div class="chat-message"><strong>John:</strong> Just pushed the latest changes!</div>
+                                <div class="chat-message"><strong>AI Assistant:</strong> I detected a potential optimization in the CSS file.</div>
+                                <div class="chat-message"><strong>Sarah:</strong> Great work team! Let's schedule a review.</div>
+                            </div>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" placeholder="Type a message..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                                <button class="btn btn-primary btn-sm">Send</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="window.open('/projects/web-apps/' + '${projectTitle}'.toLowerCase().replace(/\\s+/g, '-') + '.html', '_blank')">🚀 Open Project Page</button>
+                        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Add CSS for file and task items
+            if (!document.getElementById('workspace-styles')) {
+                const style = document.createElement('style');
+                style.id = 'workspace-styles';
+                style.textContent = `
+                    .file-item, .task-item, .chat-message {
+                        padding: 8px 0;
+                        border-bottom: 1px solid #e0e0e0;
+                        font-size: 14px;
+                    }
+                    .file-item:last-child, .task-item:last-child, .chat-message:last-child {
+                        border-bottom: none;
+                    }
+                    .chat-message {
+                        margin-bottom: 5px;
+                    }
+                    .btn-sm {
+                        padding: 6px 12px;
+                        font-size: 12px;
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        function shareProjectLink(buttonElement) {
+            const projectCard = buttonElement.closest('.project-card');
+            const projectTitle = projectCard.querySelector('.project-title').textContent;
+            
+            // Create sharing modal
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>📤 Share "${projectTitle}"</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="margin-bottom: 20px;">
+                            <label>Project Link:</label>
+                            <div style="display: flex; gap: 10px; margin-top: 5px;">
+                                <input type="text" id="shareLink" value="https://collab-ai.vercel.app/projects/web-apps/${projectTitle.toLowerCase().replace(/\\s+/g, '-')}.html" 
+                                       style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;" readonly>
+                                <button class="btn btn-primary btn-sm" onclick="copyToClipboard('shareLink')">📋 Copy</button>
+                            </div>
+                        </div>
+                        
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <button class="btn btn-outline" onclick="shareViaEmail('${projectTitle}')">
+                                📧 Email
+                            </button>
+                            <button class="btn btn-outline" onclick="shareViaSlack('${projectTitle}')">
+                                💬 Slack
+                            </button>
+                            <button class="btn btn-outline" onclick="shareViaSocial('${projectTitle}')">
+                                🌐 Social Media
+                            </button>
+                            <button class="btn btn-outline" onclick="generateEmbedCode('${projectTitle}')">
+                                🔗 Embed Code
+                            </button>
+                        </div>
+                        
+                        <div style="margin-top: 20px;">
+                            <h4>🔒 Access Control</h4>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <label>
+                                    <input type="radio" name="access" value="public" checked> 
+                                    Public - Anyone with link can view
+                                </label><br>
+                                <label>
+                                    <input type="radio" name="access" value="team"> 
+                                    Team Only - Requires team membership
+                                </label><br>
+                                <label>
+                                    <input type="radio" name="access" value="invite"> 
+                                    Invite Only - Specific email addresses
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function copyToClipboard(elementId) {
+            const input = document.getElementById(elementId);
+            input.select();
+            document.execCommand('copy');
+            
+            // Show feedback
+            const button = event.target;
+            const originalText = button.textContent;
+            button.textContent = '✅ Copied!';
+            setTimeout(() => {
+                button.textContent = originalText;
+            }, 2000);
+        }
+        
+        function shareViaEmail(projectTitle) {
+            const subject = encodeURIComponent(`Check out this project: ${projectTitle}`);
+            const body = encodeURIComponent(`I wanted to share this collaboration project with you: ${projectTitle}\\n\\nView it here: https://collab-ai.vercel.app/projects/web-apps/${projectTitle.toLowerCase().replace(/\\s+/g, '-')}.html\\n\\nBuilt with AI-Human collaboration!`);
+            window.open(`mailto:?subject=${subject}&body=${body}`);
+        }
+        
+        function shareViaSlack(projectTitle) {
+            alert(`🚀 Slack integration would send this message to your team:\\n\\n"New project shared: ${projectTitle}\\nCollaborators can join here: [project link]"`);
+        }
+        
+        function shareViaSocial(projectTitle) {
+            const text = encodeURIComponent(`Check out this AI-Human collaboration project: ${projectTitle}`);
+            const url = encodeURIComponent(`https://collab-ai.vercel.app/projects/web-apps/${projectTitle.toLowerCase().replace(/\\s+/g, '-')}.html`);
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>🌐 Share on Social Media</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <button class="btn btn-outline" onclick="window.open('https://twitter.com/intent/tweet?text=${text}&url=${url}', '_blank')">
+                                🐦 Twitter
+                            </button>
+                            <button class="btn btn-outline" onclick="window.open('https://www.linkedin.com/sharing/share-offsite/?url=${url}', '_blank')">
+                                💼 LinkedIn
+                            </button>
+                            <button class="btn btn-outline" onclick="window.open('https://www.facebook.com/sharer/sharer.php?u=${url}', '_blank')">
+                                📘 Facebook
+                            </button>
+                            <button class="btn btn-outline" onclick="window.open('https://reddit.com/submit?url=${url}&title=${text}', '_blank')">
+                                🔴 Reddit
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+        
+        function generateEmbedCode(projectTitle) {
+            const embedCode = `<iframe src="https://collab-ai.vercel.app/projects/web-apps/${projectTitle.toLowerCase().replace(/\\s+/g, '-')}.html" width="800" height="600" frameborder="0"></iframe>`;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>🔗 Embed Code</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Copy this code to embed the project in your website:</p>
+                        <textarea id="embedCode" style="width: 100%; height: 80px; margin: 10px 0; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace;" readonly>${embedCode}</textarea>
+                        <button class="btn btn-primary" onclick="copyToClipboard('embedCode')">📋 Copy Embed Code</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
     </script>
 </body>

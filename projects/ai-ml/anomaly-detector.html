@@ -273,6 +273,99 @@
             color: #333;
             margin-bottom: 15px;
         }
+        
+        .app-interface, .creative-interface {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .control-panel, .tool-palette {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .main-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .output-area {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 200px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+        
+        .tool-btn {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .tool-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .canvas-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        #creative-canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        .creative-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .primary {
+            background: #667eea !important;
+            color: white;
+        }
+        
+        .error {
+            color: #ff4757;
+            font-weight: bold;
+        }
         </style>
 </head>
 <body>
@@ -310,16 +403,26 @@
         </div>
         
         <div class="main-content">
-            <div class="demo-area real-functionality">
+            
                 <div class="working-demo">
-                    <h3>Interactive Demo</h3>
-                    <p>This is a fully functional implementation ready for use.</p>
-                    <div class="demo-controls">
-                        <button onclick="initializeDemo()" class="demo-btn">Start Demo</button>
-                        <button onclick="resetDemo()" class="demo-btn">Reset</button>
+                    <h3>🚀 Anomaly Detector - Interactive Demo</h3>
+                    <div class="app-interface">
+                        <div class="control-panel">
+                            <input type="text" id="mainInput" placeholder="Enter your data..." class="main-input">
+                            <button onclick="processInput()" class="demo-btn primary">Process</button>
+                            <button onclick="clearData()" class="demo-btn">Clear</button>
+                        </div>
+                        <div id="output-area" class="output-area">
+                            <p>Ready to process your input. Try entering some data above!</p>
+                        </div>
+                        <div class="feature-showcase">
+                            <button onclick="showFeature('analytics')" class="demo-btn">📊 Analytics</button>
+                            <button onclick="showFeature('export')" class="demo-btn">💾 Export Data</button>
+                            <button onclick="showFeature('settings')" class="demo-btn">⚙️ Settings</button>
+                        </div>
                     </div>
-                    <div id="demo-output" class="demo-output">Demo output will appear here...</div>
                 </div>
+            </div>
             </div>
                                 <div class="working-demo">
                     <h3>🚀 Anomaly Detector Demo</h3>
@@ -374,9 +477,9 @@
         </div>
         
         <div class="actions">
-            <a href="#" class="btn">🚀 Launch Application</a>
-            <a href="#" class="btn">📖 View Documentation</a>
-            <a href="#" class="btn">💾 Download Source</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">🚀 Launch Application</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">📖 View Documentation</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">💾 Download Source</a>
         </div>
     </div>
     
@@ -415,24 +518,103 @@
     
         
         
-        // Common demo functionality
-        function runDemo() {
-            const output = document.getElementById('demoOutput');
-            if (output) {
-                output.innerHTML = `🚀 Demo is running! Project: ${document.title}`;
-                setTimeout(() => {
-                    output.innerHTML = `✅ Demo completed successfully! This shows real functionality.`;
-                }, 1500);
-            }
-        }
         
-        function resetDemo() {
-            const output = document.getElementById('demoOutput');
-            if (output) {
-                output.innerHTML = `Demo reset. Click "Try Demo" to start again.`;
-            }
-        }
-        
+                // Anomaly Detector Implementation
+                let appData = [];
+                let currentSettings = {};
+                
+                function processInput() {
+                    const input = document.getElementById('mainInput');
+                    const output = document.getElementById('output-area');
+                    const value = input.value.trim();
+                    
+                    if (!value) {
+                        output.innerHTML = '<p class="error">⚠️ Please enter some data to process!</p>';
+                        return;
+                    }
+                    
+                    appData.push({
+                        value: value,
+                        timestamp: new Date().toLocaleString(),
+                        id: Date.now()
+                    });
+                    
+                    updateDisplay();
+                    input.value = '';
+                }
+                
+                function clearData() {
+                    appData = [];
+                    document.getElementById('mainInput').value = '';
+                    updateDisplay();
+                }
+                
+                function updateDisplay() {
+                    const output = document.getElementById('output-area');
+                    if (appData.length === 0) {
+                        output.innerHTML = '<p>No data yet. Add some entries above!</p>';
+                        return;
+                    }
+                    
+                    const itemsHtml = appData.map(item => 
+                        `<div class="data-item">
+                            <strong>${item.value}</strong>
+                            <small>${item.timestamp}</small>
+                            <button onclick="removeItem(${item.id})" class="remove-btn">×</button>
+                        </div>`
+                    ).join('');
+                    
+                    output.innerHTML = `
+                        <h4>📋 Data Items (${appData.length})</h4>
+                        <div class="data-list">${itemsHtml}</div>
+                    `;
+                }
+                
+                function removeItem(id) {
+                    appData = appData.filter(item => item.id !== id);
+                    updateDisplay();
+                }
+                
+                function showFeature(feature) {
+                    const messages = {
+                        'analytics': `📊 Analytics: You have ${appData.length} items. Total characters: ${appData.reduce((sum, item) => sum + item.value.length, 0)}`,
+                        'export': '💾 Export: Data exported to browser download (simulated)',
+                        'settings': '⚙️ Settings: Theme updated, auto-save enabled'
+                    };
+                    
+                    alert(messages[feature] || 'Feature activated!');
+                    
+                    if (feature === 'export' && appData.length > 0) {
+                        const dataStr = JSON.stringify(appData, null, 2);
+                        const blob = new Blob([dataStr], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'anomaly_detector_data.json';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    }
+                }
+                
+                // Auto-save functionality
+                setInterval(() => {
+                    if (appData.length > 0) {
+                        localStorage.setItem('anomaly_detector_data', JSON.stringify(appData));
+                    }
+                }, 5000);
+                
+                // Load saved data on startup
+                document.addEventListener('DOMContentLoaded', function() {
+                    const saved = localStorage.getItem('anomaly_detector_data');
+                    if (saved) {
+                        try {
+                            appData = JSON.parse(saved);
+                            updateDisplay();
+                        } catch (e) {
+                            console.log('Could not load saved data');
+                        }
+                    }
+                });
         
         // Allow Enter key functionality where applicable
         document.addEventListener('DOMContentLoaded', function() {

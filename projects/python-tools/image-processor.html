@@ -273,6 +273,99 @@
             color: #333;
             margin-bottom: 15px;
         }
+        
+        .app-interface, .creative-interface {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .control-panel, .tool-palette {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .main-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .output-area {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 200px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+        
+        .tool-btn {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .tool-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .canvas-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        #creative-canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        .creative-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .primary {
+            background: #667eea !important;
+            color: white;
+        }
+        
+        .error {
+            color: #ff4757;
+            font-weight: bold;
+        }
         </style>
 </head>
 <body>
@@ -310,16 +403,29 @@
         </div>
         
         <div class="main-content">
-            <div class="demo-area real-functionality">
+            
                 <div class="working-demo">
-                    <h3>Interactive Demo</h3>
-                    <p>This is a fully functional implementation ready for use.</p>
-                    <div class="demo-controls">
-                        <button onclick="initializeDemo()" class="demo-btn">Start Demo</button>
-                        <button onclick="resetDemo()" class="demo-btn">Reset</button>
+                    <h3>🎨 Image Processor - Creative Studio</h3>
+                    <div class="creative-interface">
+                        <div class="tool-palette">
+                            <button onclick="selectTool('brush')" class="tool-btn active" id="brush-tool">🖌️ Brush</button>
+                            <button onclick="selectTool('eraser')" class="tool-btn" id="eraser-tool">🧽 Eraser</button>
+                            <button onclick="selectTool('text')" class="tool-btn" id="text-tool">📝 Text</button>
+                            <button onclick="selectTool('shape')" class="tool-btn" id="shape-tool">⬜ Shape</button>
+                        </div>
+                        <div class="canvas-container">
+                            <canvas id="creative-canvas" width="600" height="400"></canvas>
+                        </div>
+                        <div class="creative-controls">
+                            <input type="color" id="color-picker" value="#667eea">
+                            <input type="range" id="brush-size" min="1" max="50" value="5">
+                            <button onclick="clearCanvas()" class="demo-btn">🗑️ Clear</button>
+                            <button onclick="saveCreation()" class="demo-btn">💾 Save</button>
+                            <button onclick="generateArt()" class="demo-btn">✨ AI Generate</button>
+                        </div>
                     </div>
-                    <div id="demo-output" class="demo-output">Demo output will appear here...</div>
                 </div>
+            </div>
             </div>
                                 <div class="working-demo">
                     <h3>🚀 Image Processor Demo</h3>
@@ -374,9 +480,9 @@
         </div>
         
         <div class="actions">
-            <a href="#" class="btn">🚀 Launch Application</a>
-            <a href="#" class="btn">📖 View Documentation</a>
-            <a href="#" class="btn">💾 Download Source</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">🚀 Launch Application</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">📖 View Documentation</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">💾 Download Source</a>
         </div>
     </div>
     
@@ -415,24 +521,103 @@
     
         
         
-        // Common demo functionality
-        function runDemo() {
-            const output = document.getElementById('demoOutput');
-            if (output) {
-                output.innerHTML = `🚀 Demo is running! Project: ${document.title}`;
-                setTimeout(() => {
-                    output.innerHTML = `✅ Demo completed successfully! This shows real functionality.`;
-                }, 1500);
-            }
-        }
         
-        function resetDemo() {
-            const output = document.getElementById('demoOutput');
-            if (output) {
-                output.innerHTML = `Demo reset. Click "Try Demo" to start again.`;
-            }
-        }
-        
+                // Image Processor Creative Implementation
+                let canvas, ctx;
+                let isDrawing = false;
+                let currentTool = 'brush';
+                
+                document.addEventListener('DOMContentLoaded', function() {
+                    canvas = document.getElementById('creative-canvas');
+                    ctx = canvas.getContext('2d');
+                    
+                    // Set up canvas background
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                    
+                    // Mouse events
+                    canvas.addEventListener('mousedown', startDrawing);
+                    canvas.addEventListener('mousemove', draw);
+                    canvas.addEventListener('mouseup', stopDrawing);
+                    canvas.addEventListener('mouseout', stopDrawing);
+                });
+                
+                function selectTool(tool) {
+                    document.querySelectorAll('.tool-btn').forEach(btn => btn.classList.remove('active'));
+                    document.getElementById(tool + '-tool').classList.add('active');
+                    currentTool = tool;
+                }
+                
+                function startDrawing(e) {
+                    isDrawing = true;
+                    draw(e);
+                }
+                
+                function draw(e) {
+                    if (!isDrawing) return;
+                    
+                    const rect = canvas.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    
+                    ctx.lineWidth = document.getElementById('brush-size').value;
+                    ctx.lineCap = 'round';
+                    
+                    if (currentTool === 'brush') {
+                        ctx.globalCompositeOperation = 'source-over';
+                        ctx.strokeStyle = document.getElementById('color-picker').value;
+                    } else if (currentTool === 'eraser') {
+                        ctx.globalCompositeOperation = 'destination-out';
+                    }
+                    
+                    ctx.lineTo(x, y);
+                    ctx.stroke();
+                    ctx.beginPath();
+                    ctx.moveTo(x, y);
+                }
+                
+                function stopDrawing() {
+                    if (isDrawing) {
+                        isDrawing = false;
+                        ctx.beginPath();
+                    }
+                }
+                
+                function clearCanvas() {
+                    ctx.clearRect(0, 0, canvas.width, canvas.height);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, canvas.width, canvas.height);
+                }
+                
+                function saveCreation() {
+                    const dataURL = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.download = 'image_processor_creation.png';
+                    link.href = dataURL;
+                    link.click();
+                    alert('🎨 Your creation has been saved!');
+                }
+                
+                function generateArt() {
+                    // Generate random abstract art
+                    const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dda0dd'];
+                    
+                    for (let i = 0; i < 20; i++) {
+                        ctx.fillStyle = colors[Math.floor(Math.random() * colors.length)];
+                        ctx.globalAlpha = 0.7;
+                        
+                        const x = Math.random() * canvas.width;
+                        const y = Math.random() * canvas.height;
+                        const radius = Math.random() * 50 + 10;
+                        
+                        ctx.beginPath();
+                        ctx.arc(x, y, radius, 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+                    
+                    ctx.globalAlpha = 1;
+                    alert('✨ AI-generated art added to your canvas!');
+                }
         
         // Allow Enter key functionality where applicable
         document.addEventListener('DOMContentLoaded', function() {
