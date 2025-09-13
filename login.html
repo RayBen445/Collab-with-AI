@@ -271,36 +271,36 @@
             </button>
         </div>
         
-        <!-- Sign Up Form (Hidden by default) -->
-        <div id="signUpForm" class="signup-form" style="display: none;">
-            <div class="form-header">
-                <h2>🎉 Create Your Account</h2>
-                <p>Join the AI-Human collaboration revolution</p>
-            </div>
-            
-            <form id="signUpFormElement">
-                <div class="form-group">
-                    <label for="signUpName">Display Name</label>
-                    <input type="text" id="signUpName" placeholder="Enter your full name">
-                </div>
-                <div class="form-group">
-                    <label for="signUpEmail">Email Address</label>
-                    <input type="email" id="signUpEmail" required placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label for="signUpPassword">Password</label>
-                    <input type="password" id="signUpPassword" required placeholder="Enter password (min 6 characters)">
-                </div>
-                <button type="button" class="login-btn" id="signUpBtn">Create Account</button>
-            </form>
-            
-            <div class="form-footer">
-                <button type="button" class="link-btn" id="showSignInBtn">← Back to Sign In</button>
-            </div>
-        </div>
-        
         <div class="back-link">
             <a href="index.html">← Back to Homepage</a>
+        </div>
+    </div>
+
+    <!-- Sign Up Form (Hidden by default) - Moved outside login-container -->
+    <div id="signUpForm" class="signup-form" style="display: none;">
+        <div class="form-header">
+            <h2>🎉 Create Your Account</h2>
+            <p>Join the AI-Human collaboration revolution</p>
+        </div>
+        
+        <form id="signUpFormElement">
+            <div class="form-group">
+                <label for="signUpName">Display Name</label>
+                <input type="text" id="signUpName" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="signUpEmail">Email Address</label>
+                <input type="email" id="signUpEmail" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="signUpPassword">Password</label>
+                <input type="password" id="signUpPassword" required placeholder="Enter password (min 6 characters)">
+            </div>
+            <button type="button" class="login-btn" id="signUpBtn">Create Account</button>
+        </form>
+        
+        <div class="form-footer">
+            <button type="button" class="link-btn" id="showSignInBtn">← Back to Sign In</button>
         </div>
     </div>
 
