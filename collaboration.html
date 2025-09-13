@@ -574,6 +574,47 @@
             color: white;
         }
         
+        /* Typing indicator styles */
+        .typing-indicator .message-bubble {
+            background: #f0f0f0 !important;
+            color: #666 !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            30% {
+                transform: scale(1.3);
+                opacity: 1;
+            }
+        }
+        
         .ai-input {
             padding: 15px 20px;
             border-top: 1px solid #f0f0f0;
@@ -1200,7 +1241,7 @@
             }
         }
         
-        function sendAIMessage() {
+        async function sendAIMessage() {
             const input = document.getElementById('aiInput');
             const message = input.value.trim();
             
@@ -1208,11 +1249,28 @@
                 addAIMessage(message, 'user');
                 input.value = '';
                 
-                // Simulate AI response
-                setTimeout(() => {
-                    const response = generateAIResponse(message);
-                    addAIMessage(response, 'bot');
-                }, 1000);
+                // Show typing indicator
+                addTypingIndicator();
+                
+                try {
+                    // Use actual Gemini AI for response
+                    const aiPrompt = `You are an AI assistant for a collaboration platform. The user said: "${message}". 
+                    Provide a helpful response about project management, task organization, team collaboration, or AI assistance. 
+                    Keep it conversational and practical. If they're asking about creating something, mention our 235+ project templates.`;
+                    
+                    const result = await geminiAPI.generateContent(aiPrompt, {
+                        temperature: 0.7,
+                        maxTokens: 500
+                    });
+                    
+                    removeTypingIndicator();
+                    addAIMessage(result.text, 'bot');
+                } catch (error) {
+                    console.error('AI response error:', error);
+                    removeTypingIndicator();
+                    const fallbackResponse = generateAIResponse(message);
+                    addAIMessage(fallbackResponse, 'bot');
+                }
             }
         }
         
@@ -1278,8 +1336,23 @@
             alert('✅ Create New Task:\n\n• Manual task creation\n• AI-generated tasks from project analysis\n• Import from calendar\n• Voice-to-task conversion\n• Template-based tasks');
         }
         
-        function aiSuggestTasks() {
-            alert('🤖 AI Task Suggestions:\n\nBased on your current projects:\n\n• Optimize Web Scraper performance (High Priority)\n• Update Finance Tracker documentation (Medium)\n• Plan team review for To-Do List (Low)\n• Research new AI integration opportunities (Medium)\n• Backup project files (High Priority)');
+        async function aiSuggestTasks() {
+            try {
+                const currentProjects = appState.projects.map(p => `${p.title} (${p.type})`).join(', ');
+                const completedTasks = ['Initial setup', 'Team onboarding', 'Basic configuration'];
+                
+                const suggestions = await geminiAPI.suggestTasks(
+                    `User is working on these collaboration projects: ${currentProjects}. Platform includes 235+ project templates across web apps, AI tools, games, and business applications.`,
+                    completedTasks
+                );
+                
+                const taskList = suggestions.map(task => `• ${task.title}: ${task.description}`).join('\n');
+                alert(`🤖 AI Task Suggestions:\n\nBased on your current projects:\n\n${taskList}`);
+            } catch (error) {
+                console.error('AI task suggestion error:', error);
+                // Fallback to static suggestions
+                alert('🤖 AI Task Suggestions:\n\nBased on your current projects:\n\n• Optimize Web Scraper performance (High Priority)\n• Update Finance Tracker documentation (Medium)\n• Plan team review for To-Do List (Low)\n• Research new AI integration opportunities (Medium)\n• Backup project files (High Priority)');
+            }
         }
         
         // Search functionality
@@ -1371,14 +1444,54 @@
             }
         }
         
+        // Add typing indicator functions for AI chat
+        function addTypingIndicator() {
+            const chat = document.getElementById('aiChat');
+            const indicator = document.createElement('div');
+            indicator.className = 'ai-message bot typing-indicator';
+            indicator.id = 'typing-indicator';
+            indicator.innerHTML = `
+                <div class="message-bubble">
+                    <div class="typing-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    AI is thinking...
+                </div>
+            `;
+            chat.appendChild(indicator);
+            chat.scrollTop = chat.scrollHeight;
+        }
+        
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
         // Initialize app
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             // Initialize authentication first
             const authManager = new AuthenticationManager();
+            
+            // Initialize Gemini AI service
+            try {
+                await geminiAPI.initializeService();
+                if (geminiAPI.isInitialized()) {
+                    console.log('✅ Gemini AI service initialized successfully');
+                } else {
+                    console.warn('⚠️ Gemini AI service not available - using fallback responses');
+                }
+            } catch (error) {
+                console.error('❌ Failed to initialize Gemini AI service:', error);
+            }
             
             console.log('🤖 AI-Human Collaboration Platform initialized');
             console.log('Features loaded: Dashboard, Projects, Tasks, Chat, AI Assistant, Advanced Features');
         });
     </script>
+    
+    <!-- Include Gemini AI Service -->
+    <script src="js/gemini-api.js"></script>
 </body>
 </html>

@@ -917,14 +917,44 @@ Phase 4: Analytics and optimization
         }
         
         // AI assistance functions
-        function aiAssist() {
+        async function aiAssist() {
             const editor = document.getElementById('mainEditor');
             const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
             
             if (selectedText) {
-                simulateAIAnalysis(selectedText);
+                await simulateAIAnalysis(selectedText);
             } else {
-                alert('🤖 AI Assistant: Select text for analysis or ask me anything in the chat!');
+                // Offer general writing assistance
+                try {
+                    const documentContent = editor.value;
+                    if (documentContent.trim()) {
+                        const aiPrompt = `Please review this document and provide general feedback and improvement suggestions:
+
+"${documentContent}"
+
+Focus on:
+1. Overall structure and organization
+2. Content clarity and flow
+3. Potential areas for expansion
+4. Writing style recommendations
+
+Keep suggestions concise and actionable.`;
+
+                        showNotification('🤖 AI analyzing entire document...');
+                        const result = await geminiAPI.generateContent(aiPrompt, {
+                            temperature: 0.4,
+                            maxTokens: 1000
+                        });
+                        
+                        addAISuggestion('Document Review', result.text);
+                        showNotification('✅ Document analysis complete!');
+                    } else {
+                        alert('🤖 AI Assistant: Start typing and I can help with writing suggestions, or select text for specific analysis!');
+                    }
+                } catch (error) {
+                    console.error('AI assist error:', error);
+                    alert('🤖 AI Assistant: Select text for analysis or ask me anything in the chat!');
+                }
             }
         }
         
@@ -1034,14 +1064,36 @@ Phase 4: Analytics and optimization
             suggestionsList.insertBefore(newSuggestion, suggestionsList.firstChild);
         }
         
-        function simulateAIAnalysis(text) {
+        async function simulateAIAnalysis(text) {
             showNotification('🤖 AI analyzing selected text...');
             
-            setTimeout(() => {
+            try {
+                const aiPrompt = `Please analyze the following text for writing quality, clarity, and provide improvement suggestions:
+
+"${text}"
+
+Please provide:
+1. Writing quality assessment
+2. Clarity and readability feedback
+3. Specific improvement suggestions
+4. Grammar or style recommendations
+
+Keep the response concise and actionable.`;
+
+                const result = await geminiAPI.generateContent(aiPrompt, {
+                    temperature: 0.4,
+                    maxTokens: 800
+                });
+                
+                addAISuggestion('AI Analysis', result.text);
+                showNotification('✅ AI analysis complete! Check suggestions panel.');
+            } catch (error) {
+                console.error('AI analysis error:', error);
+                // Fallback to original analysis
                 const analysis = analyzeText(text);
                 addAISuggestion('Analysis', analysis);
-                showNotification('✅ AI analysis complete! Check suggestions panel.');
-            }, 2000);
+                showNotification('✅ Analysis complete! Check suggestions panel.');
+            }
         }
         
         function analyzeText(text) {
@@ -1112,8 +1164,26 @@ Phase 4: Analytics and optimization
             }
         });
         
+        // Initialize Gemini AI service
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                await geminiAPI.initializeService();
+                if (geminiAPI.isInitialized()) {
+                    console.log('✅ Gemini AI service initialized for real-time editor');
+                    showNotification('🤖 AI writing assistant ready!');
+                } else {
+                    console.warn('⚠️ Gemini AI service not available - using fallback analysis');
+                }
+            } catch (error) {
+                console.error('❌ Failed to initialize Gemini AI service:', error);
+            }
+        });
+        
         console.log('📝 Real-time collaborative editor initialized');
         console.log('Features: Live editing, AI suggestions, Comments, Version control');
     </script>
+    
+    <!-- Include Gemini AI Service -->
+    <script src="js/gemini-api.js"></script>
 </body>
 </html>

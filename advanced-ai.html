@@ -1002,6 +1002,24 @@ function calculateTeamProductivity(tasks, members) {
         
         // Initialize AI features
         const aiFeatures = new AdvancedAIFeatures();
+        
+        // Initialize Gemini AI service
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                await geminiAPI.initializeService();
+                if (geminiAPI.isInitialized()) {
+                    console.log('✅ Gemini AI service initialized for advanced AI features');
+                    showNotification('🤖 Advanced AI features powered by Google Gemini are ready!');
+                } else {
+                    console.warn('⚠️ Gemini AI service not available - using demo features');
+                }
+            } catch (error) {
+                console.error('❌ Failed to initialize Gemini AI service:', error);
+            }
+        });
     </script>
+    
+    <!-- Include Gemini AI Service -->
+    <script src="js/gemini-api.js"></script>
 </body>
 </html>
