@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Templates - AI-Human Collaboration Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+        
+        .header p {
+            color: #636e72;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #e17055;
+            background: rgba(225, 112, 85, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: #e17055;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .template-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .template-card:hover {
+            border-color: #e17055;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(225, 112, 85, 0.1);
+        }
+        
+        .template-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .template-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3436;
+        }
+        
+        .template-description {
+            color: #636e72;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .template-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #e17055, #fdcb6e);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .template-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(225, 112, 85, 0.3);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #e17055;
+        }
+        
+        .stat-label {
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+        
+        .template-preview {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid #e9ecef;
+        }
+        
+        .preview-title {
+            font-size: 1.5rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .preview-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            background: rgba(225, 112, 85, 0.1);
+            color: #e17055;
+            border: 1px solid #e17055;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn:hover, .tab-btn.active {
+            background: #e17055;
+            color: white;
+        }
+        
+        .preview-content {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 200px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            overflow-x: auto;
+        }
+        
+        .download-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid #e9ecef;
+            text-align: center;
+        }
+        
+        .download-title {
+            font-size: 1.5rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+        
+        .download-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .download-btn {
+            background: linear-gradient(135deg, #e17055, #fdcb6e);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(225, 112, 85, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📋 Project Templates</h1>
+            <p>Ready-to-use project scaffolds and starter templates</p>
+            
+            <div class="nav-links">
+                <a href="/index.html" class="nav-link">🏠 Home</a>
+                <a href="/projects/" class="nav-link">📁 All Projects</a>
+                <a href="/projects/developer-tools/" class="nav-link">🛠️ Dev Tools</a>
+                <a href="https://github.com/RayBen445/Collab-with-AI" class="nav-link">📦 GitHub</a>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">25</div>
+                <div class="stat-label">Templates</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Customizations</div>
+            </div>
+        </div>
+        
+        <!-- Template Grid -->
+        <div class="templates-grid">
+            <div class="template-card" onclick="openTemplate('web-app-basic')">
+                <div class="template-icon">🌐</div>
+                <h3 class="template-title">Basic Web App</h3>
+                <p class="template-description">Clean, responsive web application starter with HTML5, CSS3, and vanilla JavaScript</p>
+                <span class="template-link">Use Template</span>
+            </div>
+            
+            <div class="template-card" onclick="openTemplate('creative-portfolio')">
+                <div class="template-icon">🎨</div>
+                <h3 class="template-title">Creative Portfolio</h3>
+                <p class="template-description">Stunning portfolio template for artists, designers, and creative professionals</p>
+                <span class="template-link">Use Template</span>
+            </div>
+            
+            <div class="template-card" onclick="openTemplate('simple-game')">
+                <div class="template-icon">🎮</div>
+                <h3 class="template-title">Simple Game</h3>
+                <p class="template-description">Browser-based game template with canvas rendering and game loop architecture</p>
+                <span class="template-link">Use Template</span>
+            </div>
+            
+            <div class="template-card" onclick="openTemplate('python-flask')">
+                <div class="template-icon">🐍</div>
+                <h3 class="template-title">Python Flask App</h3>
+                <p class="template-description">Full-featured Flask web application with authentication, database, and API routes</p>
+                <span class="template-link">Use Template</span>
+            </div>
+            
+            <div class="template-card" onclick="openTemplate('react-component')">
+                <div class="template-icon">⚛️</div>
+                <h3 class="template-title">React Component</h3>
+                <p class="template-description">Reusable React component with TypeScript, testing, and Storybook integration</p>
+                <span class="template-link">Use Template</span>
+            </div>
+            
+            <div class="template-card" onclick="openTemplate('nodejs-api')">
+                <div class="template-icon">🚀</div>
+                <h3 class="template-title">Node.js API</h3>
+                <p class="template-description">RESTful API server with Express.js, middleware, and database connectivity</p>
+                <span class="template-link">Use Template</span>
+            </div>
+            
+            <div class="template-card" onclick="openTemplate('data-dashboard')">
+                <div class="template-icon">📊</div>
+                <h3 class="template-title">Data Dashboard</h3>
+                <p class="template-description">Interactive data visualization dashboard with charts, graphs, and real-time updates</p>
+                <span class="template-link">Use Template</span>
+            </div>
+            
+            <div class="template-card" onclick="openTemplate('mobile-pwa')">
+                <div class="template-icon">📱</div>
+                <h3 class="template-title">Mobile PWA</h3>
+                <p class="template-description">Progressive Web App template with offline support and mobile-first design</p>
+                <span class="template-link">Use Template</span>
+            </div>
+            
+            <div class="template-card" onclick="openTemplate('documentation-site')">
+                <div class="template-icon">📚</div>
+                <h3 class="template-title">Documentation Site</h3>
+                <p class="template-description">Professional documentation website with search, navigation, and markdown support</p>
+                <span class="template-link">Use Template</span>
+            </div>
+            
+            <div class="template-card" onclick="openTemplate('e-commerce')">
+                <div class="template-icon">🛒</div>
+                <h3 class="template-title">E-Commerce Store</h3>
+                <p class="template-description">Complete online store template with shopping cart, payment integration, and admin panel</p>
+                <span class="template-link">Use Template</span>
+            </div>
+            
+            <div class="template-card" onclick="openTemplate('blog-cms')">
+                <div class="template-icon">✍️</div>
+                <h3 class="template-title">Blog CMS</h3>
+                <p class="template-description">Content management system for blogs with editor, comments, and SEO optimization</p>
+                <span class="template-link">Use Template</span>
+            </div>
+            
+            <div class="template-card" onclick="openTemplate('landing-page')">
+                <div class="template-icon">🎯</div>
+                <h3 class="template-title">Landing Page</h3>
+                <p class="template-description">High-converting landing page template with call-to-action sections and contact forms</p>
+                <span class="template-link">Use Template</span>
+            </div>
+        </div>
+        
+        <!-- Template Preview Section -->
+        <div class="template-preview">
+            <h2 class="preview-title">🔍 Template Preview</h2>
+            <div class="preview-tabs">
+                <button class="tab-btn active" onclick="showPreview('html')">HTML</button>
+                <button class="tab-btn" onclick="showPreview('css')">CSS</button>
+                <button class="tab-btn" onclick="showPreview('js')">JavaScript</button>
+                <button class="tab-btn" onclick="showPreview('structure')">Structure</button>
+            </div>
+            <div id="previewContent" class="preview-content">
+<!-- Basic Web App Template - HTML -->
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;My Web App&lt;/title&gt;
+    &lt;link rel="stylesheet" href="styles.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;header&gt;
+        &lt;nav class="navbar"&gt;
+            &lt;div class="nav-brand"&gt;My App&lt;/div&gt;
+            &lt;ul class="nav-links"&gt;
+                &lt;li&gt;&lt;a href="#home"&gt;Home&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="#about"&gt;About&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="#contact"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/nav&gt;
+    &lt;/header&gt;
+    
+    &lt;main&gt;
+        &lt;section id="hero"&gt;
+            &lt;h1&gt;Welcome to My Web App&lt;/h1&gt;
+            &lt;p&gt;A modern, responsive web application&lt;/p&gt;
+            &lt;button class="cta-btn"&gt;Get Started&lt;/button&gt;
+        &lt;/section&gt;
+    &lt;/main&gt;
+    
+    &lt;script src="script.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+            </div>
+        </div>
+        
+        <!-- Download Section -->
+        <div class="download-section">
+            <h2 class="download-title">📥 Download Templates</h2>
+            <p>Get started instantly with our pre-built templates</p>
+            
+            <div class="download-grid">
+                <button class="download-btn" onclick="downloadTemplate('web-app-basic')">
+                    🌐 Web App Basic
+                </button>
+                <button class="download-btn" onclick="downloadTemplate('creative-portfolio')">
+                    🎨 Creative Portfolio
+                </button>
+                <button class="download-btn" onclick="downloadTemplate('simple-game')">
+                    🎮 Simple Game
+                </button>
+                <button class="download-btn" onclick="downloadTemplate('python-flask')">
+                    🐍 Python Flask
+                </button>
+                <button class="download-btn" onclick="downloadTemplate('react-component')">
+                    ⚛️ React Component
+                </button>
+                <button class="download-btn" onclick="downloadTemplate('all-templates')">
+                    📦 All Templates
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const templatePreviews = {
+            html: `<!-- Basic Web App Template - HTML -->
+&lt;!DOCTYPE html&gt;
+&lt;html lang="en"&gt;
+&lt;head&gt;
+    &lt;meta charset="UTF-8"&gt;
+    &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+    &lt;title&gt;My Web App&lt;/title&gt;
+    &lt;link rel="stylesheet" href="styles.css"&gt;
+&lt;/head&gt;
+&lt;body&gt;
+    &lt;header&gt;
+        &lt;nav class="navbar"&gt;
+            &lt;div class="nav-brand"&gt;My App&lt;/div&gt;
+            &lt;ul class="nav-links"&gt;
+                &lt;li&gt;&lt;a href="#home"&gt;Home&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="#about"&gt;About&lt;/a&gt;&lt;/li&gt;
+                &lt;li&gt;&lt;a href="#contact"&gt;Contact&lt;/a&gt;&lt;/li&gt;
+            &lt;/ul&gt;
+        &lt;/nav&gt;
+    &lt;/header&gt;
+    
+    &lt;main&gt;
+        &lt;section id="hero"&gt;
+            &lt;h1&gt;Welcome to My Web App&lt;/h1&gt;
+            &lt;p&gt;A modern, responsive web application&lt;/p&gt;
+            &lt;button class="cta-btn"&gt;Get Started&lt;/button&gt;
+        &lt;/section&gt;
+    &lt;/main&gt;
+    
+    &lt;script src="script.js"&gt;&lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;`,
+            css: `/* Basic Web App Template - CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: #667eea;
+    color: white;
+}
+
+.nav-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-links a {
+    color: white;
+    text-decoration: none;
+    transition: opacity 0.3s ease;
+}
+
+.nav-links a:hover {
+    opacity: 0.8;
+}
+
+#hero {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+}
+
+#hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+#hero p {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+}
+
+.cta-btn {
+    background: white;
+    color: #667eea;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.cta-btn:hover {
+    transform: translateY(-2px);
+}`,
+            js: `// Basic Web App Template - JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Web App Loaded Successfully!');
+    
+    // Smooth scrolling for navigation links
+    const navLinks = document.querySelectorAll('.nav-links a');
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            e.preventDefault();
+            const targetId = this.getAttribute('href').substring(1);
+            const targetElement = document.getElementById(targetId);
+            
+            if (targetElement) {
+                targetElement.scrollIntoView({
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+    
+    // CTA Button functionality
+    const ctaBtn = document.querySelector('.cta-btn');
+    if (ctaBtn) {
+        ctaBtn.addEventListener('click', function() {
+            alert('Welcome to our web app! 🎉');
+            // Add your custom functionality here
+        });
+    }
+    
+    // Add loading animation
+    document.body.style.opacity = '0';
+    setTimeout(() => {
+        document.body.style.transition = 'opacity 0.5s ease';
+        document.body.style.opacity = '1';
+    }, 100);
+});
+
+// Utility functions
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.className = \`notification \${type}\`;
+    notification.textContent = message;
+    
+    // Style the notification
+    Object.assign(notification.style, {
+        position: 'fixed',
+        top: '20px',
+        right: '20px',
+        padding: '1rem',
+        borderRadius: '5px',
+        color: 'white',
+        background: type === 'success' ? '#28a745' : 
+                   type === 'error' ? '#dc3545' : '#007bff',
+        zIndex: '1000'
+    });
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+        notification.remove();
+    }, 3000);
+}`,
+            structure: `📁 Project Structure:
+
+my-web-app/
+├── 📄 index.html          # Main HTML file
+├── 🎨 styles.css          # Stylesheet
+├── ⚡ script.js           # JavaScript functionality
+├── 📁 assets/             # Static assets
+│   ├── 🖼️ images/         # Image files
+│   ├── 🎵 audio/          # Audio files
+│   └── 🎬 videos/         # Video files
+├── 📁 css/                # Additional stylesheets
+│   ├── normalize.css      # CSS reset
+│   └── components.css     # Component styles
+├── 📁 js/                 # JavaScript modules
+│   ├── utils.js           # Utility functions
+│   ├── api.js             # API integration
+│   └── components.js      # UI components
+├── 📄 README.md           # Project documentation
+├── 📄 .gitignore          # Git ignore rules
+└── 📄 package.json        # Dependencies (if using npm)
+
+🔧 Features Included:
+✅ Responsive design
+✅ Modern CSS Grid/Flexbox
+✅ Vanilla JavaScript
+✅ Cross-browser compatibility
+✅ SEO-friendly structure
+✅ Accessibility features
+✅ Performance optimized
+
+🚀 Getting Started:
+1. Download the template
+2. Customize the content
+3. Add your branding
+4. Deploy to your hosting`
+        };
+        
+        function openTemplate(templateName) {
+            // Navigate to the specific template
+            const templatePaths = {
+                'web-app-basic': '/projects/templates/web-app-basic/',
+                'creative-portfolio': '/projects/templates/creative-portfolio/',
+                'simple-game': '/projects/templates/simple-game/',
+            };
+            
+            if (templatePaths[templateName]) {
+                window.open(templatePaths[templateName], '_blank');
+            } else {
+                alert(`Opening ${templateName.replace('-', ' ')} template...`);
+            }
+        }
+        
+        function showPreview(type) {
+            // Update active tab
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update preview content
+            const previewContent = document.getElementById('previewContent');
+            previewContent.textContent = templatePreviews[type] || 'Preview not available';
+        }
+        
+        function downloadTemplate(templateName) {
+            // Simulate template download
+            showNotification(`Downloading ${templateName.replace('-', ' ')} template...`, 'success');
+            
+            // In a real implementation, this would trigger an actual download
+            setTimeout(() => {
+                showNotification(`${templateName.replace('-', ' ')} template downloaded successfully!`, 'success');
+            }, 2000);
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            // Style the notification
+            Object.assign(notification.style, {
+                position: 'fixed',
+                top: '20px',
+                right: '20px',
+                padding: '1rem',
+                borderRadius: '5px',
+                color: 'white',
+                background: type === 'success' ? '#28a745' : 
+                           type === 'error' ? '#dc3545' : '#007bff',
+                zIndex: '1000',
+                boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            });
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+</html>

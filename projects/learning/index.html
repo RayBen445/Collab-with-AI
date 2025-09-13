@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning - AI-Human Collaboration Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+        
+        .header p {
+            color: #636e72;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #00b894;
+            background: rgba(0, 184, 148, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: #00b894;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .project-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            border-color: #00b894;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 184, 148, 0.1);
+        }
+        
+        .project-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .project-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3436;
+        }
+        
+        .project-description {
+            color: #636e72;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .project-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .project-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 184, 148, 0.3);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00b894;
+        }
+        
+        .stat-label {
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+        
+        .demo-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .demo-btn {
+            background: rgba(0, 184, 148, 0.1);
+            color: #00b894;
+            border: 2px solid #00b894;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+        }
+        
+        .demo-btn:hover {
+            background: #00b894;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .interactive-demo {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid #e9ecef;
+        }
+        
+        .demo-title {
+            font-size: 1.5rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .quiz-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .question {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            color: #2d3436;
+        }
+        
+        .options {
+            display: grid;
+            gap: 10px;
+        }
+        
+        .option {
+            background: white;
+            border: 2px solid #e9ecef;
+            padding: 10px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .option:hover {
+            border-color: #00b894;
+            background: rgba(0, 184, 148, 0.05);
+        }
+        
+        .option.correct {
+            border-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+            color: #28a745;
+        }
+        
+        .option.incorrect {
+            border-color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+            color: #dc3545;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e9ecef;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 20px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #00b894, #00cec9);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        
+        .learning-path {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            border: 2px solid #e9ecef;
+        }
+        
+        .path-title {
+            font-size: 1.5rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .path-steps {
+            display: grid;
+            gap: 15px;
+        }
+        
+        .step {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .step:hover {
+            border-color: #00b894;
+            transform: translateX(5px);
+        }
+        
+        .step-number {
+            background: #00b894;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 15px;
+        }
+        
+        .step-content h4 {
+            color: #2d3436;
+            margin-bottom: 5px;
+        }
+        
+        .step-content p {
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 Learning & Education</h1>
+            <p>Interactive tutorials, visualizers, and educational tools</p>
+            
+            <div class="nav-links">
+                <a href="/index.html" class="nav-link">🏠 Home</a>
+                <a href="/projects/" class="nav-link">📁 All Projects</a>
+                <a href="/projects/developer-tools/" class="nav-link">🛠️ Dev Tools</a>
+                <a href="https://github.com/RayBen445/Collab-with-AI" class="nav-link">📦 GitHub</a>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">15</div>
+                <div class="stat-label">Learning Projects</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">8</div>
+                <div class="stat-label">Subject Areas</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">∞</div>
+                <div class="stat-label">Knowledge</div>
+            </div>
+        </div>
+        
+        <div class="projects-grid">
+            <div class="project-card">
+                <div class="project-icon">🧠</div>
+                <h3 class="project-title">Algorithm Visualizer</h3>
+                <p class="project-description">Interactive visualization of sorting, searching, and graph algorithms with step-by-step execution</p>
+                <a href="algorithm-visualizer.html" class="project-link">Visualize Algorithms</a>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-icon">🔬</div>
+                <h3 class="project-title">Physics Simulator</h3>
+                <p class="project-description">Interactive physics simulations for mechanics, optics, and quantum phenomena</p>
+                <a href="#" class="project-link" onclick="startDemo('physics')">Simulate Physics</a>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-icon">🧮</div>
+                <h3 class="project-title">Math Playground</h3>
+                <p class="project-description">Interactive math tools for algebra, calculus, geometry, and statistics</p>
+                <a href="#" class="project-link" onclick="startDemo('math')">Explore Math</a>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-icon">🌍</div>
+                <h3 class="project-title">Geography Explorer</h3>
+                <p class="project-description">Interactive world maps, country facts, and geography quizzes</p>
+                <a href="#" class="project-link" onclick="startDemo('geography')">Explore World</a>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-icon">🔤</div>
+                <h3 class="project-title">Language Lab</h3>
+                <p class="project-description">Interactive language learning with vocabulary, grammar, and pronunciation tools</p>
+                <a href="#" class="project-link" onclick="startDemo('language')">Learn Languages</a>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-icon">💻</div>
+                <h3 class="project-title">Code Academy</h3>
+                <p class="project-description">Interactive coding tutorials for Python, JavaScript, HTML/CSS, and more</p>
+                <a href="#" class="project-link" onclick="startDemo('coding')">Learn Coding</a>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-icon">🎵</div>
+                <h3 class="project-title">Music Theory</h3>
+                <p class="project-description">Interactive music theory lessons with virtual instruments and notation</p>
+                <a href="#" class="project-link" onclick="startDemo('music')">Learn Music</a>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-icon">🏛️</div>
+                <h3 class="project-title">History Timeline</h3>
+                <p class="project-description">Interactive historical timelines with events, figures, and civilizations</p>
+                <a href="#" class="project-link" onclick="startDemo('history')">Explore History</a>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-icon">🧪</div>
+                <h3 class="project-title">Chemistry Lab</h3>
+                <p class="project-description">Virtual chemistry experiments with periodic table and molecular modeling</p>
+                <a href="#" class="project-link" onclick="startDemo('chemistry')">Mix Chemicals</a>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-icon">📊</div>
+                <h3 class="project-title">Statistics Studio</h3>
+                <p class="project-description">Interactive statistics and probability tools with data visualization</p>
+                <a href="#" class="project-link" onclick="startDemo('statistics')">Analyze Data</a>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-icon">🌱</div>
+                <h3 class="project-title">Biology Explorer</h3>
+                <p class="project-description">Interactive biology simulations covering cells, genetics, and ecosystems</p>
+                <a href="#" class="project-link" onclick="startDemo('biology')">Explore Life</a>
+            </div>
+            
+            <div class="project-card">
+                <div class="project-icon">🎨</div>
+                <h3 class="project-title">Art Studio</h3>
+                <p class="project-description">Interactive art history and digital creation tools with color theory</p>
+                <a href="#" class="project-link" onclick="startDemo('art')">Create Art</a>
+            </div>
+        </div>
+        
+        <!-- Interactive Quiz Demo -->
+        <div class="interactive-demo">
+            <h2 class="demo-title">🧠 Quick Learning Quiz</h2>
+            <div class="quiz-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+                <div id="quizContent">
+                    <div class="question">What is the time complexity of binary search?</div>
+                    <div class="options">
+                        <div class="option" onclick="selectOption(this, false)">O(n)</div>
+                        <div class="option" onclick="selectOption(this, true)">O(log n)</div>
+                        <div class="option" onclick="selectOption(this, false)">O(n²)</div>
+                        <div class="option" onclick="selectOption(this, false)">O(1)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="demo-controls">
+                <button class="demo-btn" onclick="nextQuestion()">Next Question</button>
+                <button class="demo-btn" onclick="resetQuiz()">Reset Quiz</button>
+            </div>
+        </div>
+        
+        <!-- Learning Path -->
+        <div class="learning-path">
+            <h2 class="path-title">🎯 Recommended Learning Path</h2>
+            <div class="path-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-content">
+                        <h4>Foundation Concepts</h4>
+                        <p>Start with basic algorithms and data structures</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-content">
+                        <h4>Visual Learning</h4>
+                        <p>Use algorithm visualizers to understand execution</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-content">
+                        <h4>Practice Problems</h4>
+                        <p>Solve coding challenges and practice implementations</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-content">
+                        <h4>Real Applications</h4>
+                        <p>Build projects using learned concepts</p>
+                    </div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-content">
+                        <h4>Advanced Topics</h4>
+                        <p>Explore specialized algorithms and optimizations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        let currentQuestion = 0;
+        let score = 0;
+        
+        const questions = [
+            {
+                question: "What is the time complexity of binary search?",
+                options: ["O(n)", "O(log n)", "O(n²)", "O(1)"],
+                correct: 1
+            },
+            {
+                question: "Which data structure uses LIFO (Last In, First Out)?",
+                options: ["Queue", "Stack", "Array", "Linked List"],
+                correct: 1
+            },
+            {
+                question: "What is the capital of France?",
+                options: ["London", "Berlin", "Paris", "Madrid"],
+                correct: 2
+            },
+            {
+                question: "Which element has the chemical symbol 'O'?",
+                options: ["Gold", "Silver", "Oxygen", "Iron"],
+                correct: 2
+            },
+            {
+                question: "What is 2³?",
+                options: ["6", "8", "9", "12"],
+                correct: 1
+            }
+        ];
+        
+        function selectOption(optionElement, isCorrect) {
+            // Clear previous selections
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('correct', 'incorrect');
+            });
+            
+            // Mark selection
+            if (isCorrect) {
+                optionElement.classList.add('correct');
+                score++;
+            } else {
+                optionElement.classList.add('incorrect');
+                // Show correct answer
+                const correctIndex = questions[currentQuestion].correct;
+                document.querySelectorAll('.option')[correctIndex].classList.add('correct');
+            }
+            
+            // Update progress
+            updateProgress();
+        }
+        
+        function nextQuestion() {
+            currentQuestion = (currentQuestion + 1) % questions.length;
+            displayQuestion();
+        }
+        
+        function displayQuestion() {
+            const q = questions[currentQuestion];
+            document.getElementById('quizContent').innerHTML = `
+                <div class="question">${q.question}</div>
+                <div class="options">
+                    ${q.options.map((option, index) => 
+                        `<div class="option" onclick="selectOption(this, ${index === q.correct})">${option}</div>`
+                    ).join('')}
+                </div>
+            `;
+        }
+        
+        function updateProgress() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+        
+        function resetQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            displayQuestion();
+            updateProgress();
+        }
+        
+        function startDemo(subject) {
+            const demos = {
+                physics: "🔬 Physics Simulator: Explore gravity, momentum, waves, and electromagnetic fields with real-time simulations!",
+                math: "🧮 Math Playground: Solve equations, visualize functions, and explore geometric shapes interactively!",
+                geography: "🌍 Geography Explorer: Discover countries, capitals, landmarks, and test your knowledge!",
+                language: "🔤 Language Lab: Learn vocabulary, practice pronunciation, and master grammar rules!",
+                coding: "💻 Code Academy: Write, run, and debug code with step-by-step tutorials!",
+                music: "🎵 Music Theory: Learn notes, scales, chords, and compose your own melodies!",
+                history: "🏛️ History Timeline: Journey through time and explore major historical events!",
+                chemistry: "🧪 Chemistry Lab: Mix virtual chemicals and explore molecular structures!",
+                statistics: "📊 Statistics Studio: Analyze data, create charts, and understand probability!",
+                biology: "🌱 Biology Explorer: Examine cells, DNA, ecosystems, and evolutionary processes!",
+                art: "🎨 Art Studio: Learn color theory, art history, and create digital masterpieces!"
+            };
+            
+            alert(demos[subject] || "Demo coming soon!");
+        }
+        
+        // Initialize quiz
+        displayQuestion();
+        updateProgress();
+        
+        // Add sparkle animation for learning
+        function createSparkle() {
+            const sparkle = document.createElement('div');
+            sparkle.innerHTML = '✨';
+            sparkle.style.position = 'fixed';
+            sparkle.style.pointerEvents = 'none';
+            sparkle.style.fontSize = Math.random() * 20 + 15 + 'px';
+            sparkle.style.left = Math.random() * window.innerWidth + 'px';
+            sparkle.style.top = Math.random() * window.innerHeight + 'px';
+            sparkle.style.zIndex = '1000';
+            sparkle.style.animation = 'sparkle 3s ease-out forwards';
+            
+            document.body.appendChild(sparkle);
+            
+            setTimeout(() => {
+                sparkle.remove();
+            }, 3000);
+        }
+        
+        // Add CSS animation for sparkles
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes sparkle {
+                0% { opacity: 1; transform: scale(0) rotate(0deg); }
+                50% { opacity: 1; transform: scale(1) rotate(180deg); }
+                100% { opacity: 0; transform: scale(0) rotate(360deg); }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Create learning sparkles periodically
+        setInterval(createSparkle, 4000);
+    </script>
+</body>
+</html>
