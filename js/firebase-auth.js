@@ -30,7 +30,7 @@ class FirebaseAuthService {
     this.db = db;
     this.googleProvider = new GoogleAuthProvider();
     this.currentUser = null;
-    this.adminEmail = 'oladoyeheritage445@gmail.com';
+    this.adminEmail = window.ENV?.ADMIN_EMAIL || null;
     
     // Set up authentication state listener
     this.setupAuthStateListener();

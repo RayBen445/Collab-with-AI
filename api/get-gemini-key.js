@@ -62,14 +62,16 @@ async function validateUserToken(token) {
             return false;
         }
 
-        // For this demo, we'll check if it's the expected admin token
         // In production, implement proper JWT verification
-        const expectedTokens = [
-            'admin-token-professor', // Demo admin token
-            process.env.ADMIN_TOKEN  // Environment-based admin token
-        ].filter(Boolean);
+        // Check against environment-based admin token only
+        const adminToken = process.env.ADMIN_TOKEN;
+        
+        if (!adminToken) {
+            console.warn('ADMIN_TOKEN environment variable not set');
+            return false;
+        }
 
-        return expectedTokens.includes(token);
+        return token === adminToken;
 
     } catch (error) {
         console.error('Token validation error:', error);

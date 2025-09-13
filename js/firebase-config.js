@@ -12,15 +12,17 @@ import { getStorage, connectStorageEmulator } from 'firebase/storage';
 import { getAnalytics } from 'firebase/analytics';
 
 // Firebase configuration object
-// These values should be replaced with your actual Firebase project configuration
+// These values are loaded from environment variables for security
+// For client-side code, Vercel exposes environment variables prefixed with NEXT_PUBLIC_
+// or they can be injected at build time
 const firebaseConfig = {
-  apiKey: "your-api-key-here",
-  authDomain: "collab-with-ai.firebaseapp.com",
-  projectId: "collab-with-ai",
-  storageBucket: "collab-with-ai.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdefghijklmnop",
-  measurementId: "G-ABCDEFGHIJ"
+  apiKey: window.ENV?.FIREBASE_API_KEY || "your-api-key-here",
+  authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "collab-with-ai.firebaseapp.com",
+  projectId: window.ENV?.FIREBASE_PROJECT_ID || "collab-with-ai",
+  storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "collab-with-ai.appspot.com",
+  messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
+  appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdefghijklmnop",
+  measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID || "G-ABCDEFGHIJ"
 };
 
 // Initialize Firebase

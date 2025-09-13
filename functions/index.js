@@ -16,6 +16,9 @@ const express = require('express');
 // Initialize Firebase Admin
 admin.initializeApp();
 
+// Get admin email from environment variable
+const ADMIN_EMAIL = functions.config().admin?.email || process.env.ADMIN_EMAIL;
+
 // Initialize Express app with CORS
 const app = express();
 app.use(cors({ origin: true }));
@@ -157,8 +160,8 @@ exports.createUserProfile = functions.auth.user().onCreate(async (user) => {
       displayName: user.displayName || '',
       email: user.email,
       photoURL: user.photoURL || '',
-      role: user.email === 'oladoyeheritage445@gmail.com' ? 'admin' : 'user',
-      isAdmin: user.email === 'oladoyeheritage445@gmail.com',
+      role: user.email === ADMIN_EMAIL ? 'admin' : 'user',
+      isAdmin: user.email === ADMIN_EMAIL,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       lastLoginAt: admin.firestore.FieldValue.serverTimestamp(),
       isOnline: true,
@@ -359,7 +362,7 @@ exports.getPlatformAnalytics = functions.https.onCall(async (data, context) => {
   }
 
   const userEmail = context.auth.token.email;
-  if (userEmail !== 'oladoyeheritage445@gmail.com') {
+  if (userEmail !== ADMIN_EMAIL) {
     throw new functions.https.HttpsError('permission-denied', 'Admin access required');
   }
 
