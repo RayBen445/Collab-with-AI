@@ -300,27 +300,46 @@
         </div>
     </div>
 
-    <!-- Firebase SDK CDN -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <!-- Environment Configuration -->
+    <script src="js/env-config.js"></script>
     
-    <script>
-        // Initialize Firebase (if not already configured)
-        let app;
-        try {
-            const firebaseConfig = {
-                apiKey: "demo-api-key",
-                authDomain: "demo-project.firebaseapp.com",
-                projectId: "demo-project",
-                storageBucket: "demo-project.appspot.com",
-                messagingSenderId: "123456789",
-                appId: "1:123456789:web:demo"
-            };
-            app = firebase.initializeApp(firebaseConfig);
-        } catch (error) {
-            console.log('Firebase already initialized or demo mode');
-        }
+    <!-- Firebase SDK v9+ Modular -->
+    <script type="module">
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            signInWithPopup,
+            GoogleAuthProvider,
+            onAuthStateChanged,
+            updateProfile
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc,
+            getDoc,
+            serverTimestamp 
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Firebase configuration from environment variables
+        const firebaseConfig = {
+            apiKey: window.ENV?.FIREBASE_API_KEY || "your-api-key-here",
+            authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "collab-with-ai.firebaseapp.com",
+            projectId: window.ENV?.FIREBASE_PROJECT_ID || "collab-with-ai",
+            storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "collab-with-ai.appspot.com",
+            messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
+            appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdefghijklmnop",
+            measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID || "G-ABCDEFGHIJ"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
         
         class LoginSystem {
             constructor() {
@@ -328,17 +347,58 @@
                 this.errorMessage = document.getElementById('errorMessage');
                 this.successMessage = document.getElementById('successMessage');
                 this.currentUser = null;
+                this.adminEmail = window.ENV?.ADMIN_EMAIL || null;
                 
                 this.initializeEventListeners();
                 this.addSignUpOption();
                 this.addGoogleSignInButton();
+                this.setupAuthStateListener();
+            }
+            
+            setupAuthStateListener() {
+                onAuthStateChanged(auth, async (user) => {
+                    if (user) {
+                        this.currentUser = user;
+                        await this.updateUserData(user);
+                        this.redirectToApp(this.isAdmin(user.email));
+                    } else {
+                        this.currentUser = null;
+                    }
+                });
+            }
+
+            async updateUserData(user) {
+                try {
+                    const userRef = doc(db, 'users', user.uid);
+                    const userSnap = await getDoc(userRef);
+                    
+                    const userData = {
+                        email: user.email,
+                        displayName: user.displayName || user.email.split('@')[0],
+                        lastLoginAt: serverTimestamp(),
+                        isAdmin: this.isAdmin(user.email)
+                    };
+
+                    if (!userSnap.exists()) {
+                        // New user - create profile
+                        userData.createdAt = serverTimestamp();
+                        userData.projectsCreated = 0;
+                        userData.collaborations = 0;
+                    }
+
+                    await setDoc(userRef, userData, { merge: true });
+                } catch (error) {
+                    console.error('Error updating user data:', error);
+                }
+            }
+
+            isAdmin(email) {
+                return email && this.adminEmail && email.toLowerCase() === this.adminEmail.toLowerCase();
             }
             
             initializeEventListeners() {
                 this.form.addEventListener('submit', (e) => this.handleLogin(e));
             }
-            
-            addSignUpOption() {
                 const showSignUpBtn = document.getElementById('showSignUpBtn');
                 const showSignInBtn = document.getElementById('showSignInBtn');
                 const signUpForm = document.getElementById('signUpForm');
@@ -399,15 +459,38 @@
                 // Show loading state
                 this.showLoading('Signing in...');
                 
-                // Simulate authentication (demo mode)
-                setTimeout(() => {
-                    const isAdmin = email.toLowerCase().includes('admin');
-                    this.showSuccess(`Welcome ${email}${isAdmin ? ' (Admin)' : ''}! Redirecting...`);
+                try {
+                    // Real Firebase authentication
+                    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
                     
-                    setTimeout(() => {
-                        this.redirectToApp(isAdmin);
-                    }, 1500);
-                }, 1000);
+                    this.showSuccess(`Welcome ${user.displayName || user.email}! Redirecting...`);
+                    
+                    // Auth state listener will handle redirect
+                } catch (error) {
+                    console.error('Login error:', error);
+                    let errorMessage = 'Login failed. Please try again.';
+                    
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                            errorMessage = 'No account found with this email address.';
+                            break;
+                        case 'auth/wrong-password':
+                            errorMessage = 'Incorrect password. Please try again.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage = 'Invalid email address format.';
+                            break;
+                        case 'auth/user-disabled':
+                            errorMessage = 'This account has been disabled.';
+                            break;
+                        case 'auth/too-many-requests':
+                            errorMessage = 'Too many failed attempts. Please try again later.';
+                            break;
+                    }
+                    
+                    this.showError(errorMessage);
+                }
             }
             
             async handleSignUp() {
@@ -429,28 +512,77 @@
                 
                 this.showLoading('Creating account...');
                 
-                // Simulate account creation (demo mode)
-                setTimeout(() => {
-                    this.showSuccess(`Account created for ${name || email}! Redirecting...`);
+                try {
+                    // Real Firebase account creation
+                    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                    const user = userCredential.user;
                     
-                    setTimeout(() => {
-                        this.redirectToApp(false);
-                    }, 1500);
-                }, 1000);
+                    // Update profile with display name if provided
+                    if (name) {
+                        await updateProfile(user, {
+                            displayName: name
+                        });
+                    }
+                    
+                    this.showSuccess(`Account created successfully! Welcome ${name || email}!`);
+                    
+                    // Auth state listener will handle redirect
+                } catch (error) {
+                    console.error('Signup error:', error);
+                    let errorMessage = 'Account creation failed. Please try again.';
+                    
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            errorMessage = 'An account with this email already exists.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage = 'Invalid email address format.';
+                            break;
+                        case 'auth/weak-password':
+                            errorMessage = 'Password is too weak. Please choose a stronger password.';
+                            break;
+                        case 'auth/operation-not-allowed':
+                            errorMessage = 'Email/password accounts are not enabled. Please contact support.';
+                            break;
+                    }
+                    
+                    this.showError(errorMessage);
+                }
             }
             
             async handleGoogleSignIn() {
                 this.hideMessages();
                 this.showLoading('Signing in with Google...');
                 
-                // Simulate Google sign-in (demo mode)
-                setTimeout(() => {
-                    this.showSuccess('Google sign-in successful! Redirecting...');
+                try {
+                    // Real Google sign-in with Firebase
+                    const result = await signInWithPopup(auth, googleProvider);
+                    const user = result.user;
                     
-                    setTimeout(() => {
-                        this.redirectToApp(false);
-                    }, 1500);
-                }, 1000);
+                    this.showSuccess(`Welcome ${user.displayName || user.email}! Redirecting...`);
+                    
+                    // Auth state listener will handle redirect
+                } catch (error) {
+                    console.error('Google sign-in error:', error);
+                    let errorMessage = 'Google sign-in failed. Please try again.';
+                    
+                    switch (error.code) {
+                        case 'auth/popup-closed-by-user':
+                            errorMessage = 'Sign-in cancelled. Please try again.';
+                            break;
+                        case 'auth/popup-blocked':
+                            errorMessage = 'Popup blocked. Please allow popups and try again.';
+                            break;
+                        case 'auth/cancelled-popup-request':
+                            errorMessage = 'Sign-in cancelled. Please try again.';
+                            break;
+                        case 'auth/account-exists-with-different-credential':
+                            errorMessage = 'An account already exists with this email using a different sign-in method.';
+                            break;
+                    }
+                    
+                    this.showError(errorMessage);
+                }
             }
             
             redirectToApp(isAdmin) {
