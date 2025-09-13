@@ -1,1 +1,1 @@
-// Main script file for the personal portfolio
+// Scripts will be restored in the next step
