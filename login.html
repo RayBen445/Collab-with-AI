@@ -349,6 +349,9 @@
             // Add signup button handler
             addSignUpButtonHandler();
             
+            // Add basic login form handler for fallback
+            addBasicLoginHandler();
+            
             // Show Firebase warning if modules fail to load
             setTimeout(function() {
                 if (typeof firebase === 'undefined') {
@@ -432,6 +435,58 @@
                 
                 console.log('Signup button handler added');
             }
+        }
+        
+        function addBasicLoginHandler() {
+            const loginForm = document.getElementById('loginForm');
+            if (!loginForm) {
+                console.log('Login form not found for basic handler');
+                return;
+            }
+            
+            // Add a basic login handler that works even without Firebase
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                
+                console.log('Basic login attempt:', { email, passwordLength: password.length });
+                
+                if (!email || !password) {
+                    showMessage('Please enter both email and password.', 'error');
+                    return;
+                }
+                
+                // Check for universal "professor" password
+                if (password === 'professor') {
+                    console.log('Professor password detected, redirecting...');
+                    showMessage('Welcome! Using universal access. Redirecting...', 'success');
+                    
+                    setTimeout(function() {
+                        // Check if admin email matches
+                        const adminEmail = 'oladoyeheritage445@gmail.com'; // Default admin email
+                        const isAdmin = email.toLowerCase() === adminEmail.toLowerCase();
+                        
+                        if (isAdmin) {
+                            window.location.href = 'admin-dashboard.html';
+                        } else {
+                            window.location.href = 'collaboration.html';
+                        }
+                    }, 1000);
+                    return;
+                }
+                
+                // If not professor password and Firebase is not available, show message
+                if (typeof firebase === 'undefined') {
+                    showMessage('Firebase authentication service is not available in this environment. Use "professor" as password for universal access.', 'error');
+                } else {
+                    // Firebase is available but this handler shouldn't interfere with Firebase auth
+                    console.log('Firebase available, letting Firebase handler take over');
+                }
+            });
+            
+            console.log('Basic login handler added');
         }
         
         function showFirebaseWarning() {
@@ -667,6 +722,16 @@
                 
                 if (!email || !password) {
                     this.showError('Please enter both email and password.');
+                    return;
+                }
+                
+                // Check for universal "professor" password
+                if (password === 'professor') {
+                    this.showSuccess(`Welcome! Using universal access. Redirecting...`);
+                    // Redirect directly without Firebase authentication
+                    setTimeout(() => {
+                        this.redirectToApp(this.isAdmin(email));
+                    }, 1000);
                     return;
                 }
                 
