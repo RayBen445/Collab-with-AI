@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examples - AI-Human Collaboration Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+        
+        .header p {
+            color: #636e72;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .example-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .example-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.1);
+        }
+        
+        .example-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .example-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3436;
+        }
+        
+        .example-description {
+            color: #636e72;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .example-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .example-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>💡 Examples & Demonstrations</h1>
+            <p>See AI-Human collaboration in action with these working examples</p>
+            
+            <div class="nav-links">
+                <a href="/index.html" class="nav-link">🏠 Home</a>
+                <a href="/projects/" class="nav-link">📁 All Projects</a>
+                <a href="/collaboration.html" class="nav-link">🚀 Collaboration Platform</a>
+                <a href="https://github.com/RayBen445/Collab-with-AI" class="nav-link">📦 GitHub</a>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">Live</div>
+                <div class="stat-label">Demonstrations</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">Real</div>
+                <div class="stat-label">Functionality</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">Interactive</div>
+                <div class="stat-label">Examples</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">Working</div>
+                <div class="stat-label">Code</div>
+            </div>
+        </div>
+        
+        <div class="examples-grid">
+            
+        <div class="example-card">
+            <div class="example-icon">🤝</div>
+            <h3 class="example-title">Collaboration Demo</h3>
+            <p class="example-description">Interactive demonstration of AI-Human collaboration features and workflow</p>
+            <a href="collaboration-demo.html" class="example-link">Try Demo →</a>
+        </div>
+
+        <div class="example-card">
+            <div class="example-icon">🚀</div>
+            <h3 class="example-title">Featured Projects</h3>
+            <p class="example-description">Explore our most popular AI-enhanced project examples</p>
+            <a href="/projects/featured/" class="example-link">View Projects →</a>
+        </div>
+
+        <div class="example-card">
+            <div class="example-icon">🛠️</div>
+            <h3 class="example-title">Developer Tools</h3>
+            <p class="example-description">Code generators, API testers, and development utilities in action</p>
+            <a href="/projects/developer-tools/" class="example-link">Try Tools →</a>
+        </div>
+
+        <div class="example-card">
+            <div class="example-icon">📋</div>
+            <h3 class="example-title">Project Templates</h3>
+            <p class="example-description">Ready-to-use project scaffolds and templates with live previews</p>
+            <a href="/projects/templates/" class="example-link">Browse Templates →</a>
+        </div>
+
+        <div class="example-card">
+            <div class="example-icon">🎮</div>
+            <h3 class="example-title">Interactive Games</h3>
+            <p class="example-description">AI-enhanced games and entertainment applications</p>
+            <a href="/projects/games/" class="example-link">Play Games →</a>
+        </div>
+
+        <div class="example-card">
+            <div class="example-icon">📊</div>
+            <h3 class="example-title">Web Applications</h3>
+            <p class="example-description">Full-featured web apps with real functionality</p>
+            <a href="/projects/web-apps/" class="example-link">Use Apps →</a>
+        </div>
+
+        <div class="example-card">
+            <div class="example-icon">🧠</div>
+            <h3 class="example-title">AI & ML Projects</h3>
+            <p class="example-description">Machine learning models and AI applications in action</p>
+            <a href="/projects/ai-ml/" class="example-link">Explore AI →</a>
+        </div>
+
+        <div class="example-card">
+            <div class="example-icon">⚡</div>
+            <h3 class="example-title">Utilities & Tools</h3>
+            <p class="example-description">Practical utilities for developers and users</p>
+            <a href="/projects/utilities/" class="example-link">Use Tools →</a>
+        </div>
+
+        <div class="example-card">
+            <div class="example-icon">🔬</div>
+            <h3 class="example-title">Experimental</h3>
+            <p class="example-description">Cutting-edge experimental features and prototypes</p>
+            <a href="/projects/experimental/" class="example-link">Experiment →</a>
+        </div>
+        </div>
+    </div>
+    
+    <script>
+        // Animate stats on scroll
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        });
+        
+        document.querySelectorAll('.stat, .example-card').forEach(element => {
+            element.style.opacity = '0';
+            element.style.transform = 'translateY(20px)';
+            element.style.transition = 'all 0.6s ease';
+            observer.observe(element);
+        });
+        
+        console.log('Welcome to Examples & Demonstrations!');
+        console.log('This section showcases working examples of AI-Human collaboration.');
+        console.log('Visit https://github.com/RayBen445/Collab-with-AI for more!');
+    </script>
+</body>
+</html>

@@ -321,9 +321,13 @@
                     <div id="demo-output" class="demo-output">Demo output will appear here...</div>
                 </div>
             </div>
-                <div class="demo-text">
-                    Interactive demo area for AI Assistant<br>
-                    <small>This is a template - customize with your implementation</small>
+                <div class="working-demo">
+                    <h3>🤖 AI Assistant Demo</h3>
+                    <div class="demo-controls">
+                        <input type="text" id="userQuery" placeholder="Ask the AI assistant something..." style="flex: 1; padding: 10px; border: 2px solid #e9ecef; border-radius: 10px;">
+                        <button class="demo-btn" onclick="processAIQuery()">Ask AI</button>
+                    </div>
+                    <div id="aiResponse" class="demo-output">Ask me anything! I can help with calculations, recommendations, or general questions.</div>
                 </div>
             </div>
             
@@ -403,6 +407,92 @@
         console.log('Welcome to AI Assistant!');
         console.log('This project was built using AI-Human collaboration.');
         console.log('Visit https://github.com/RayBen445/Collab-with-AI for more!');
+        
+        // AI Assistant Demo Functionality
+        function processAIQuery() {
+            const userQuery = document.getElementById('userQuery').value.toLowerCase().trim();
+            const responseDiv = document.getElementById('aiResponse');
+            
+            if (!userQuery) {
+                responseDiv.innerHTML = "Please enter a question first!";
+                responseDiv.style.color = "#ff6b6b";
+                return;
+            }
+            
+            responseDiv.innerHTML = "🤔 Thinking...";
+            responseDiv.style.color = "#667eea";
+            
+            setTimeout(() => {
+                let response = generateAIResponse(userQuery);
+                responseDiv.innerHTML = "🤖 " + response;
+                responseDiv.style.color = "#2d3436";
+                document.getElementById('userQuery').value = '';
+            }, 1000);
+        }
+        
+        function generateAIResponse(query) {
+            const responses = {
+                "hello": "Hello! I'm your AI assistant. How can I help you today?",
+                "help": "I can assist you with calculations, provide information, answer questions, and offer recommendations. What would you like to know?",
+                "time": "The current time is " + new Date().toLocaleTimeString(),
+                "date": "Today's date is " + new Date().toLocaleDateString(),
+                "weather": "I'd need access to weather APIs to provide real weather data. For now, it's looking great outside! ☀️",
+                "calculate": "I can help with calculations! Try asking something like 'what is 25 * 4?' or 'square root of 144'",
+                "joke": "Why don't scientists trust atoms? Because they make up everything! 😄",
+                "inspiration": "The future belongs to those who believe in the beauty of their dreams. - Eleanor Roosevelt ✨"
+            };
+            
+            // Check for math calculations
+            if (query.includes("what is") || query.includes("calculate")) {
+                try {
+                    const mathMatch = query.match(/(\d+[\+\-\*\/\s\d\(\)\.]+\d+)/);
+                    if (mathMatch) {
+                        const result = eval(mathMatch[1].replace(/[^0-9\+\-\*\/\(\)\.\s]/g, ''));
+                        return `The answer is: ${result}`;
+                    }
+                } catch (e) {
+                    return "I couldn't calculate that. Please try a simpler math expression.";
+                }
+            }
+            
+            // Square root calculation
+            if (query.includes("square root")) {
+                const numMatch = query.match(/(\d+)/);
+                if (numMatch) {
+                    const result = Math.sqrt(parseInt(numMatch[1]));
+                    return `The square root of ${numMatch[1]} is ${result}`;
+                }
+            }
+            
+            // Find exact matches first
+            for (let key in responses) {
+                if (query.includes(key)) {
+                    return responses[key];
+                }
+            }
+            
+            // General responses
+            const generalResponses = [
+                "That's an interesting question! As an AI assistant, I'm here to help with various tasks and provide information.",
+                "I understand your query. While I have basic capabilities in this demo, I can assist with simple calculations, general questions, and provide helpful information.",
+                "Thanks for asking! I'm a demonstration AI assistant. I can help with basic tasks, answer simple questions, and provide useful information.",
+                "Great question! This demo shows how an AI assistant might respond. I can help with calculations, provide information, and answer various questions."
+            ];
+            
+            return generalResponses[Math.floor(Math.random() * generalResponses.length)];
+        }
+        
+        // Allow Enter key to submit
+        document.addEventListener('DOMContentLoaded', function() {
+            const queryInput = document.getElementById('userQuery');
+            if (queryInput) {
+                queryInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        processAIQuery();
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>

@@ -321,9 +321,26 @@
                     <div id="demo-output" class="demo-output">Demo output will appear here...</div>
                 </div>
             </div>
-                <div class="demo-text">
-                    Interactive demo area for CRM System<br>
-                    <small>This is a template - customize with your implementation</small>
+                <div class="working-demo">
+                    <h3>📊 CRM Customer Management Demo</h3>
+                    <div class="demo-controls">
+                        <input type="text" id="customerName" placeholder="Customer name..." style="flex: 1; padding: 10px; border: 2px solid #e9ecef; border-radius: 10px; margin-right: 10px;">
+                        <select id="customerStatus" style="padding: 10px; border: 2px solid #e9ecef; border-radius: 10px; margin-right: 10px;">
+                            <option value="lead">Lead</option>
+                            <option value="prospect">Prospect</option>
+                            <option value="customer">Customer</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                        <button class="demo-btn" onclick="addCustomer()">Add Customer</button>
+                    </div>
+                    <div id="customerList" class="demo-output">
+                        <div style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin: 5px 0; background: #f9f9f9;">
+                            <strong>John Doe</strong> - <span style="color: #28a745;">Customer</span> - Last contact: 2 days ago
+                        </div>
+                        <div style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin: 5px 0; background: #f9f9f9;">
+                            <strong>Jane Smith</strong> - <span style="color: #ffc107;">Prospect</span> - Last contact: 1 week ago
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -403,6 +420,75 @@
         console.log('Welcome to CRM System!');
         console.log('This project was built using AI-Human collaboration.');
         console.log('Visit https://github.com/RayBen445/Collab-with-AI for more!');
+        
+        // CRM System Demo Functionality
+        let customers = [
+            { name: "John Doe", status: "customer", lastContact: "2 days ago" },
+            { name: "Jane Smith", status: "prospect", lastContact: "1 week ago" }
+        ];
+        
+        function addCustomer() {
+            const nameInput = document.getElementById('customerName');
+            const statusSelect = document.getElementById('customerStatus');
+            const customerList = document.getElementById('customerList');
+            
+            const name = nameInput.value.trim();
+            const status = statusSelect.value;
+            
+            if (!name) {
+                alert('Please enter a customer name');
+                return;
+            }
+            
+            const newCustomer = {
+                name: name,
+                status: status,
+                lastContact: "Just added"
+            };
+            
+            customers.push(newCustomer);
+            updateCustomerList();
+            nameInput.value = '';
+        }
+        
+        function updateCustomerList() {
+            const customerList = document.getElementById('customerList');
+            
+            const statusColors = {
+                lead: '#6c757d',
+                prospect: '#ffc107', 
+                customer: '#28a745',
+                inactive: '#dc3545'
+            };
+            
+            customerList.innerHTML = customers.map(customer => `
+                <div style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin: 5px 0; background: #f9f9f9; display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <strong>${customer.name}</strong> - 
+                        <span style="color: ${statusColors[customer.status]}; font-weight: bold;">${customer.status.charAt(0).toUpperCase() + customer.status.slice(1)}</span> - 
+                        Last contact: ${customer.lastContact}
+                    </div>
+                    <button style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 3px; cursor: pointer;" onclick="removeCustomer('${customer.name}')">Remove</button>
+                </div>
+            `).join('');
+        }
+        
+        function removeCustomer(name) {
+            customers = customers.filter(customer => customer.name !== name);
+            updateCustomerList();
+        }
+        
+        // Allow Enter key to add customer
+        document.addEventListener('DOMContentLoaded', function() {
+            const nameInput = document.getElementById('customerName');
+            if (nameInput) {
+                nameInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        addCustomer();
+                    }
+                });
+            }
+        });
     </script>
 </body>
 </html>
