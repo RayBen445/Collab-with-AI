@@ -1,6 +1,7 @@
 {
   "version": 2,
   "name": "collab-with-ai",
+  "outputDirectory": ".",
   "routes": [
     {
       "src": "/api/(.*)",
