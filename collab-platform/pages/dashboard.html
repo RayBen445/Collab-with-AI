@@ -7,6 +7,11 @@
     <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
+    <div id="status-bar">
+        <div id="time"></div>
+        <div id="date"></div>
+        <div id="battery"></div>
+    </div>
     <div class="dashboard-container">
         <header class="dashboard-header">
             <h1>Dashboard</h1>
@@ -30,5 +35,9 @@
         </main>
     </div>
     <script src="../js/script.js"></script>
+    <div id="low-battery-notification" class="notification hidden">
+        <p>Your battery is running low. Please connect your device to a power source.</p>
+        <button id="dismiss-notification">&times;</button>
+    </div>
 </body>
 </html>
