@@ -403,35 +403,86 @@
         </div>
         
         <div class="main-content">
-            
-                <div class="working-demo">
-                    <h3>🚀 QR Code Generator - Interactive Demo</h3>
-                    <div class="app-interface">
-                        <div class="control-panel">
-                            <input type="text" id="mainInput" placeholder="Enter your data..." class="main-input">
-                            <button onclick="processInput()" class="demo-btn primary">Process</button>
-                            <button onclick="clearData()" class="demo-btn">Clear</button>
+            <div class="working-demo">
+                <h3>📱 QR Code Generator & Scanner</h3>
+                
+                <!-- QR Generation Section -->
+                <div class="qr-section">
+                    <div class="input-section">
+                        <label for="qrInput">Enter text, URL, or data to generate QR code:</label>
+                        <textarea id="qrInput" placeholder="Enter text, URL, phone number, email, WiFi details, etc..." class="qr-textarea"></textarea>
+                        
+                        <div class="qr-options">
+                            <div class="option-group">
+                                <label for="qrSize">Size:</label>
+                                <select id="qrSize" class="qr-select">
+                                    <option value="200">Small (200x200)</option>
+                                    <option value="300" selected>Medium (300x300)</option>
+                                    <option value="400">Large (400x400)</option>
+                                    <option value="500">Extra Large (500x500)</option>
+                                </select>
+                            </div>
+                            
+                            <div class="option-group">
+                                <label for="qrColor">Color:</label>
+                                <input type="color" id="qrColor" value="#000000" class="color-input">
+                            </div>
+                            
+                            <div class="option-group">
+                                <label for="qrBackground">Background:</label>
+                                <input type="color" id="qrBackground" value="#ffffff" class="color-input">
+                            </div>
                         </div>
-                        <div id="output-area" class="output-area">
-                            <p>Ready to process your input. Try entering some data above!</p>
+                        
+                        <div class="quick-templates">
+                            <h4>Quick Templates:</h4>
+                            <div class="template-buttons">
+                                <button onclick="setTemplate('url')" class="template-btn">🌐 Website URL</button>
+                                <button onclick="setTemplate('email')" class="template-btn">📧 Email</button>
+                                <button onclick="setTemplate('phone')" class="template-btn">📞 Phone</button>
+                                <button onclick="setTemplate('wifi')" class="template-btn">📶 WiFi</button>
+                                <button onclick="setTemplate('text')" class="template-btn">📝 Plain Text</button>
+                            </div>
                         </div>
-                        <div class="feature-showcase">
-                            <button onclick="showFeature('analytics')" class="demo-btn">📊 Analytics</button>
-                            <button onclick="showFeature('export')" class="demo-btn">💾 Export Data</button>
-                            <button onclick="showFeature('settings')" class="demo-btn">⚙️ Settings</button>
+                        
+                        <button onclick="generateQR()" class="generate-qr-btn">🎯 Generate QR Code</button>
+                    </div>
+                    
+                    <!-- QR Display Section -->
+                    <div class="qr-display">
+                        <div id="qrOutput" class="qr-output">
+                            <div class="qr-placeholder">
+                                <div class="placeholder-icon">📱</div>
+                                <p>QR code will appear here</p>
+                            </div>
+                        </div>
+                        
+                        <div class="qr-actions" id="qrActions" style="display: none;">
+                            <button onclick="downloadQR()" class="action-btn download">📥 Download PNG</button>
+                            <button onclick="copyQRLink()" class="action-btn copy">🔗 Copy Link</button>
+                            <button onclick="printQR()" class="action-btn print">🖨️ Print</button>
                         </div>
                     </div>
                 </div>
-            </div>
-            </div>
-                                <div class="working-demo">
-                    <h3>🚀 Qr Generator Demo</h3>
-                    <div class="demo-controls">
-                        <button class="demo-btn" onclick="runDemo()">Try Demo</button>
-                        <button class="demo-btn" onclick="resetDemo()">Reset</button>
+                
+                <!-- QR History -->
+                <div class="qr-history">
+                    <h4>Recent QR Codes <button onclick="clearQRHistory()" class="clear-history-btn">🗑️ Clear</button></h4>
+                    <div id="qrHistoryList" class="history-list">
+                        <p class="no-history">No QR codes generated yet</p>
                     </div>
-                    <div id="demoOutput" class="demo-output">
-                        This is a working demo of qr generator. Click the buttons above to interact!
+                </div>
+                
+                <!-- QR Scanner Section -->
+                <div class="scanner-section">
+                    <h4>📷 QR Code Scanner</h4>
+                    <div class="scanner-area">
+                        <input type="file" id="qrFileInput" accept="image/*" class="file-input">
+                        <label for="qrFileInput" class="file-label">
+                            <div class="upload-icon">📁</div>
+                            <span>Upload image with QR code</span>
+                        </label>
+                        <div id="scanResult" class="scan-result"></div>
                     </div>
                 </div>
             </div>
