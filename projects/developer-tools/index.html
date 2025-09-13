@@ -428,6 +428,20 @@
                 <p class="tool-description">Preview Markdown files with live rendering and export capabilities</p>
                 <span class="tool-link">Preview Markdown</span>
             </div>
+            
+            <div class="tool-card" onclick="downloadDevTool('dev_environment_setup.py')">
+                <div class="tool-icon">⚙️</div>
+                <h3 class="tool-title">Dev Environment Setup</h3>
+                <p class="tool-description">Automated development environment setup for Python, Node.js, Docker, and Git</p>
+                <span class="tool-link">Download Tool</span>
+            </div>
+            
+            <div class="tool-card" onclick="downloadDevTool('testing_utilities.py')">
+                <div class="tool-icon">🧪</div>
+                <h3 class="tool-title">Testing Utilities</h3>
+                <p class="tool-description">Comprehensive testing framework with Python/JavaScript support and coverage reports</p>
+                <span class="tool-link">Download Tool</span>
+            </div>
         </div>
         
         <!-- Tool Demos -->
@@ -1003,6 +1017,28 @@ HSL: ${hexToHsl(randomColor)}
             }
             
             return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;
+        }
+        
+        // Download developer tool functionality
+        function downloadDevTool(filename) {
+            // Create download link
+            const link = document.createElement('a');
+            link.href = filename;
+            link.download = filename;
+            link.click();
+            
+            // Show success message
+            const output = document.getElementById('demoOutput');
+            if (output) {
+                output.innerHTML = `📥 ${filename} download started!<br><em>Professional development tool ready to use</em>`;
+                setTimeout(() => {
+                    if (filename.includes('environment')) {
+                        output.innerHTML = `⚙️ Dev Environment Setup downloaded!<br>Run with: <code>python3 ${filename} --help</code><br>Supports Python, Node.js, Docker, and Git environments`;
+                    } else if (filename.includes('testing')) {
+                        output.innerHTML = `🧪 Testing Utilities downloaded!<br>Run with: <code>python3 ${filename} --help</code><br>Supports Python and JavaScript testing with coverage reports`;
+                    }
+                }, 2000);
+            }
         }
     </script>
 </body>

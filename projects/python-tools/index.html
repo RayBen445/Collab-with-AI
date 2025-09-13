@@ -201,7 +201,7 @@
         
         <div class="stats">
             <div class="stat">
-                <div class="stat-number">18</div>
+                <div class="stat-number">20</div>
                 <div class="stat-label">Projects</div>
             </div>
             <div class="stat">
@@ -235,10 +235,25 @@
         </div>
 
         <div class="project-card">
+            <div class="project-icon">🤖</div>
+            <h3 class="project-title">Automation Scripts</h3>
+            <p class="project-description">System automation utilities for common development tasks</p>
+            <div class="demo-controls">
+                <button class="demo-btn" onclick="downloadScript('automation_scripts.py')">📥 Download Script</button>
+                <button class="demo-btn" onclick="showAutomationDemo()">🔧 View Demo</button>
+            </div>
+            <div id="automation-demo" class="demo-output">Comprehensive automation toolkit for backup, cleanup, monitoring, and project setup</div>
+        </div>
+
+        <div class="project-card">
             <div class="project-icon">🕸️</div>
-            <h3 class="project-title">Web Crawler</h3>
-            <p class="project-description">Intelligent web scraping tool</p>
-            <a href="web-crawler.html" class="project-link">View Project →</a>
+            <h3 class="project-title">Web Scraper</h3>
+            <p class="project-description">Advanced web scraping with rate limiting and export capabilities</p>
+            <div class="demo-controls">
+                <button class="demo-btn" onclick="downloadScript('web_scraper.py')">📥 Download Script</button>
+                <button class="demo-btn" onclick="showScrapingDemo()">🕷️ View Demo</button>
+            </div>
+            <div id="scraping-demo" class="demo-output">Professional web scraping tool with BeautifulSoup integration and data export</div>
         </div>
 
         <div class="project-card">
@@ -365,6 +380,50 @@
         console.log('Built with AI-Human collaboration');
     
         
+        
+        // Download script functionality
+        function downloadScript(filename) {
+            // Create download link
+            const link = document.createElement('a');
+            link.href = filename;
+            link.download = filename;
+            link.click();
+            
+            // Show success message
+            const output = document.getElementById(filename.replace('.py', '') + '-demo');
+            if (output) {
+                output.innerHTML = `📥 ${filename} download started!`;
+                setTimeout(() => {
+                    output.innerHTML = `Ready to use! Run with: python3 ${filename} --help`;
+                }, 2000);
+            }
+        }
+        
+        function showAutomationDemo() {
+            const output = document.getElementById('automation-demo');
+            output.innerHTML = `
+                <strong>🤖 Automation Scripts Features:</strong><br>
+                • System backup with exclusion patterns<br>
+                • Cleanup old files (dry run mode)<br>
+                • System resource monitoring<br>
+                • Project structure generation<br>
+                • Test running with coverage<br>
+                <em>Usage: python3 automation_scripts.py --help</em>
+            `;
+        }
+        
+        function showScrapingDemo() {
+            const output = document.getElementById('scraping-demo');
+            output.innerHTML = `
+                <strong>🕷️ Web Scraper Features:</strong><br>
+                • Rate limiting and ethical scraping<br>
+                • BeautifulSoup HTML parsing<br>
+                • Multiple export formats (JSON, CSV)<br>
+                • Sitemap support and link extraction<br>
+                • News article specialization<br>
+                <em>Usage: python3 web_scraper.py --urls https://example.com</em>
+            `;
+        }
         
         // Common demo functionality
         function runDemo() {
