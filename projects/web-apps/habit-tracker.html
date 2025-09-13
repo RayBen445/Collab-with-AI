@@ -71,302 +71,231 @@
             color: white;
             transform: translateY(-2px);
         }
-        
-        .main-content {
-            background: white;
-            border-radius: 15px;
-            padding: 40px;
+
+        .habit-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 300px;
+            gap: 30px;
             margin-bottom: 30px;
-            border: 2px solid #e9ecef;
         }
-        
-        .demo-area {
+
+        .habits-container {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .habit-form {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2d3436;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .habit-item {
             background: #f8f9fa;
             border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-            min-height: 300px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+        }
+
+        .habit-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .habit-name {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d3436;
+        }
+
+        .habit-streak {
+            background: linear-gradient(135deg, #00b894, #00a085);
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .habit-description {
+            color: #636e72;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .habit-calendar {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+
+        .habit-day {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #e9ecef;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
-        }
-        
-        .demo-placeholder {
-            font-size: 4rem;
-            color: #667eea;
-            margin-bottom: 20px;
-        }
-        
-        .demo-text {
-            color: #636e72;
-            font-size: 1.1rem;
-        }
-        
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
-        }
-        
-        .feature-card {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            border: 2px solid #e9ecef;
-            text-align: center;
+            font-size: 0.8rem;
+            cursor: pointer;
             transition: all 0.3s ease;
         }
-        
-        .feature-card:hover {
-            border-color: #667eea;
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.1);
-        }
-        
-        .feature-icon {
-            font-size: 2rem;
-            margin-bottom: 15px;
-        }
-        
-        .feature-title {
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: #2d3436;
-        }
-        
-        .feature-description {
-            color: #636e72;
-            font-size: 0.9rem;
-        }
-        
-        .tech-stack {
-            background: linear-gradient(135deg, #667eea, #764ba2);
+
+        .habit-day.completed {
+            background: linear-gradient(135deg, #00b894, #00a085);
             color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 30px;
         }
-        
-        .tech-stack h3 {
-            margin-bottom: 20px;
-            text-align: center;
+
+        .habit-day.today {
+            border: 2px solid #667eea;
         }
-        
-        .tech-tags {
+
+        .habit-day:hover {
+            transform: scale(1.1);
+        }
+
+        .habit-actions {
             display: flex;
-            flex-wrap: wrap;
             gap: 10px;
-            justify-content: center;
         }
-        
-        .tech-tag {
-            background: rgba(255, 255, 255, 0.2);
-            padding: 8px 16px;
-            border-radius: 20px;
+
+        .btn-small {
+            padding: 8px 15px;
             font-size: 0.9rem;
+            width: auto;
         }
-        
-        .actions {
-            text-align: center;
+
+        .btn-complete {
+            background: linear-gradient(135deg, #00b894, #00a085);
+        }
+
+        .btn-delete {
+            background: linear-gradient(135deg, #e17055, #d63031);
+        }
+
+        .stats-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
             margin-top: 30px;
         }
-        
-        .btn {
-            display: inline-block;
-            padding: 15px 30px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            text-decoration: none;
-            border-radius: 25px;
-            font-weight: bold;
-            margin: 0 10px;
-            transition: all 0.3s ease;
-        }
-        
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
-        }
-        
-        .stats {
+
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 20px;
-            margin: 30px 0;
         }
-        
-        .stat {
-            text-align: center;
+
+        .stat-card {
             background: #f8f9fa;
             padding: 20px;
             border-radius: 15px;
+            text-align: center;
         }
-        
+
         .stat-number {
             font-size: 2rem;
             font-weight: bold;
             color: #667eea;
         }
-        
+
         .stat-label {
             color: #636e72;
             font-size: 0.9rem;
+            margin-top: 5px;
         }
-        
-        @media (max-width: 768px) {
-            .container {
-                padding: 20px;
-                margin: 10px;
-            }
-            
-            .header h1 {
-                font-size: 2rem;
-            }
-            
-            .header .icon {
-                font-size: 3rem;
-            }
-            
-            .nav-links {
-                flex-direction: column;
-                align-items: center;
-            }
-        }
-    
-        .demo-controls {
-            margin: 20px 0;
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .demo-btn {
+
+        .motivation-quote {
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 25px;
-            cursor: pointer;
-            font-weight: 500;
-            transition: all 0.3s ease;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 30px;
         }
-        
-        .demo-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
-        }
-        
-        .demo-output {
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #666;
+
+        .quote-text {
+            font-size: 1.1rem;
             font-style: italic;
+            margin-bottom: 10px;
         }
-        
-        .working-demo h3 {
-            color: #333;
-            margin-bottom: 15px;
+
+        .quote-author {
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
-        
-        .app-interface, .creative-interface {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
-            margin: 20px 0;
+
+        @media (max-width: 768px) {
+            .habit-dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .habit-calendar {
+                grid-template-columns: repeat(7, 1fr);
+                gap: 3px;
+            }
+            
+            .habit-day {
+                width: 25px;
+                height: 25px;
+            }
         }
-        
-        .control-panel, .tool-palette {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .main-input {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-        
-        .output-area {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            padding: 20px;
-            margin: 15px 0;
-            min-height: 200px;
-        }
-        
-        .data-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .remove-btn {
-            background: #ff4757;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-        }
-        
-        .tool-btn {
-            padding: 10px 15px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        
-        .tool-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        .canvas-container {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            display: inline-block;
-        }
-        
-        #creative-canvas {
-            display: block;
-            cursor: crosshair;
-        }
-        
-        .creative-controls {
-            margin-top: 15px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .primary {
-            background: #667eea !important;
-            color: white;
-        }
-        
-        .error {
-            color: #ff4757;
-            font-weight: bold;
-        }
-        </style>
+    </style>
 </head>
 <body>
     <div class="container">
@@ -382,256 +311,339 @@
                 <a href="https://github.com/RayBen445/Collab-with-AI" class="nav-link">📦 GitHub</a>
             </div>
         </div>
-        
-        <div class="stats">
-            <div class="stat">
-                <div class="stat-number">100%</div>
-                <div class="stat-label">AI-Human Built</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">Open</div>
-                <div class="stat-label">Source</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">Modern</div>
-                <div class="stat-label">Technology</div>
-            </div>
-            <div class="stat">
-                <div class="stat-number">Free</div>
-                <div class="stat-label">to Use</div>
-            </div>
+
+        <div class="motivation-quote" id="motivationQuote">
+            <div class="quote-text">"Success is the sum of small efforts repeated day in and day out."</div>
+            <div class="quote-author">— Robert Collier</div>
         </div>
-        
-        <div class="main-content">
-            
-                <div class="working-demo">
-                    <h3>🚀 Habit Tracker - Interactive Demo</h3>
-                    <div class="app-interface">
-                        <div class="control-panel">
-                            <input type="text" id="mainInput" placeholder="Enter your data..." class="main-input">
-                            <button onclick="processInput()" class="demo-btn primary">Process</button>
-                            <button onclick="clearData()" class="demo-btn">Clear</button>
-                        </div>
-                        <div id="output-area" class="output-area">
-                            <p>Ready to process your input. Try entering some data above!</p>
-                        </div>
-                        <div class="feature-showcase">
-                            <button onclick="showFeature('analytics')" class="demo-btn">📊 Analytics</button>
-                            <button onclick="showFeature('export')" class="demo-btn">💾 Export Data</button>
-                            <button onclick="showFeature('settings')" class="demo-btn">⚙️ Settings</button>
-                        </div>
-                    </div>
+
+        <div class="habit-dashboard">
+            <div class="habits-container">
+                <h3>Your Habits</h3>
+                <div id="habitsList">
+                    <!-- Habits will be displayed here -->
                 </div>
             </div>
+
+            <div class="habit-form">
+                <h3>Add New Habit</h3>
+                <form id="habitForm">
+                    <div class="form-group">
+                        <label for="habitName">Habit Name</label>
+                        <input type="text" id="habitName" placeholder="e.g., Drink 8 glasses of water" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="habitDescription">Description</label>
+                        <textarea id="habitDescription" rows="3" placeholder="Why is this habit important to you?"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="habitCategory">Category</label>
+                        <select id="habitCategory" required>
+                            <option value="">Select Category</option>
+                            <option value="health">Health & Fitness</option>
+                            <option value="productivity">Productivity</option>
+                            <option value="learning">Learning</option>
+                            <option value="mindfulness">Mindfulness</option>
+                            <option value="social">Social</option>
+                            <option value="creative">Creative</option>
+                            <option value="financial">Financial</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="habitFrequency">Frequency</label>
+                        <select id="habitFrequency" required>
+                            <option value="daily">Daily</option>
+                            <option value="weekly">Weekly</option>
+                            <option value="custom">Custom</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn">Add Habit</button>
+                </form>
             </div>
-                                <div class="working-demo">
-                    <h3>🚀 Habit Tracker Demo</h3>
-                    <div class="demo-controls">
-                        <button class="demo-btn" onclick="runDemo()">Try Demo</button>
-                        <button class="demo-btn" onclick="resetDemo()">Reset</button>
-                    </div>
-                    <div id="demoOutput" class="demo-output">
-                        This is a working demo of habit tracker. Click the buttons above to interact!
-                    </div>
+        </div>
+
+        <div class="stats-section">
+            <h3>Your Progress</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalHabits">0</div>
+                    <div class="stat-label">Total Habits</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="activeStreaks">0</div>
+                    <div class="stat-label">Active Streaks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="completedToday">0</div>
+                    <div class="stat-label">Completed Today</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="longestStreak">0</div>
+                    <div class="stat-label">Longest Streak</div>
                 </div>
             </div>
-            
-            <div class="features">
-                
-        <div class="feature-card">
-            <div class="feature-icon">⚡</div>
-            <div class="feature-title">Fast Performance</div>
-            <div class="feature-description">Optimized for speed and efficiency</div>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">📱</div>
-            <div class="feature-title">Responsive Design</div>
-            <div class="feature-description">Works on all devices and screen sizes</div>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">🔒</div>
-            <div class="feature-title">Secure</div>
-            <div class="feature-description">Built with security best practices</div>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">🎨</div>
-            <div class="feature-title">Modern UI</div>
-            <div class="feature-description">Clean and intuitive user interface</div>
-        </div>
-            </div>
-        </div>
-        
-        <div class="tech-stack">
-            <h3>🛠️ Technology Stack</h3>
-            <div class="tech-tags">
-                <span class="tech-tag">HTML5</span>
-<span class="tech-tag">CSS3</span>
-<span class="tech-tag">JavaScript</span>
-<span class="tech-tag">React</span>
-<span class="tech-tag">Vue.js</span>
-<span class="tech-tag">Node.js</span>
-            </div>
-        </div>
-        
-        <div class="actions">
-            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">🚀 Launch Application</a>
-            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">📖 View Documentation</a>
-            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">💾 Download Source</a>
         </div>
     </div>
-    
+
     <script>
-        // Add some interactivity
-        document.querySelectorAll('.feature-card').forEach(card => {
-            card.addEventListener('mouseenter', () => {
-                card.style.transform = 'translateY(-5px) scale(1.02)';
-            });
-            
-            card.addEventListener('mouseleave', () => {
-                card.style.transform = 'translateY(0) scale(1)';
-            });
-        });
-        
-        // Animate stats on scroll
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    entry.target.style.opacity = '1';
-                    entry.target.style.transform = 'translateY(0)';
-                }
-            });
-        });
-        
-        document.querySelectorAll('.stat, .feature-card').forEach(element => {
-            element.style.opacity = '0';
-            element.style.transform = 'translateY(20px)';
-            element.style.transition = 'all 0.6s ease';
-            observer.observe(element);
-        });
-        
-        console.log('Welcome to Habit Tracker!');
-        console.log('This project was built using AI-Human collaboration.');
-        console.log('Visit https://github.com/RayBen445/Collab-with-AI for more!');
-    
-        
-        
-        
-                // Habit Tracker Implementation
-                let appData = [];
-                let currentSettings = {};
-                
-                function processInput() {
-                    const input = document.getElementById('mainInput');
-                    const output = document.getElementById('output-area');
-                    const value = input.value.trim();
-                    
-                    if (!value) {
-                        output.innerHTML = '<p class="error">⚠️ Please enter some data to process!</p>';
-                        return;
-                    }
-                    
-                    appData.push({
-                        value: value,
-                        timestamp: new Date().toLocaleString(),
-                        id: Date.now()
-                    });
-                    
-                    updateDisplay();
-                    input.value = '';
-                }
-                
-                function clearData() {
-                    appData = [];
-                    document.getElementById('mainInput').value = '';
-                    updateDisplay();
-                }
-                
-                function updateDisplay() {
-                    const output = document.getElementById('output-area');
-                    if (appData.length === 0) {
-                        output.innerHTML = '<p>No data yet. Add some entries above!</p>';
-                        return;
-                    }
-                    
-                    const itemsHtml = appData.map(item => 
-                        `<div class="data-item">
-                            <strong>${item.value}</strong>
-                            <small>${item.timestamp}</small>
-                            <button onclick="removeItem(${item.id})" class="remove-btn">×</button>
-                        </div>`
-                    ).join('');
-                    
-                    output.innerHTML = `
-                        <h4>📋 Data Items (${appData.length})</h4>
-                        <div class="data-list">${itemsHtml}</div>
-                    `;
-                }
-                
-                function removeItem(id) {
-                    appData = appData.filter(item => item.id !== id);
-                    updateDisplay();
-                }
-                
-                function showFeature(feature) {
-                    const messages = {
-                        'analytics': `📊 Analytics: You have ${appData.length} items. Total characters: ${appData.reduce((sum, item) => sum + item.value.length, 0)}`,
-                        'export': '💾 Export: Data exported to browser download (simulated)',
-                        'settings': '⚙️ Settings: Theme updated, auto-save enabled'
-                    };
-                    
-                    alert(messages[feature] || 'Feature activated!');
-                    
-                    if (feature === 'export' && appData.length > 0) {
-                        const dataStr = JSON.stringify(appData, null, 2);
-                        const blob = new Blob([dataStr], { type: 'application/json' });
-                        const url = URL.createObjectURL(blob);
-                        const a = document.createElement('a');
-                        a.href = url;
-                        a.download = 'habit_tracker_data.json';
-                        a.click();
-                        URL.revokeObjectURL(url);
-                    }
-                }
-                
-                // Auto-save functionality
-                setInterval(() => {
-                    if (appData.length > 0) {
-                        localStorage.setItem('habit_tracker_data', JSON.stringify(appData));
-                    }
-                }, 5000);
-                
-                // Load saved data on startup
-                document.addEventListener('DOMContentLoaded', function() {
-                    const saved = localStorage.getItem('habit_tracker_data');
-                    if (saved) {
-                        try {
-                            appData = JSON.parse(saved);
-                            updateDisplay();
-                        } catch (e) {
-                            console.log('Could not load saved data');
-                        }
-                    }
-                });
-        
-        // Allow Enter key functionality where applicable
+        let habits = JSON.parse(localStorage.getItem('habit_tracker_habits') || '[]');
+
+        const motivationalQuotes = [
+            { text: "Success is the sum of small efforts repeated day in and day out.", author: "Robert Collier" },
+            { text: "We are what we repeatedly do. Excellence, then, is not an act, but a habit.", author: "Aristotle" },
+            { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+            { text: "Motivation is what gets you started. Habit is what keeps you going.", author: "Jim Ryun" },
+            { text: "Your habits determine your future.", author: "Jack Canfield" },
+            { text: "Small habits, when consistently performed, lead to remarkable results.", author: "Unknown" }
+        ];
+
+        // Initialize
         document.addEventListener('DOMContentLoaded', function() {
-            // Auto-setup enter key for inputs
-            const inputs = document.querySelectorAll('input[type="text"]');
-            inputs.forEach(input => {
-                if (input.id.includes('Query') || input.id.includes('Input') || input.id.includes('Search')) {
-                    input.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            // Find associated button and click it
-                            const button = input.parentElement.querySelector('button');
-                            if (button) button.click();
-                        }
-                    });
-                }
-            });
+            displayHabits();
+            updateStats();
+            setRandomQuote();
         });
-        </script>
+
+        function setRandomQuote() {
+            const quote = motivationalQuotes[Math.floor(Math.random() * motivationalQuotes.length)];
+            document.getElementById('motivationQuote').innerHTML = `
+                <div class="quote-text">"${quote.text}"</div>
+                <div class="quote-author">— ${quote.author}</div>
+            `;
+        }
+
+        document.getElementById('habitForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            addHabit();
+        });
+
+        function addHabit() {
+            const name = document.getElementById('habitName').value.trim();
+            const description = document.getElementById('habitDescription').value.trim();
+            const category = document.getElementById('habitCategory').value;
+            const frequency = document.getElementById('habitFrequency').value;
+
+            if (!name || !category || !frequency) {
+                alert('Please fill in all required fields');
+                return;
+            }
+
+            const habit = {
+                id: Date.now(),
+                name,
+                description,
+                category,
+                frequency,
+                created: new Date().toISOString().split('T')[0],
+                completions: [], // Array of completion dates
+                streak: 0,
+                longestStreak: 0
+            };
+
+            habits.push(habit);
+            saveHabits();
+            displayHabits();
+            updateStats();
+            clearForm();
+        }
+
+        function clearForm() {
+            document.getElementById('habitForm').reset();
+        }
+
+        function displayHabits() {
+            const habitsList = document.getElementById('habitsList');
+
+            if (habits.length === 0) {
+                habitsList.innerHTML = '<p style="text-align: center; color: #636e72; padding: 20px;">No habits yet. Add your first habit!</p>';
+                return;
+            }
+
+            const habitsHTML = habits.map(habit => {
+                const isCompletedToday = isHabitCompletedToday(habit);
+                const calendar = generateHabitCalendar(habit);
+                
+                return `
+                    <div class="habit-item">
+                        <div class="habit-header">
+                            <div class="habit-name">${habit.name}</div>
+                            <div class="habit-streak">${habit.streak} day streak</div>
+                        </div>
+                        ${habit.description ? `<div class="habit-description">${habit.description}</div>` : ''}
+                        <div class="habit-calendar">${calendar}</div>
+                        <div class="habit-actions">
+                            <button class="btn btn-small btn-complete" onclick="toggleHabitCompletion(${habit.id})" ${isCompletedToday ? 'disabled' : ''}>
+                                ${isCompletedToday ? '✓ Completed' : 'Mark Complete'}
+                            </button>
+                            <button class="btn btn-small btn-delete" onclick="deleteHabit(${habit.id})">Delete</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            habitsList.innerHTML = habitsHTML;
+        }
+
+        function generateHabitCalendar(habit) {
+            const today = new Date();
+            const days = [];
+            
+            // Show last 7 days
+            for (let i = 6; i >= 0; i--) {
+                const date = new Date(today);
+                date.setDate(date.getDate() - i);
+                const dateString = date.toISOString().split('T')[0];
+                
+                const isCompleted = habit.completions.includes(dateString);
+                const isToday = i === 0;
+                
+                days.push(`
+                    <div class="habit-day ${isCompleted ? 'completed' : ''} ${isToday ? 'today' : ''}" 
+                         title="${date.toLocaleDateString()}">
+                        ${date.getDate()}
+                    </div>
+                `);
+            }
+            
+            return days.join('');
+        }
+
+        function isHabitCompletedToday(habit) {
+            const today = new Date().toISOString().split('T')[0];
+            return habit.completions.includes(today);
+        }
+
+        function toggleHabitCompletion(habitId) {
+            const habit = habits.find(h => h.id === habitId);
+            if (!habit) return;
+
+            const today = new Date().toISOString().split('T')[0];
+            
+            if (!habit.completions.includes(today)) {
+                habit.completions.push(today);
+                updateHabitStreak(habit);
+                saveHabits();
+                displayHabits();
+                updateStats();
+            }
+        }
+
+        function updateHabitStreak(habit) {
+            const today = new Date();
+            let streak = 0;
+            
+            for (let i = 0; i < 365; i++) {
+                const checkDate = new Date(today);
+                checkDate.setDate(checkDate.getDate() - i);
+                const dateString = checkDate.toISOString().split('T')[0];
+                
+                if (habit.completions.includes(dateString)) {
+                    streak++;
+                } else {
+                    break;
+                }
+            }
+            
+            habit.streak = streak;
+            if (streak > habit.longestStreak) {
+                habit.longestStreak = streak;
+            }
+        }
+
+        function deleteHabit(habitId) {
+            if (confirm('Are you sure you want to delete this habit?')) {
+                habits = habits.filter(h => h.id !== habitId);
+                saveHabits();
+                displayHabits();
+                updateStats();
+            }
+        }
+
+        function updateStats() {
+            const totalHabits = habits.length;
+            const activeStreaks = habits.filter(h => h.streak > 0).length;
+            const completedToday = habits.filter(h => isHabitCompletedToday(h)).length;
+            const longestStreak = Math.max(...habits.map(h => h.longestStreak), 0);
+
+            document.getElementById('totalHabits').textContent = totalHabits;
+            document.getElementById('activeStreaks').textContent = activeStreaks;
+            document.getElementById('completedToday').textContent = completedToday;
+            document.getElementById('longestStreak').textContent = longestStreak;
+        }
+
+        function saveHabits() {
+            localStorage.setItem('habit_tracker_habits', JSON.stringify(habits));
+        }
+
+        // Demo functionality
+        function addSampleHabits() {
+            const sampleHabits = [
+                {
+                    name: "Drink 8 glasses of water",
+                    description: "Stay hydrated throughout the day",
+                    category: "health",
+                    frequency: "daily"
+                },
+                {
+                    name: "Read for 30 minutes",
+                    description: "Expand knowledge and improve focus",
+                    category: "learning",
+                    frequency: "daily"
+                },
+                {
+                    name: "Exercise for 30 minutes",
+                    description: "Maintain physical fitness and health",
+                    category: "health",
+                    frequency: "daily"
+                }
+            ];
+
+            sampleHabits.forEach(sample => {
+                const habit = {
+                    id: Date.now() + Math.random(),
+                    ...sample,
+                    created: new Date().toISOString().split('T')[0],
+                    completions: [],
+                    streak: Math.floor(Math.random() * 10),
+                    longestStreak: Math.floor(Math.random() * 20)
+                };
+                
+                // Add some random completions for demo
+                for (let i = 0; i < habit.streak; i++) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    habit.completions.push(date.toISOString().split('T')[0]);
+                }
+                
+                habits.push(habit);
+            });
+
+            saveHabits();
+            displayHabits();
+            updateStats();
+        }
+
+        // Add sample data button for demo
+        setTimeout(() => {
+            if (habits.length === 0) {
+                const addSampleBtn = document.createElement('button');
+                addSampleBtn.textContent = 'Add Sample Habits';
+                addSampleBtn.className = 'btn';
+                addSampleBtn.style.margin = '10px auto';
+                addSampleBtn.style.width = 'auto';
+                addSampleBtn.style.padding = '10px 20px';
+                addSampleBtn.onclick = addSampleHabits;
+                document.querySelector('.stats-section').appendChild(addSampleBtn);
+            }
+        }, 1000);
+
+        // Change quote daily
+        setInterval(setRandomQuote, 24 * 60 * 60 * 1000);
+    </script>
 </body>
 </html>
