@@ -33,7 +33,7 @@ class StatusBar {
             <div id="realtime-status-bar" class="status-bar">
                 <div class="status-left">
                     <div class="user-info">
-                        <img id="status-user-avatar" src="https://via.placeholder.com/32x32/667eea/white?text=?" alt="User" class="user-avatar">
+                        <div id="status-user-avatar" class="user-avatar">👤</div>
                         <span id="status-username">Guest User</span>
                     </div>
                 </div>
@@ -184,7 +184,14 @@ class StatusBar {
                     height: 32px;
                     border-radius: 50%;
                     border: 2px solid #667eea;
-                    object-fit: cover;
+                    background: linear-gradient(135deg, #667eea, #764ba2);
+                    color: white;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 16px;
+                    font-weight: bold;
+                    flex-shrink: 0;
                 }
 
                 .time-display {

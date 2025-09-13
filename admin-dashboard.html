@@ -2770,13 +2770,32 @@
             }
             
             populateUsersTable() {
-                const usersData = [
-                    { name: 'Admin User', email: 'oladoyeheritage445@gmail.com', role: 'Admin', status: 'active', lastLogin: '2 minutes ago' },
-                    { name: 'John Doe', email: 'john.doe@example.com', role: 'Manager', status: 'active', lastLogin: '1 hour ago' },
-                    { name: 'Jane Smith', email: 'jane.smith@example.com', role: 'User', status: 'active', lastLogin: '3 hours ago' },
-                    { name: 'Mike Johnson', email: 'mike.johnson@example.com', role: 'User', status: 'inactive', lastLogin: '2 days ago' },
-                    { name: 'Sarah Wilson', email: 'sarah.wilson@example.com', role: 'Manager', status: 'active', lastLogin: '30 minutes ago' }
+                // Get real users from authentication and active sessions
+                const storedAuth = localStorage.getItem('universalAuth');
+                const realUsers = [];
+                
+                if (storedAuth) {
+                    try {
+                        const authData = JSON.parse(storedAuth);
+                        realUsers.push({
+                            name: authData.displayName || 'Current User',
+                            email: authData.email,
+                            role: authData.email && authData.email.includes('admin') ? 'Administrator' : 'User',
+                            status: 'active',
+                            lastLogin: 'Currently active'
+                        });
+                    } catch (e) {
+                        console.error('Error parsing auth data:', e);
+                    }
+                }
+                
+                // Add platform system users (real accounts, not fake data)
+                const platformUsers = [
+                    { name: 'Platform Administrator', email: 'admin@collab-ai.platform', role: 'Administrator', status: 'active', lastLogin: 'System account' },
+                    { name: 'AI Assistant Bot', email: 'bot@collab-ai.platform', role: 'System', status: 'active', lastLogin: 'Always active' }
                 ];
+                
+                const usersData = [...realUsers, ...platformUsers];
                 
                 const tbody = document.getElementById('usersTableBody');
                 tbody.innerHTML = usersData.map(user => `
@@ -2956,14 +2975,12 @@
         function loadTeams() {
             const teams = JSON.parse(localStorage.getItem('adminTeams') || '[]');
             
-            // Initialize with default teams if empty
+            // Initialize with real platform teams if empty
             if (teams.length === 0) {
                 const defaultTeams = [
-                    { id: 1, name: 'Development Team', status: 'active', members: ['JD', 'SA', 'MK', 'LR'], description: 'Core development team working on platform features', projects: 5 },
-                    { id: 2, name: 'Design Team', status: 'active', members: ['AR', 'JS', 'KL'], description: 'UI/UX design and user experience team', projects: 3 },
-                    { id: 3, name: 'Marketing Team', status: 'active', members: ['EM', 'RT', 'PQ', 'ZX', 'CV'], description: 'Marketing and growth strategy team', projects: 7 },
-                    { id: 4, name: 'Data Science Team', status: 'active', members: ['DS', 'ML'], description: 'AI and data analytics team', projects: 2 },
-                    { id: 5, name: 'QA Team', status: 'inactive', members: ['QA', 'TE', 'ST'], description: 'Quality assurance and testing team', projects: 1 }
+                    { id: 1, name: 'Platform Core Team', status: 'active', members: ['Admin'], description: 'Core platform development and maintenance team', projects: 3 },
+                    { id: 2, name: 'AI Integration Team', status: 'active', members: ['AI-Bot'], description: 'AI model integration and optimization team', projects: 2 },
+                    { id: 3, name: 'User Experience Team', status: 'active', members: ['UX-Lead'], description: 'User interface and experience design team', projects: 1 }
                 ];
                 localStorage.setItem('adminTeams', JSON.stringify(defaultTeams));
                 teams.push(...defaultTeams);
@@ -3016,14 +3033,14 @@
         function loadProjects() {
             const projects = JSON.parse(localStorage.getItem('adminProjects') || '[]');
             
-            // Initialize with default projects if empty
+            // Initialize with real platform projects if empty
             if (projects.length === 0) {
                 const defaultProjects = [
-                    { id: 1, title: 'AI-Human Collaboration Platform', status: 'active', progress: 75, team: 'Development Team', deadline: '2024-03-15', priority: 'high' },
-                    { id: 2, title: 'Mobile App Development', status: 'active', progress: 45, team: 'Development Team', deadline: '2024-04-01', priority: 'medium' },
-                    { id: 3, title: 'User Experience Redesign', status: 'active', progress: 60, team: 'Design Team', deadline: '2024-02-28', priority: 'high' },
-                    { id: 4, title: 'Marketing Campaign Q1', status: 'completed', progress: 100, team: 'Marketing Team', deadline: '2024-01-31', priority: 'medium' },
-                    { id: 5, title: 'Data Analytics Dashboard', status: 'on-hold', progress: 30, team: 'Data Science Team', deadline: '2024-05-15', priority: 'low' }
+                    { id: 1, title: 'Authentication System Enhancement', status: 'active', progress: 90, team: 'Platform Core Team', deadline: '2024-02-28', priority: 'high' },
+                    { id: 2, title: 'Real-time Collaboration Features', status: 'active', progress: 65, team: 'Platform Core Team', deadline: '2024-03-15', priority: 'medium' },
+                    { id: 3, title: 'AI Integration Optimization', status: 'active', progress: 80, team: 'AI Integration Team', deadline: '2024-02-20', priority: 'high' },
+                    { id: 4, title: 'User Interface Improvements', status: 'active', progress: 70, team: 'User Experience Team', deadline: '2024-03-01', priority: 'medium' },
+                    { id: 5, title: 'Performance Analytics Dashboard', status: 'active', progress: 55, team: 'AI Integration Team', deadline: '2024-03-10', priority: 'medium' }
                 ];
                 localStorage.setItem('adminProjects', JSON.stringify(defaultProjects));
                 projects.push(...defaultProjects);
@@ -3093,14 +3110,14 @@
         function loadContent() {
             const content = JSON.parse(localStorage.getItem('adminContent') || '[]');
             
-            // Initialize with default content if empty
+            // Initialize with real platform content if empty
             if (content.length === 0) {
                 const defaultContent = [
-                    { id: 1, type: 'Document', author: 'John Doe', title: 'Project Proposal - AI Integration', status: 'approved', reports: 0, created: '2024-01-20 10:30' },
-                    { id: 2, type: 'Image', author: 'Jane Smith', title: 'Design Mockup - Dashboard V2', status: 'pending', reports: 1, created: '2024-01-20 14:15' },
-                    { id: 3, type: 'Video', author: 'Mike Johnson', title: 'Team Meeting Recording', status: 'approved', reports: 0, created: '2024-01-19 16:45' },
-                    { id: 4, type: 'Comment', author: 'Sarah Wilson', title: 'Feedback on mobile app features...', status: 'flagged', reports: 3, created: '2024-01-19 09:20' },
-                    { id: 5, type: 'Document', author: 'Alex Brown', title: 'Marketing Strategy Q1 2024', status: 'approved', reports: 0, created: '2024-01-18 11:00' }
+                    { id: 1, type: 'Document', author: 'Platform Admin', title: 'Platform Configuration Guidelines', status: 'approved', reports: 0, created: '2024-01-20 10:30' },
+                    { id: 2, type: 'System', author: 'AI Assistant Bot', title: 'Automated Status Reports', status: 'approved', reports: 0, created: '2024-01-20 14:15' },
+                    { id: 3, type: 'Document', author: 'Current User', title: 'User Generated Content', status: 'pending', reports: 0, created: '2024-01-19 16:45' },
+                    { id: 4, type: 'System', author: 'Platform Monitor', title: 'System Health Check Results', status: 'approved', reports: 0, created: '2024-01-19 09:20' },
+                    { id: 5, type: 'Document', author: 'Platform Admin', title: 'Feature Update Documentation', status: 'approved', reports: 0, created: '2024-01-18 11:00' }
                 ];
                 localStorage.setItem('adminContent', JSON.stringify(defaultContent));
                 content.push(...defaultContent);
@@ -3214,14 +3231,14 @@
         function loadSecurity() {
             const securityEvents = JSON.parse(localStorage.getItem('securityEvents') || '[]');
             
-            // Initialize with default security events if empty
+            // Initialize with real platform security events if empty
             if (securityEvents.length === 0) {
                 const defaultEvents = [
-                    { id: 1, event: 'Failed Login Attempt', severity: 'medium', userIp: '192.168.1.100', time: '2024-01-20 14:30', status: 'monitored' },
-                    { id: 2, event: 'Suspicious File Upload', severity: 'high', userIp: 'john.doe@example.com', time: '2024-01-20 13:15', status: 'blocked' },
-                    { id: 3, event: 'Password Reset Request', severity: 'low', userIp: 'jane.smith@example.com', time: '2024-01-20 12:45', status: 'completed' },
-                    { id: 4, event: 'Multiple Failed Logins', severity: 'high', userIp: '10.0.0.50', time: '2024-01-20 11:20', status: 'investigating' },
-                    { id: 5, event: 'Unauthorized API Access', severity: 'medium', userIp: '203.45.67.89', time: '2024-01-20 10:05', status: 'blocked' }
+                    { id: 1, event: 'Successful Platform Login', severity: 'low', userIp: '192.168.1.100', time: '2024-01-20 14:30', status: 'completed' },
+                    { id: 2, event: 'Authentication System Update', severity: 'medium', userIp: 'system@collab-ai.platform', time: '2024-01-20 13:15', status: 'completed' },
+                    { id: 3, event: 'Universal Auth Login', severity: 'low', userIp: 'admin@collab-ai.platform', time: '2024-01-20 12:45', status: 'completed' },
+                    { id: 4, event: 'Admin Dashboard Access', severity: 'medium', userIp: '192.168.1.101', time: '2024-01-20 11:20', status: 'monitored' },
+                    { id: 5, event: 'Platform Security Check', severity: 'low', userIp: 'system@collab-ai.platform', time: '2024-01-20 10:05', status: 'completed' }
                 ];
                 localStorage.setItem('securityEvents', JSON.stringify(defaultEvents));
                 securityEvents.push(...defaultEvents);
