@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Strategy Challenge</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            text-align: center;
+            max-width: 800px;
+            width: 90%;
+        }
+        
+        .game-header {
+            margin-bottom: 2rem;
+        }
+        
+        .game-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .game-board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 300px;
+            margin: 0 auto 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .cell {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .cell:hover:not(.taken) {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        
+        .cell.taken {
+            cursor: not-allowed;
+        }
+        
+        .cell.human {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .cell.ai {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+            color: white;
+            border-color: #ff6b6b;
+        }
+        
+        .cell.winning {
+            animation: winner 1s ease-in-out infinite;
+        }
+        
+        @keyframes winner {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        .game-controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .difficulty-selector {
+            margin-bottom: 1rem;
+        }
+        
+        .difficulty-btn {
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #FFD700;
+        }
+        
+        .game-message {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            min-height: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .thinking {
+            color: #FFD700;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .ai-personality {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-style: italic;
+            border-left: 4px solid #FFD700;
+        }
+        
+        .move-history {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 0.5rem;
+            margin-top: 1rem;
+            max-height: 100px;
+            overflow-y: auto;
+        }
+        
+        .move-item {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.8rem;
+        }
+        
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 1rem;
+            }
+            
+            .game-header h1 {
+                font-size: 2rem;
+            }
+            
+            .cell {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🤖🧠 AI Strategy Challenge</h1>
+            <p>Test your skills against our collaborative AI in this advanced Tic-Tac-Toe</p>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="humanWins">0</div>
+                <div class="stat-label">Human Wins</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="aiWins">0</div>
+                <div class="stat-label">AI Wins</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="draws">0</div>
+                <div class="stat-label">Draws</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="currentStreak">0</div>
+                <div class="stat-label">Streak</div>
+            </div>
+        </div>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn" onclick="setDifficulty('easy')">🟢 Easy</button>
+            <button class="difficulty-btn active" onclick="setDifficulty('medium')">🟡 Medium</button>
+            <button class="difficulty-btn" onclick="setDifficulty('hard')">🔴 Hard</button>
+            <button class="difficulty-btn" onclick="setDifficulty('impossible')">💀 Impossible</button>
+        </div>
+        
+        <div class="ai-personality" id="aiPersonality">
+            "I'm analyzing the board... Let's see what move would challenge you most! 🤔"
+        </div>
+        
+        <div class="game-message" id="gameMessage">Choose your difficulty and make your first move!</div>
+        
+        <div class="game-board" id="gameBoard">
+            <!-- Board cells will be generated by JavaScript -->
+        </div>
+        
+        <div class="game-controls">
+            <button class="btn btn-primary" onclick="newGame()">🎮 New Game</button>
+            <button class="btn btn-secondary" onclick="resetStats()">📊 Reset Stats</button>
+        </div>
+        
+        <div class="move-history" id="moveHistory"></div>
+    </div>
+
+    <script>
+        class AIStrategyGame {
+            constructor() {
+                this.board = Array(9).fill('');
+                this.currentPlayer = 'human';
+                this.gameActive = true;
+                this.difficulty = 'medium';
+                this.stats = JSON.parse(localStorage.getItem('aiGameStats')) || {
+                    humanWins: 0,
+                    aiWins: 0,
+                    draws: 0,
+                    currentStreak: 0,
+                    streakOwner: 'none'
+                };
+                this.moveHistory = [];
+                this.aiPersonalities = {
+                    easy: [
+                        "I'm taking it easy on you! 😊",
+                        "Let me make a random move...",
+                        "Hmm, this looks like a good spot!",
+                        "I'm not trying too hard this time!"
+                    ],
+                    medium: [
+                        "Calculating optimal strategies... 🤔",
+                        "I see what you're trying to do!",
+                        "This is getting interesting!",
+                        "Let me think about this move..."
+                    ],
+                    hard: [
+                        "Analyzing all possible outcomes... 🧠",
+                        "You're good, but I'm better!",
+                        "I'm several moves ahead already!",
+                        "This requires my full attention!"
+                    ],
+                    impossible: [
+                        "You cannot defeat me, human! 🤖",
+                        "I am the perfect player!",
+                        "Resistance is futile!",
+                        "I see every possible future!"
+                    ]
+                };
+                
+                this.initializeGame();
+            }
+            
+            initializeGame() {
+                this.createBoard();
+                this.updateStats();
+                this.updateAIPersonality();
+            }
+            
+            createBoard() {
+                const board = document.getElementById('gameBoard');
+                board.innerHTML = '';
+                
+                for (let i = 0; i < 9; i++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    cell.dataset.index = i;
+                    cell.addEventListener('click', () => this.makeMove(i));
+                    board.appendChild(cell);
+                }
+            }
+            
+            makeMove(index) {
+                if (!this.gameActive || this.board[index] !== '' || this.currentPlayer !== 'human') {
+                    return;
+                }
+                
+                this.board[index] = 'X';
+                this.updateBoard();
+                this.addMoveToHistory('Human', index);
+                
+                if (this.checkWinner()) {
+                    this.endGame('human');
+                    return;
+                }
+                
+                if (this.isBoardFull()) {
+                    this.endGame('draw');
+                    return;
+                }
+                
+                this.currentPlayer = 'ai';
+                this.showThinking();
+                
+                // Add delay for AI thinking animation
+                setTimeout(() => {
+                    this.makeAIMove();
+                }, Math.random() * 1500 + 500);
+            }
+            
+            makeAIMove() {
+                if (!this.gameActive) return;
+                
+                let move;
+                switch (this.difficulty) {
+                    case 'easy':
+                        move = this.getRandomMove();
+                        break;
+                    case 'medium':
+                        move = Math.random() < 0.7 ? this.getBestMove() : this.getRandomMove();
+                        break;
+                    case 'hard':
+                        move = Math.random() < 0.9 ? this.getBestMove() : this.getRandomMove();
+                        break;
+                    case 'impossible':
+                        move = this.getBestMove();
+                        break;
+                }
+                
+                this.board[move] = 'O';
+                this.updateBoard();
+                this.addMoveToHistory('AI', move);
+                this.updateAIPersonality();
+                
+                if (this.checkWinner()) {
+                    this.endGame('ai');
+                    return;
+                }
+                
+                if (this.isBoardFull()) {
+                    this.endGame('draw');
+                    return;
+                }
+                
+                this.currentPlayer = 'human';
+                this.updateMessage("Your turn! Choose your next move wisely.");
+            }
+            
+            getBestMove() {
+                // Minimax algorithm implementation
+                const bestScore = { score: -Infinity, index: -1 };
+                
+                for (let i = 0; i < 9; i++) {
+                    if (this.board[i] === '') {
+                        this.board[i] = 'O';
+                        const score = this.minimax(this.board, 0, false);
+                        this.board[i] = '';
+                        
+                        if (score > bestScore.score) {
+                            bestScore.score = score;
+                            bestScore.index = i;
+                        }
+                    }
+                }
+                
+                return bestScore.index;
+            }
+            
+            minimax(board, depth, isMaximizing) {
+                const result = this.evaluateBoard();
+                
+                if (result !== null) {
+                    return result === 'O' ? 10 - depth : result === 'X' ? depth - 10 : 0;
+                }
+                
+                if (isMaximizing) {
+                    let bestScore = -Infinity;
+                    for (let i = 0; i < 9; i++) {
+                        if (board[i] === '') {
+                            board[i] = 'O';
+                            const score = this.minimax(board, depth + 1, false);
+                            board[i] = '';
+                            bestScore = Math.max(score, bestScore);
+                        }
+                    }
+                    return bestScore;
+                } else {
+                    let bestScore = Infinity;
+                    for (let i = 0; i < 9; i++) {
+                        if (board[i] === '') {
+                            board[i] = 'X';
+                            const score = this.minimax(board, depth + 1, true);
+                            board[i] = '';
+                            bestScore = Math.min(score, bestScore);
+                        }
+                    }
+                    return bestScore;
+                }
+            }
+            
+            evaluateBoard() {
+                const winPatterns = [
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
+                    [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
+                    [0, 4, 8], [2, 4, 6] // diagonals
+                ];
+                
+                for (const pattern of winPatterns) {
+                    const [a, b, c] = pattern;
+                    if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) {
+                        return this.board[a];
+                    }
+                }
+                
+                return this.board.includes('') ? null : 'draw';
+            }
+            
+            getRandomMove() {
+                const availableMoves = this.board.map((cell, index) => cell === '' ? index : null)
+                                                .filter(index => index !== null);
+                return availableMoves[Math.floor(Math.random() * availableMoves.length)];
+            }
+            
+            checkWinner() {
+                return this.evaluateBoard() !== null && this.evaluateBoard() !== 'draw';
+            }
+            
+            isBoardFull() {
+                return !this.board.includes('');
+            }
+            
+            updateBoard() {
+                const cells = document.querySelectorAll('.cell');
+                cells.forEach((cell, index) => {
+                    const value = this.board[index];
+                    cell.textContent = value === 'X' ? '👤' : value === 'O' ? '🤖' : '';
+                    cell.className = 'cell';
+                    
+                    if (value === 'X') {
+                        cell.classList.add('human', 'taken');
+                    } else if (value === 'O') {
+                        cell.classList.add('ai', 'taken');
+                    }
+                });
+            }
+            
+            endGame(winner) {
+                this.gameActive = false;
+                
+                if (winner !== 'draw') {
+                    this.highlightWinningLine();
+                }
+                
+                // Update stats
+                if (winner === 'human') {
+                    this.stats.humanWins++;
+                    this.stats.currentStreak = this.stats.streakOwner === 'human' ? this.stats.currentStreak + 1 : 1;
+                    this.stats.streakOwner = 'human';
+                    this.updateMessage("🎉 Congratulations! You defeated the AI!");
+                } else if (winner === 'ai') {
+                    this.stats.aiWins++;
+                    this.stats.currentStreak = this.stats.streakOwner === 'ai' ? this.stats.currentStreak + 1 : 1;
+                    this.stats.streakOwner = 'ai';
+                    this.updateMessage("🤖 AI wins! Better luck next time!");
+                } else {
+                    this.stats.draws++;
+                    this.stats.currentStreak = 0;
+                    this.stats.streakOwner = 'none';
+                    this.updateMessage("🤝 It's a draw! Great game!");
+                }
+                
+                this.saveStats();
+                this.updateStats();
+            }
+            
+            highlightWinningLine() {
+                const winPatterns = [
+                    [0, 1, 2], [3, 4, 5], [6, 7, 8],
+                    [0, 3, 6], [1, 4, 7], [2, 5, 8],
+                    [0, 4, 8], [2, 4, 6]
+                ];
+                
+                const cells = document.querySelectorAll('.cell');
+                
+                for (const pattern of winPatterns) {
+                    const [a, b, c] = pattern;
+                    if (this.board[a] && this.board[a] === this.board[b] && this.board[a] === this.board[c]) {
+                        cells[a].classList.add('winning');
+                        cells[b].classList.add('winning');
+                        cells[c].classList.add('winning');
+                        break;
+                    }
+                }
+            }
+            
+            addMoveToHistory(player, position) {
+                this.moveHistory.push({ player, position, time: Date.now() });
+                this.updateMoveHistory();
+            }
+            
+            updateMoveHistory() {
+                const historyDiv = document.getElementById('moveHistory');
+                historyDiv.innerHTML = '';
+                
+                this.moveHistory.slice(-6).forEach(move => {
+                    const moveDiv = document.createElement('div');
+                    moveDiv.className = 'move-item';
+                    moveDiv.textContent = `${move.player}: Position ${move.position + 1}`;
+                    historyDiv.appendChild(moveDiv);
+                });
+            }
+            
+            showThinking() {
+                this.updateMessage('<span class="thinking">🤖 AI is thinking...</span>');
+            }
+            
+            updateMessage(message) {
+                document.getElementById('gameMessage').innerHTML = message;
+            }
+            
+            updateAIPersonality() {
+                const personalities = this.aiPersonalities[this.difficulty];
+                const randomPersonality = personalities[Math.floor(Math.random() * personalities.length)];
+                document.getElementById('aiPersonality').textContent = `"${randomPersonality}"`;
+            }
+            
+            updateStats() {
+                document.getElementById('humanWins').textContent = this.stats.humanWins;
+                document.getElementById('aiWins').textContent = this.stats.aiWins;
+                document.getElementById('draws').textContent = this.stats.draws;
+                document.getElementById('currentStreak').textContent = this.stats.currentStreak;
+            }
+            
+            saveStats() {
+                localStorage.setItem('aiGameStats', JSON.stringify(this.stats));
+            }
+            
+            newGame() {
+                this.board = Array(9).fill('');
+                this.currentPlayer = 'human';
+                this.gameActive = true;
+                this.moveHistory = [];
+                this.createBoard();
+                this.updateMessage("New game started! Make your first move.");
+                this.updateAIPersonality();
+                document.getElementById('moveHistory').innerHTML = '';
+            }
+            
+            setDifficulty(difficulty) {
+                this.difficulty = difficulty;
+                this.updateAIPersonality();
+                
+                // Update difficulty buttons
+                document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                this.newGame();
+            }
+            
+            resetStats() {
+                if (confirm('Are you sure you want to reset all statistics?')) {
+                    this.stats = {
+                        humanWins: 0,
+                        aiWins: 0,
+                        draws: 0,
+                        currentStreak: 0,
+                        streakOwner: 'none'
+                    };
+                    this.saveStats();
+                    this.updateStats();
+                    this.updateMessage("Statistics reset! Ready for a fresh start?");
+                }
+            }
+        }
+        
+        // Initialize game
+        let game;
+        window.addEventListener('load', () => {
+            game = new AIStrategyGame();
+        });
+        
+        // Global functions for button clicks
+        function newGame() {
+            game.newGame();
+        }
+        
+        function resetStats() {
+            game.resetStats();
+        }
+        
+        function setDifficulty(difficulty) {
+            game.setDifficulty(difficulty);
+        }
+    </script>
+</body>
+</html>

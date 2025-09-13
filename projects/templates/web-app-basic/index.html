@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Collaborative Web App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Your Web App</h1>
+        <p>This is a basic template for our collaborative web application.</p>
+        
+        <div id="content">
+            <h2>Features to Add Together:</h2>
+            <ul>
+                <li>Interactive forms</li>
+                <li>Data visualization</li>
+                <li>User interface enhancements</li>
+                <li>API integrations</li>
+            </ul>
+        </div>
+        
+        <button onclick="startBuilding()">Let's Start Building!</button>
+        <div id="output"></div>
+    </div>
+
+    <script>
+        function startBuilding() {
+            document.getElementById('output').innerHTML = 
+                '<p style="color: green; margin-top: 20px;">✨ Ready to customize this together! What features should we add?</p>';
+        }
+    </script>
+</body>
+</html>

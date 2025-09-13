@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Data Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            color: #333;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 2rem;
+        }
+        
+        .sidebar h2 {
+            margin-bottom: 2rem;
+            font-size: 1.5rem;
+        }
+        
+        .nav-item {
+            padding: 1rem;
+            margin: 0.5rem 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .main-content {
+            padding: 2rem;
+            overflow-y: auto;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+        
+        .header h1 {
+            font-size: 2rem;
+            color: #333;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .charts-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .chart-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #333;
+        }
+        
+        .data-table {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .table-header {
+            background: #667eea;
+            color: white;
+            padding: 1rem;
+            font-weight: 600;
+        }
+        
+        .table-content {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .table-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            padding: 1rem;
+            border-bottom: 1px solid #eee;
+            transition: background 0.3s ease;
+        }
+        
+        .table-row:hover {
+            background: #f8f9fa;
+        }
+        
+        .filter-controls {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .filter-btn.active, .filter-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .refresh-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+        
+        .refresh-btn:hover {
+            background: #218838;
+        }
+        
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            .sidebar {
+                display: none;
+            }
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <div class="sidebar">
+            <h2>📊 Dashboard</h2>
+            <div class="nav-item active" onclick="switchView('overview')">📈 Overview</div>
+            <div class="nav-item" onclick="switchView('analytics')">🔍 Analytics</div>
+            <div class="nav-item" onclick="switchView('reports')">📋 Reports</div>
+            <div class="nav-item" onclick="switchView('settings')">⚙️ Settings</div>
+        </div>
+        
+        <div class="main-content">
+            <div class="header">
+                <h1>Collaborative Dashboard</h1>
+                <button class="refresh-btn" onclick="refreshData()">🔄 Refresh Data</button>
+            </div>
+            
+            <div class="filter-controls">
+                <button class="filter-btn active" onclick="setTimeframe('day')">Today</button>
+                <button class="filter-btn" onclick="setTimeframe('week')">This Week</button>
+                <button class="filter-btn" onclick="setTimeframe('month')">This Month</button>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">👥</div>
+                    <div class="stat-value" id="usersCount">1,234</div>
+                    <div class="stat-label">Active Users</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">💼</div>
+                    <div class="stat-value" id="projectsCount">42</div>
+                    <div class="stat-label">Projects</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">🚀</div>
+                    <div class="stat-value" id="deploymentsCount">156</div>
+                    <div class="stat-label">Deployments</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon">⭐</div>
+                    <div class="stat-value" id="satisfactionScore">98%</div>
+                    <div class="stat-label">Satisfaction</div>
+                </div>
+            </div>
+            
+            <div class="charts-grid">
+                <div class="chart-container">
+                    <div class="chart-title">📈 Performance Trends</div>
+                    <canvas id="lineChart" width="400" height="200"></canvas>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">📊 Project Distribution</div>
+                    <canvas id="doughnutChart" width="200" height="200"></canvas>
+                </div>
+            </div>
+            
+            <div class="data-table">
+                <div class="table-header">Recent Activity</div>
+                <div class="table-content" id="activityTable">
+                    <div class="table-row">
+                        <div><strong>User</strong></div>
+                        <div><strong>Action</strong></div>
+                        <div><strong>Time</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let lineChart, doughnutChart;
+        let currentTimeframe = 'day';
+        
+        // Initialize charts
+        function initCharts() {
+            // Line Chart
+            const lineCtx = document.getElementById('lineChart').getContext('2d');
+            lineChart = new Chart(lineCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'User Activity',
+                        data: [65, 59, 80, 81, 56, 55, 40],
+                        borderColor: '#667eea',
+                        backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }, {
+                        label: 'Projects Created',
+                        data: [28, 48, 40, 19, 86, 27, 90],
+                        borderColor: '#764ba2',
+                        backgroundColor: 'rgba(118, 75, 162, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+            
+            // Doughnut Chart
+            const doughnutCtx = document.getElementById('doughnutChart').getContext('2d');
+            doughnutChart = new Chart(doughnutCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Web Apps', 'Python Tools', 'Games', 'Documentation'],
+                    datasets: [{
+                        data: [30, 25, 20, 25],
+                        backgroundColor: [
+                            '#667eea',
+                            '#764ba2',
+                            '#ff6b6b',
+                            '#4ecdc4'
+                        ],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Generate sample activity data
+        function generateActivityData() {
+            const actions = ['Created project', 'Updated code', 'Deployed app', 'Added feature', 'Fixed bug', 'Reviewed code'];
+            const users = ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank'];
+            const table = document.getElementById('activityTable');
+            
+            // Clear existing data (except header)
+            const rows = table.querySelectorAll('.table-row');
+            for (let i = 1; i < rows.length; i++) {
+                rows[i].remove();
+            }
+            
+            // Add new data
+            for (let i = 0; i < 10; i++) {
+                const row = document.createElement('div');
+                row.className = 'table-row';
+                row.innerHTML = `
+                    <div>${users[Math.floor(Math.random() * users.length)]}</div>
+                    <div>${actions[Math.floor(Math.random() * actions.length)]}</div>
+                    <div>${Math.floor(Math.random() * 60)} min ago</div>
+                `;
+                table.appendChild(row);
+            }
+        }
+        
+        // Update stats with animation
+        function updateStats() {
+            const stats = [
+                { id: 'usersCount', value: Math.floor(Math.random() * 1000 + 1000) },
+                { id: 'projectsCount', value: Math.floor(Math.random() * 50 + 30) },
+                { id: 'deploymentsCount', value: Math.floor(Math.random() * 100 + 100) },
+                { id: 'satisfactionScore', value: Math.floor(Math.random() * 10 + 90) + '%' }
+            ];
+            
+            stats.forEach(stat => {
+                const element = document.getElementById(stat.id);
+                element.style.transform = 'scale(1.1)';
+                element.style.color = '#ff6b6b';
+                setTimeout(() => {
+                    element.textContent = stat.value;
+                    element.style.transform = 'scale(1)';
+                    element.style.color = '#667eea';
+                }, 200);
+            });
+        }
+        
+        // Switch view function
+        function switchView(view) {
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update main content based on view
+            const header = document.querySelector('.header h1');
+            switch(view) {
+                case 'overview':
+                    header.textContent = 'Collaborative Dashboard';
+                    break;
+                case 'analytics':
+                    header.textContent = 'Advanced Analytics';
+                    break;
+                case 'reports':
+                    header.textContent = 'Reports & Insights';
+                    break;
+                case 'settings':
+                    header.textContent = 'Dashboard Settings';
+                    break;
+            }
+        }
+        
+        // Set timeframe
+        function setTimeframe(timeframe) {
+            currentTimeframe = timeframe;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Update chart data based on timeframe
+            updateChartData(timeframe);
+        }
+        
+        // Update chart data
+        function updateChartData(timeframe) {
+            let labels, data1, data2;
+            
+            switch(timeframe) {
+                case 'day':
+                    labels = ['6AM', '9AM', '12PM', '3PM', '6PM', '9PM', '12AM'];
+                    data1 = [12, 19, 25, 32, 28, 15, 8];
+                    data2 = [5, 8, 12, 15, 10, 6, 3];
+                    break;
+                case 'week':
+                    labels = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+                    data1 = [65, 59, 80, 81, 56, 55, 40];
+                    data2 = [28, 48, 40, 19, 86, 27, 90];
+                    break;
+                case 'month':
+                    labels = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+                    data1 = [245, 312, 289, 367];
+                    data2 = [134, 198, 156, 245];
+                    break;
+            }
+            
+            lineChart.data.labels = labels;
+            lineChart.data.datasets[0].data = data1;
+            lineChart.data.datasets[1].data = data2;
+            lineChart.update();
+        }
+        
+        // Refresh all data
+        function refreshData() {
+            updateStats();
+            generateActivityData();
+            updateChartData(currentTimeframe);
+            
+            // Show refresh feedback
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✓ Updated!';
+            btn.style.background = '#28a745';
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '#28a745';
+            }, 2000);
+        }
+        
+        // Initialize dashboard
+        window.addEventListener('load', () => {
+            initCharts();
+            generateActivityData();
+            
+            // Auto-refresh every 30 seconds
+            setInterval(() => {
+                updateStats();
+                generateActivityData();
+            }, 30000);
+        });
+    </script>
+</body>
+</html>

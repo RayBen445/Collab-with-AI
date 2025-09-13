@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profile - AI-Human Collaboration Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 70px 20px 20px 20px;
+        }
+        
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+        }
+        
+        .profile-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .profile-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .profile-header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.3s ease;
+        }
+        
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .profile-content {
+            padding: 40px;
+        }
+        
+        .profile-section {
+            margin-bottom: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .avatar-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .avatar-container {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+        
+        .current-avatar {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            border: 4px solid #667eea;
+            object-fit: cover;
+            background: #f0f0f0;
+        }
+        
+        .avatar-overlay {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        
+        .avatar-overlay:hover {
+            background: #5a6fd8;
+            transform: scale(1.1);
+        }
+        
+        .upload-controls {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .upload-controls.active {
+            display: flex;
+        }
+        
+        .file-input {
+            display: none;
+        }
+        
+        .upload-btn, .edit-btn, .save-btn, .cancel-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .upload-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .edit-btn {
+            background: #28a745;
+            color: white;
+        }
+        
+        .save-btn {
+            background: #007bff;
+            color: white;
+        }
+        
+        .cancel-btn {
+            background: #6c757d;
+            color: white;
+        }
+        
+        .upload-btn:hover, .edit-btn:hover, .save-btn:hover, .cancel-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .image-editor {
+            display: none;
+            margin-top: 20px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        
+        .image-editor.active {
+            display: block;
+        }
+        
+        .preview-image {
+            max-width: 300px;
+            max-height: 300px;
+            border: 2px dashed #667eea;
+            border-radius: 10px;
+            margin: 0 auto 20px auto;
+            display: block;
+        }
+        
+        .edit-controls {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .rotate-btn {
+            background: #ffc107;
+            color: #333;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .info-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .info-value {
+            color: #666;
+            font-size: 1.1rem;
+        }
+        
+        .editable-field {
+            position: relative;
+        }
+        
+        .edit-input {
+            display: none;
+            width: 100%;
+            padding: 8px 12px;
+            border: 2px solid #667eea;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            background: white;
+        }
+        
+        .edit-input.active {
+            display: block;
+        }
+        
+        .edit-input.active + .info-value {
+            display: none;
+        }
+        
+        .edit-toggle {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .activity-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        
+        .activity-details h4 {
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .activity-time {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            font-size: 1.1rem;
+            color: #667eea;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 1px solid #c3e6cb;
+        }
+        
+        @media (max-width: 768px) {
+            .profile-content {
+                padding: 20px;
+            }
+            
+            .info-section {
+                grid-template-columns: 1fr;
+            }
+            
+            .profile-header h1 {
+                font-size: 2rem;
+            }
+            
+            .current-avatar {
+                width: 120px;
+                height: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Status bar will be inserted here -->
+    
+    <div class="profile-container">
+        <div class="profile-header">
+            <a href="collaboration.html" class="back-btn">← Back to Dashboard</a>
+            <h1>User Profile</h1>
+            <p>Manage your account settings and information</p>
+        </div>
+        
+        <div class="profile-content">
+            <!-- Avatar Section -->
+            <div class="profile-section avatar-section">
+                <div class="section-title">Profile Picture</div>
+                <div class="avatar-container">
+                    <img id="current-avatar" class="current-avatar" src="https://ui-avatars.com/api/?name=User&background=667eea&color=fff" alt="Profile Picture">
+                    <button class="avatar-overlay" onclick="toggleUploadControls()">📷</button>
+                </div>
+                
+                <div id="upload-controls" class="upload-controls">
+                    <input type="file" id="avatar-input" class="file-input" accept="image/*" onchange="handleFileSelect(event)">
+                    <button class="upload-btn" onclick="document.getElementById('avatar-input').click()">Choose New Picture</button>
+                    <button class="cancel-btn" onclick="toggleUploadControls()">Cancel</button>
+                </div>
+                
+                <div id="image-editor" class="image-editor">
+                    <img id="preview-image" class="preview-image" alt="Preview">
+                    <div class="edit-controls">
+                        <button class="rotate-btn" onclick="rotateImage(-90)">↺ Rotate Left</button>
+                        <button class="rotate-btn" onclick="rotateImage(90)">↻ Rotate Right</button>
+                        <button class="save-btn" onclick="saveAvatar()">Save Picture</button>
+                        <button class="cancel-btn" onclick="cancelEdit()">Cancel</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- User Information Section -->
+            <div class="profile-section">
+                <div class="section-title">Personal Information</div>
+                <div class="info-section">
+                    <div class="info-card editable-field">
+                        <div class="info-label">Username</div>
+                        <input type="text" id="username-input" class="edit-input" onblur="saveField('username')" onkeypress="handleEnterKey(event, 'username')">
+                        <div id="username-value" class="info-value">Loading...</div>
+                        <button class="edit-toggle" onclick="editField('username')">✎</button>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-label">Email Address</div>
+                        <div id="email-value" class="info-value">Loading...</div>
+                    </div>
+                    
+                    <div class="info-card editable-field">
+                        <div class="info-label">Display Name</div>
+                        <input type="text" id="displayName-input" class="edit-input" onblur="saveField('displayName')" onkeypress="handleEnterKey(event, 'displayName')">
+                        <div id="displayName-value" class="info-value">Loading...</div>
+                        <button class="edit-toggle" onclick="editField('displayName')">✎</button>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-label">Member Since</div>
+                        <div id="memberSince-value" class="info-value">Loading...</div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-label">Account Role</div>
+                        <div id="role-value" class="info-value">Loading...</div>
+                    </div>
+                    
+                    <div class="info-card">
+                        <div class="info-label">Last Login</div>
+                        <div id="lastLogin-value" class="info-value">Loading...</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Recent Activity Section -->
+            <div class="profile-section">
+                <div class="section-title">Recent Activity</div>
+                <div class="activity-section">
+                    <div id="activity-list" class="loading">
+                        Loading recent activity...
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Status Bar -->
+    <script src="js/status-bar.js"></script>
+    
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-storage-compat.js"></script>
+    
+    <!-- Firebase Configuration -->
+    <script src="js/firebase-config.js"></script>
+    
+    <script>
+        let currentRotation = 0;
+        let selectedFile = null;
+        let currentUser = null;
+
+        // Initialize Firebase and load user data
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserProfile();
+                await loadUserActivity();
+            } else {
+                // Redirect to login if not authenticated
+                window.location.href = 'login.html';
+            }
+        });
+
+        async function loadUserProfile() {
+            try {
+                const user = currentUser;
+                
+                // Load basic user info
+                document.getElementById('email-value').textContent = user.email;
+                document.getElementById('username-value').textContent = user.displayName || user.email.split('@')[0];
+                document.getElementById('displayName-value').textContent = user.displayName || 'Not set';
+                document.getElementById('memberSince-value').textContent = new Date(user.metadata.creationTime).toLocaleDateString();
+                document.getElementById('lastLogin-value').textContent = new Date(user.metadata.lastSignInTime).toLocaleDateString();
+                
+                // Set input values
+                document.getElementById('username-input').value = user.displayName || user.email.split('@')[0];
+                document.getElementById('displayName-input').value = user.displayName || '';
+                
+                // Load profile picture
+                if (user.photoURL) {
+                    document.getElementById('current-avatar').src = user.photoURL;
+                }
+                
+                // Check if user is admin
+                const isAdmin = user.email === 'oladoyeheritage445@gmail.com';
+                document.getElementById('role-value').textContent = isAdmin ? 'Administrator' : 'User';
+                
+                // Load additional profile data from Firestore
+                try {
+                    const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                    if (userDoc.exists) {
+                        const userData = userDoc.data();
+                        if (userData.customAvatar) {
+                            document.getElementById('current-avatar').src = userData.customAvatar;
+                        }
+                        if (userData.username) {
+                            document.getElementById('username-value').textContent = userData.username;
+                            document.getElementById('username-input').value = userData.username;
+                        }
+                    }
+                } catch (error) {
+                    console.log('Error loading additional profile data:', error);
+                }
+                
+            } catch (error) {
+                console.error('Error loading user profile:', error);
+                showError('Failed to load user profile');
+            }
+        }
+
+        async function loadUserActivity() {
+            try {
+                const activityList = document.getElementById('activity-list');
+                
+                // Load recent activity from Firestore
+                const activities = await firebase.firestore()
+                    .collection('userActivity')
+                    .where('userId', '==', currentUser.uid)
+                    .orderBy('timestamp', 'desc')
+                    .limit(10)
+                    .get();
+                
+                if (activities.empty) {
+                    activityList.innerHTML = `
+                        <div class="activity-item">
+                            <div class="activity-icon">📝</div>
+                            <div class="activity-details">
+                                <h4>Welcome to the platform!</h4>
+                                <div class="activity-time">Start collaborating to see your activity here</div>
+                            </div>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                activityList.innerHTML = '';
+                activities.forEach(doc => {
+                    const activity = doc.data();
+                    const activityItem = createActivityItem(activity);
+                    activityList.appendChild(activityItem);
+                });
+                
+            } catch (error) {
+                console.error('Error loading user activity:', error);
+                document.getElementById('activity-list').innerHTML = `
+                    <div class="activity-item">
+                        <div class="activity-icon">⚠️</div>
+                        <div class="activity-details">
+                            <h4>Unable to load activity</h4>
+                            <div class="activity-time">Please try again later</div>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function createActivityItem(activity) {
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            
+            const iconMap = {
+                'login': '🔐',
+                'project_created': '📁',
+                'task_completed': '✅',
+                'file_uploaded': '📎',
+                'comment_added': '💬',
+                'default': '📝'
+            };
+            
+            const icon = iconMap[activity.type] || iconMap.default;
+            const timeAgo = getTimeAgo(activity.timestamp.toDate());
+            
+            item.innerHTML = `
+                <div class="activity-icon">${icon}</div>
+                <div class="activity-details">
+                    <h4>${activity.description}</h4>
+                    <div class="activity-time">${timeAgo}</div>
+                </div>
+            `;
+            
+            return item;
+        }
+
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diff = now - date;
+            const minutes = Math.floor(diff / 60000);
+            const hours = Math.floor(diff / 3600000);
+            const days = Math.floor(diff / 86400000);
+            
+            if (minutes < 1) return 'Just now';
+            if (minutes < 60) return `${minutes} minutes ago`;
+            if (hours < 24) return `${hours} hours ago`;
+            return `${days} days ago`;
+        }
+
+        function toggleUploadControls() {
+            const controls = document.getElementById('upload-controls');
+            const editor = document.getElementById('image-editor');
+            
+            controls.classList.toggle('active');
+            editor.classList.remove('active');
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            if (!file.type.startsWith('image/')) {
+                showError('Please select a valid image file');
+                return;
+            }
+            
+            if (file.size > 5 * 1024 * 1024) { // 5MB limit
+                showError('Image size must be less than 5MB');
+                return;
+            }
+            
+            selectedFile = file;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('preview-image').src = e.target.result;
+                document.getElementById('image-editor').classList.add('active');
+                document.getElementById('upload-controls').classList.remove('active');
+                currentRotation = 0;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function rotateImage(degrees) {
+            currentRotation += degrees;
+            const img = document.getElementById('preview-image');
+            img.style.transform = `rotate(${currentRotation}deg)`;
+        }
+
+        async function saveAvatar() {
+            if (!selectedFile) {
+                showError('No image selected');
+                return;
+            }
+            
+            try {
+                showLoading('Uploading profile picture...');
+                
+                // Create a canvas to apply rotation and get final image
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const img = new Image();
+                
+                img.onload = async function() {
+                    // Set canvas size based on rotation
+                    if (currentRotation % 180 === 0) {
+                        canvas.width = img.width;
+                        canvas.height = img.height;
+                    } else {
+                        canvas.width = img.height;
+                        canvas.height = img.width;
+                    }
+                    
+                    // Apply rotation
+                    ctx.translate(canvas.width / 2, canvas.height / 2);
+                    ctx.rotate(currentRotation * Math.PI / 180);
+                    ctx.drawImage(img, -img.width / 2, -img.height / 2);
+                    
+                    // Convert to blob
+                    canvas.toBlob(async (blob) => {
+                        try {
+                            // Upload to Firebase Storage
+                            const storageRef = firebase.storage().ref();
+                            const avatarRef = storageRef.child(`avatars/${currentUser.uid}.jpg`);
+                            
+                            await avatarRef.put(blob);
+                            const downloadURL = await avatarRef.getDownloadURL();
+                            
+                            // Update user profile
+                            await currentUser.updateProfile({
+                                photoURL: downloadURL
+                            });
+                            
+                            // Save to Firestore
+                            await firebase.firestore().collection('users').doc(currentUser.uid).set({
+                                customAvatar: downloadURL
+                            }, { merge: true });
+                            
+                            // Update UI
+                            document.getElementById('current-avatar').src = downloadURL;
+                            document.getElementById('image-editor').classList.remove('active');
+                            
+                            showSuccess('Profile picture updated successfully!');
+                            
+                        } catch (error) {
+                            console.error('Error uploading avatar:', error);
+                            showError('Failed to upload profile picture');
+                        }
+                    }, 'image/jpeg', 0.8);
+                };
+                
+                img.src = document.getElementById('preview-image').src;
+                
+            } catch (error) {
+                console.error('Error saving avatar:', error);
+                showError('Failed to save profile picture');
+            }
+        }
+
+        function cancelEdit() {
+            document.getElementById('image-editor').classList.remove('active');
+            document.getElementById('upload-controls').classList.remove('active');
+            selectedFile = null;
+            currentRotation = 0;
+        }
+
+        function editField(fieldName) {
+            const input = document.getElementById(`${fieldName}-input`);
+            const value = document.getElementById(`${fieldName}-value`);
+            
+            input.classList.add('active');
+            input.focus();
+            input.select();
+        }
+
+        async function saveField(fieldName) {
+            const input = document.getElementById(`${fieldName}-input`);
+            const value = document.getElementById(`${fieldName}-value`);
+            const newValue = input.value.trim();
+            
+            if (!newValue) {
+                input.classList.remove('active');
+                return;
+            }
+            
+            try {
+                if (fieldName === 'username') {
+                    // Save to Firestore
+                    await firebase.firestore().collection('users').doc(currentUser.uid).set({
+                        username: newValue
+                    }, { merge: true });
+                } else if (fieldName === 'displayName') {
+                    // Update Firebase Auth profile
+                    await currentUser.updateProfile({
+                        displayName: newValue
+                    });
+                }
+                
+                value.textContent = newValue;
+                input.classList.remove('active');
+                showSuccess(`${fieldName} updated successfully!`);
+                
+            } catch (error) {
+                console.error(`Error updating ${fieldName}:`, error);
+                showError(`Failed to update ${fieldName}`);
+                input.classList.remove('active');
+            }
+        }
+
+        function handleEnterKey(event, fieldName) {
+            if (event.key === 'Enter') {
+                event.target.blur();
+            }
+        }
+
+        function showError(message) {
+            removeNotifications();
+            const notification = document.createElement('div');
+            notification.className = 'error';
+            notification.textContent = message;
+            document.querySelector('.profile-content').insertBefore(notification, document.querySelector('.profile-section'));
+            setTimeout(() => notification.remove(), 5000);
+        }
+
+        function showSuccess(message) {
+            removeNotifications();
+            const notification = document.createElement('div');
+            notification.className = 'success';
+            notification.textContent = message;
+            document.querySelector('.profile-content').insertBefore(notification, document.querySelector('.profile-section'));
+            setTimeout(() => notification.remove(), 5000);
+        }
+
+        function showLoading(message) {
+            removeNotifications();
+            const notification = document.createElement('div');
+            notification.className = 'loading';
+            notification.textContent = message;
+            document.querySelector('.profile-content').insertBefore(notification, document.querySelector('.profile-section'));
+        }
+
+        function removeNotifications() {
+            const notifications = document.querySelectorAll('.error, .success, .loading');
+            notifications.forEach(n => n.remove());
+        }
+    </script>
+</body>
+</html>

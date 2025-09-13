@@ -1,0 +1,909 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Advanced Collaborative Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
+        
+        .game-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            max-width: 600px;
+            width: 100%;
+        }
+        
+        .game-header {
+            margin-bottom: 2rem;
+        }
+        
+        .game-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .game-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+        }
+        
+        .stat-card {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+        
+        .stat-label {
+            font-size: 0.8rem;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        canvas {
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: crosshair;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+        
+        button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            margin: 5px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+        }
+        
+        .difficulty-selector {
+            margin-bottom: 1rem;
+        }
+        
+        .difficulty-btn {
+            padding: 0.5rem 1rem;
+            margin: 0 0.25rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: transparent;
+            color: white;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .difficulty-btn.active {
+            background: rgba(255, 255, 255, 0.2);
+            border-color: #FFD700;
+            color: #FFD700;
+        }
+        
+        .power-ups {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .power-up {
+            background: linear-gradient(45deg, #9c27b0, #673ab7);
+            padding: 0.5rem 1rem;
+            border-radius: 15px;
+            font-size: 0.9rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .power-up:hover {
+            transform: scale(1.05);
+            background: linear-gradient(45deg, #e91e63, #9c27b0);
+        }
+        
+        .power-up.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        .achievements {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-top: 1rem;
+        }
+        
+        .achievement {
+            display: inline-block;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+            padding: 0.25rem 0.5rem;
+            border-radius: 10px;
+            margin: 0.25rem;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .game-message {
+            font-size: 1.1rem;
+            margin: 1rem 0;
+            min-height: 1.5rem;
+            font-style: italic;
+        }
+        
+        .circle {
+            position: absolute;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: 2px solid rgba(255, 255, 255, 0.8);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+        
+        .circle:hover {
+            transform: scale(1.1);
+        }
+        
+        .multiplier {
+            position: absolute;
+            color: #FFD700;
+            font-weight: bold;
+            font-size: 1.2rem;
+            pointer-events: none;
+            animation: scoreFloat 1s ease-out forwards;
+        }
+        
+        @keyframes scoreFloat {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px) scale(1.5);
+                opacity: 0;
+            }
+        }
+        
+        .combo-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 3rem;
+            font-weight: bold;
+            color: #FFD700;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            pointer-events: none;
+            animation: comboFlash 0.5s ease-out;
+        }
+        
+        @keyframes comboFlash {
+            0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            50% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(1); opacity: 0; }
+        }
+        
+        @media (max-width: 600px) {
+            .game-container {
+                padding: 1rem;
+            }
+            
+            .game-header h1 {
+                font-size: 2rem;
+            }
+            
+            canvas {
+                width: 100% !important;
+                height: auto !important;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="game-header">
+            <h1>🎮 Advanced Collaborative Game</h1>
+            <p>Enhanced circle-clicking game with power-ups and achievements!</p>
+        </div>
+        
+        <div class="game-stats">
+            <div class="stat-card">
+                <div class="stat-value" id="score">0</div>
+                <div class="stat-label">Score</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="level">1</div>
+                <div class="stat-label">Level</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="combo">0</div>
+                <div class="stat-label">Combo</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="timeLeft">60</div>
+                <div class="stat-label">Time</div>
+            </div>
+        </div>
+        
+        <div class="difficulty-selector">
+            <button class="difficulty-btn" onclick="setDifficulty('easy')">🟢 Easy</button>
+            <button class="difficulty-btn active" onclick="setDifficulty('medium')">🟡 Medium</button>
+            <button class="difficulty-btn" onclick="setDifficulty('hard')">🔴 Hard</button>
+            <button class="difficulty-btn" onclick="setDifficulty('insane')">💀 Insane</button>
+        </div>
+        
+        <div class="power-ups">
+            <div class="power-up" onclick="usePowerUp('slow')" id="slowPowerUp">⏰ Slow Time (3)</div>
+            <div class="power-up" onclick="usePowerUp('multi')" id="multiPowerUp">✨ Multi Score (2)</div>
+            <div class="power-up" onclick="usePowerUp('freeze')" id="freezePowerUp">❄️ Freeze (1)</div>
+        </div>
+        
+        <canvas id="gameCanvas" width="500" height="400"></canvas>
+        
+        <div class="game-message" id="gameMessage">
+            Click circles to score points! Chain clicks for combo multipliers!
+        </div>
+        
+        <div class="controls">
+            <button onclick="startGame()" id="startBtn">🚀 Start Game</button>
+            <button onclick="pauseGame()" class="btn-secondary" id="pauseBtn">⏸️ Pause</button>
+            <button onclick="resetGame()" class="btn-secondary">🔄 Reset</button>
+        </div>
+        
+        <div class="achievements" id="achievements">
+            <h4>🏆 Achievements</h4>
+            <div id="achievementsList">No achievements yet - start playing to unlock them!</div>
+        </div>
+    </div>
+
+    <script>
+        class AdvancedGame {
+            constructor() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.score = 0;
+                this.level = 1;
+                this.combo = 0;
+                this.maxCombo = 0;
+                this.timeLeft = 60;
+                this.gameRunning = false;
+                this.gamePaused = false;
+                this.circles = [];
+                this.difficulty = 'medium';
+                this.gameInterval = null;
+                this.spawnInterval = null;
+                this.timeInterval = null;
+                this.lastClickTime = 0;
+                this.comboTimer = 0;
+                
+                // Power-ups
+                this.powerUps = {
+                    slow: 3,
+                    multi: 2,
+                    freeze: 1
+                };
+                this.activePowerUps = {};
+                
+                // Achievements
+                this.achievements = JSON.parse(localStorage.getItem('gameAchievements')) || [];
+                this.stats = JSON.parse(localStorage.getItem('gameStats')) || {
+                    totalGames: 0,
+                    totalScore: 0,
+                    bestScore: 0,
+                    totalClicks: 0,
+                    perfectGames: 0
+                };
+                
+                this.difficultySettings = {
+                    easy: { spawnRate: 2000, circleSpeed: 0.5, circleSize: 40, timeBonus: 80 },
+                    medium: { spawnRate: 1500, circleSpeed: 1, circleSize: 35, timeBonus: 60 },
+                    hard: { spawnRate: 1000, circleSpeed: 1.5, circleSize: 30, timeBonus: 45 },
+                    insane: { spawnRate: 700, circleSpeed: 2.5, circleSize: 25, timeBonus: 30 }
+                };
+                
+                this.init();
+            }
+            
+            init() {
+                this.updateDisplay();
+                this.updateAchievements();
+                this.canvas.addEventListener('click', this.handleClick.bind(this));
+                
+                // Set initial canvas size
+                this.resizeCanvas();
+                window.addEventListener('resize', this.resizeCanvas.bind(this));
+            }
+            
+            resizeCanvas() {
+                const container = this.canvas.parentElement;
+                const maxWidth = Math.min(container.clientWidth - 40, 500);
+                const maxHeight = Math.min(window.innerHeight * 0.4, 400);
+                
+                this.canvas.width = maxWidth;
+                this.canvas.height = maxHeight;
+            }
+            
+            startGame() {
+                if (this.gameRunning) return;
+                
+                this.gameRunning = true;
+                this.gamePaused = false;
+                this.score = 0;
+                this.level = 1;
+                this.combo = 0;
+                this.circles = [];
+                this.timeLeft = this.difficultySettings[this.difficulty].timeBonus;
+                this.activePowerUps = {};
+                
+                this.updateDisplay();
+                this.updateMessage("Game started! Click the circles to score points!");
+                
+                // Update button states
+                document.getElementById('startBtn').textContent = '🎮 Playing...';
+                document.getElementById('startBtn').disabled = true;
+                
+                // Start game loops
+                this.gameInterval = setInterval(this.gameLoop.bind(this), 16); // 60 FPS
+                this.spawnInterval = setInterval(this.spawnCircle.bind(this), this.difficultySettings[this.difficulty].spawnRate);
+                this.timeInterval = setInterval(this.updateTime.bind(this), 1000);
+                
+                this.stats.totalGames++;
+                this.saveStats();
+            }
+            
+            pauseGame() {
+                if (!this.gameRunning) return;
+                
+                this.gamePaused = !this.gamePaused;
+                
+                if (this.gamePaused) {
+                    clearInterval(this.gameInterval);
+                    clearInterval(this.spawnInterval);
+                    clearInterval(this.timeInterval);
+                    document.getElementById('pauseBtn').textContent = '▶️ Resume';
+                    this.updateMessage("Game paused. Click Resume to continue!");
+                } else {
+                    this.gameInterval = setInterval(this.gameLoop.bind(this), 16);
+                    this.spawnInterval = setInterval(this.spawnCircle.bind(this), this.difficultySettings[this.difficulty].spawnRate);
+                    this.timeInterval = setInterval(this.updateTime.bind(this), 1000);
+                    document.getElementById('pauseBtn').textContent = '⏸️ Pause';
+                    this.updateMessage("Game resumed! Keep clicking!");
+                }
+            }
+            
+            resetGame() {
+                this.gameRunning = false;
+                this.gamePaused = false;
+                this.circles = [];
+                
+                clearInterval(this.gameInterval);
+                clearInterval(this.spawnInterval);
+                clearInterval(this.timeInterval);
+                
+                this.score = 0;
+                this.level = 1;
+                this.combo = 0;
+                this.timeLeft = this.difficultySettings[this.difficulty].timeBonus;
+                
+                this.updateDisplay();
+                this.clearCanvas();
+                this.updateMessage("Game reset. Ready to start again!");
+                
+                // Reset button states
+                document.getElementById('startBtn').textContent = '🚀 Start Game';
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('pauseBtn').textContent = '⏸️ Pause';
+            }
+            
+            gameLoop() {
+                if (this.gamePaused) return;
+                
+                this.clearCanvas();
+                this.updateCircles();
+                this.drawCircles();
+                this.updateCombo();
+                this.updatePowerUps();
+                this.checkLevelUp();
+            }
+            
+            spawnCircle() {
+                if (!this.gameRunning || this.gamePaused) return;
+                
+                const settings = this.difficultySettings[this.difficulty];
+                const circle = {
+                    x: Math.random() * (this.canvas.width - settings.circleSize * 2) + settings.circleSize,
+                    y: Math.random() * (this.canvas.height - settings.circleSize * 2) + settings.circleSize,
+                    radius: settings.circleSize + Math.random() * 10,
+                    color: this.getRandomColor(),
+                    life: 3000 + Math.random() * 2000, // Lives for 3-5 seconds
+                    maxLife: 3000 + Math.random() * 2000,
+                    speed: settings.circleSpeed + Math.random() * 0.5,
+                    dx: (Math.random() - 0.5) * 2,
+                    dy: (Math.random() - 0.5) * 2,
+                    points: Math.floor(10 + Math.random() * 20),
+                    special: Math.random() < 0.1 // 10% chance for special circles
+                };
+                
+                this.circles.push(circle);
+            }
+            
+            updateCircles() {
+                for (let i = this.circles.length - 1; i >= 0; i--) {
+                    const circle = this.circles[i];
+                    
+                    // Update position
+                    if (!this.activePowerUps.freeze) {
+                        circle.x += circle.dx * circle.speed;
+                        circle.y += circle.dy * circle.speed;
+                        
+                        // Bounce off walls
+                        if (circle.x - circle.radius <= 0 || circle.x + circle.radius >= this.canvas.width) {
+                            circle.dx *= -1;
+                        }
+                        if (circle.y - circle.radius <= 0 || circle.y + circle.radius >= this.canvas.height) {
+                            circle.dy *= -1;
+                        }
+                    }
+                    
+                    // Update life
+                    const timeMultiplier = this.activePowerUps.slow ? 0.3 : 1;
+                    circle.life -= 16 * timeMultiplier;
+                    
+                    if (circle.life <= 0) {
+                        this.circles.splice(i, 1);
+                    }
+                }
+            }
+            
+            drawCircles() {
+                this.circles.forEach(circle => {
+                    const lifeRatio = circle.life / circle.maxLife;
+                    
+                    // Circle body
+                    this.ctx.beginPath();
+                    this.ctx.arc(circle.x, circle.y, circle.radius, 0, 2 * Math.PI);
+                    
+                    if (circle.special) {
+                        // Special circle gradient
+                        const gradient = this.ctx.createRadialGradient(
+                            circle.x, circle.y, 0,
+                            circle.x, circle.y, circle.radius
+                        );
+                        gradient.addColorStop(0, '#FFD700');
+                        gradient.addColorStop(1, '#FF69B4');
+                        this.ctx.fillStyle = gradient;
+                    } else {
+                        this.ctx.fillStyle = circle.color;
+                    }
+                    
+                    this.ctx.globalAlpha = lifeRatio;
+                    this.ctx.fill();
+                    
+                    // Border
+                    this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.8)';
+                    this.ctx.lineWidth = 2;
+                    this.ctx.stroke();
+                    
+                    // Points display
+                    this.ctx.fillStyle = 'white';
+                    this.ctx.font = 'bold 14px Arial';
+                    this.ctx.textAlign = 'center';
+                    this.ctx.fillText(circle.points.toString(), circle.x, circle.y + 5);
+                    
+                    this.ctx.globalAlpha = 1;
+                });
+            }
+            
+            handleClick(event) {
+                if (!this.gameRunning || this.gamePaused) return;
+                
+                const rect = this.canvas.getBoundingClientRect();
+                const x = event.clientX - rect.left;
+                const y = event.clientY - rect.top;
+                
+                // Check if click hit any circle
+                for (let i = this.circles.length - 1; i >= 0; i--) {
+                    const circle = this.circles[i];
+                    const distance = Math.sqrt((x - circle.x) ** 2 + (y - circle.y) ** 2);
+                    
+                    if (distance <= circle.radius) {
+                        this.hitCircle(circle, i, x, y);
+                        break;
+                    }
+                }
+                
+                this.stats.totalClicks++;
+                this.saveStats();
+            }
+            
+            hitCircle(circle, index, x, y) {
+                // Calculate score
+                let points = circle.points;
+                
+                // Combo multiplier
+                if (this.combo > 0) {
+                    points *= (1 + this.combo * 0.1);
+                }
+                
+                // Special circle bonus
+                if (circle.special) {
+                    points *= 2;
+                    this.showComboIndicator('SPECIAL!');
+                }
+                
+                // Multi power-up
+                if (this.activePowerUps.multi) {
+                    points *= 2;
+                }
+                
+                points = Math.floor(points);
+                this.score += points;
+                this.stats.totalScore += points;
+                
+                // Update combo
+                const now = Date.now();
+                if (now - this.lastClickTime < 1000) { // Within 1 second
+                    this.combo++;
+                    if (this.combo > this.maxCombo) {
+                        this.maxCombo = this.combo;
+                    }
+                    
+                    if (this.combo >= 5) {
+                        this.showComboIndicator(`${this.combo}x COMBO!`);
+                    }
+                } else {
+                    this.combo = 1;
+                }
+                
+                this.lastClickTime = now;
+                this.comboTimer = 2000; // 2 seconds to maintain combo
+                
+                // Show score animation
+                this.showScoreAnimation(x, y, points);
+                
+                // Remove circle
+                this.circles.splice(index, 1);
+                
+                this.updateDisplay();
+                this.checkAchievements();
+            }
+            
+            showScoreAnimation(x, y, points) {
+                const scoreEl = document.createElement('div');
+                scoreEl.className = 'multiplier';
+                scoreEl.textContent = `+${points}`;
+                scoreEl.style.left = x + 'px';
+                scoreEl.style.top = y + 'px';
+                
+                this.canvas.parentElement.appendChild(scoreEl);
+                
+                setTimeout(() => {
+                    scoreEl.remove();
+                }, 1000);
+            }
+            
+            showComboIndicator(text) {
+                const indicator = document.createElement('div');
+                indicator.className = 'combo-indicator';
+                indicator.textContent = text;
+                document.body.appendChild(indicator);
+                
+                setTimeout(() => {
+                    indicator.remove();
+                }, 500);
+            }
+            
+            updateTime() {
+                if (!this.gameRunning || this.gamePaused) return;
+                
+                this.timeLeft--;
+                this.updateDisplay();
+                
+                if (this.timeLeft <= 0) {
+                    this.endGame();
+                }
+                
+                if (this.timeLeft <= 10) {
+                    this.updateMessage(`⏰ Only ${this.timeLeft} seconds left!`);
+                }
+            }
+            
+            updateCombo() {
+                if (this.comboTimer > 0) {
+                    this.comboTimer -= 16;
+                    if (this.comboTimer <= 0 && this.combo > 0) {
+                        this.combo = 0;
+                        this.updateDisplay();
+                    }
+                }
+            }
+            
+            updatePowerUps() {
+                Object.keys(this.activePowerUps).forEach(powerUp => {
+                    this.activePowerUps[powerUp] -= 16;
+                    if (this.activePowerUps[powerUp] <= 0) {
+                        delete this.activePowerUps[powerUp];
+                        this.updateMessage(`${powerUp} power-up expired!`);
+                    }
+                });
+                
+                this.updatePowerUpDisplay();
+            }
+            
+            checkLevelUp() {
+                const newLevel = Math.floor(this.score / 1000) + 1;
+                if (newLevel > this.level) {
+                    this.level = newLevel;
+                    this.timeLeft += 10; // Bonus time
+                    this.updateMessage(`🆙 Level ${this.level}! +10 seconds bonus!`);
+                    this.updateDisplay();
+                }
+            }
+            
+            endGame() {
+                this.gameRunning = false;
+                this.gamePaused = false;
+                
+                clearInterval(this.gameInterval);
+                clearInterval(this.spawnInterval);
+                clearInterval(this.timeInterval);
+                
+                // Update best score
+                if (this.score > this.stats.bestScore) {
+                    this.stats.bestScore = this.score;
+                    this.updateMessage(`🎉 NEW HIGH SCORE: ${this.score}! Amazing job!`);
+                } else {
+                    this.updateMessage(`Game Over! Final Score: ${this.score}. Best: ${this.stats.bestScore}`);
+                }
+                
+                // Check for perfect game
+                if (this.maxCombo >= 10) {
+                    this.stats.perfectGames++;
+                }
+                
+                this.saveStats();
+                this.checkAchievements();
+                
+                // Reset button states
+                document.getElementById('startBtn').textContent = '🚀 Start Game';
+                document.getElementById('startBtn').disabled = false;
+                document.getElementById('pauseBtn').textContent = '⏸️ Pause';
+            }
+            
+            usePowerUp(type) {
+                if (this.powerUps[type] <= 0 || !this.gameRunning) return;
+                
+                this.powerUps[type]--;
+                
+                switch (type) {
+                    case 'slow':
+                        this.activePowerUps.slow = 5000; // 5 seconds
+                        this.updateMessage("⏰ Time slowed down!");
+                        break;
+                    case 'multi':
+                        this.activePowerUps.multi = 10000; // 10 seconds
+                        this.updateMessage("✨ Double score activated!");
+                        break;
+                    case 'freeze':
+                        this.activePowerUps.freeze = 3000; // 3 seconds
+                        this.updateMessage("❄️ Circles frozen!");
+                        break;
+                }
+                
+                this.updatePowerUpDisplay();
+            }
+            
+            setDifficulty(difficulty) {
+                if (this.gameRunning) return;
+                
+                this.difficulty = difficulty;
+                this.timeLeft = this.difficultySettings[difficulty].timeBonus;
+                
+                // Update difficulty buttons
+                document.querySelectorAll('.difficulty-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+                this.updateDisplay();
+                this.updateMessage(`Difficulty set to ${difficulty}. Ready to play!`);
+            }
+            
+            checkAchievements() {
+                const newAchievements = [];
+                
+                // Score-based achievements
+                if (this.score >= 1000 && !this.achievements.includes('first_1k')) {
+                    newAchievements.push('first_1k');
+                    this.achievements.push('first_1k');
+                }
+                
+                if (this.score >= 5000 && !this.achievements.includes('score_master')) {
+                    newAchievements.push('score_master');
+                    this.achievements.push('score_master');
+                }
+                
+                // Combo achievements
+                if (this.maxCombo >= 10 && !this.achievements.includes('combo_king')) {
+                    newAchievements.push('combo_king');
+                    this.achievements.push('combo_king');
+                }
+                
+                // Game count achievements
+                if (this.stats.totalGames >= 10 && !this.achievements.includes('dedicated_player')) {
+                    newAchievements.push('dedicated_player');
+                    this.achievements.push('dedicated_player');
+                }
+                
+                if (newAchievements.length > 0) {
+                    this.updateMessage(`🏆 New achievement(s) unlocked: ${newAchievements.join(', ')}!`);
+                    this.saveAchievements();
+                    this.updateAchievements();
+                }
+            }
+            
+            updateDisplay() {
+                document.getElementById('score').textContent = this.score;
+                document.getElementById('level').textContent = this.level;
+                document.getElementById('combo').textContent = this.combo;
+                document.getElementById('timeLeft').textContent = this.timeLeft;
+            }
+            
+            updatePowerUpDisplay() {
+                document.getElementById('slowPowerUp').textContent = `⏰ Slow Time (${this.powerUps.slow})`;
+                document.getElementById('multiPowerUp').textContent = `✨ Multi Score (${this.powerUps.multi})`;
+                document.getElementById('freezePowerUp').textContent = `❄️ Freeze (${this.powerUps.freeze})`;
+                
+                // Update disabled states
+                Object.keys(this.powerUps).forEach(type => {
+                    const btn = document.getElementById(`${type}PowerUp`);
+                    if (this.powerUps[type] <= 0) {
+                        btn.classList.add('disabled');
+                    } else {
+                        btn.classList.remove('disabled');
+                    }
+                });
+            }
+            
+            updateAchievements() {
+                const achievementNames = {
+                    'first_1k': '🎯 First 1000 Points',
+                    'score_master': '🌟 Score Master (5000+)',
+                    'combo_king': '⚡ Combo King (10+ combo)',
+                    'dedicated_player': '🏅 Dedicated Player (10+ games)'
+                };
+                
+                const list = document.getElementById('achievementsList');
+                if (this.achievements.length === 0) {
+                    list.textContent = 'No achievements yet - start playing to unlock them!';
+                } else {
+                    list.innerHTML = this.achievements
+                        .map(achievement => `<span class="achievement">${achievementNames[achievement]}</span>`)
+                        .join('');
+                }
+            }
+            
+            updateMessage(message) {
+                document.getElementById('gameMessage').textContent = message;
+            }
+            
+            clearCanvas() {
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+            
+            getRandomColor() {
+                const colors = [
+                    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', 
+                    '#FECA57', '#FF9FF3', '#54A0FF', '#5F27CD'
+                ];
+                return colors[Math.floor(Math.random() * colors.length)];
+            }
+            
+            saveStats() {
+                localStorage.setItem('gameStats', JSON.stringify(this.stats));
+            }
+            
+            saveAchievements() {
+                localStorage.setItem('gameAchievements', JSON.stringify(this.achievements));
+            }
+        }
+        
+        // Initialize game
+        let game;
+        window.addEventListener('load', () => {
+            game = new AdvancedGame();
+        });
+        
+        // Global functions for buttons
+        function startGame() {
+            game.startGame();
+        }
+        
+        function pauseGame() {
+            game.pauseGame();
+        }
+        
+        function resetGame() {
+            game.resetGame();
+        }
+        
+        function setDifficulty(difficulty) {
+            game.setDifficulty(difficulty);
+        }
+        
+        function usePowerUp(type) {
+            game.usePowerUp(type);
+        }
+    </script>
+</body>
+</html>

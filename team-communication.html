@@ -1,0 +1,1705 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Communication Hub - CollabAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .communication-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: #2c3e50;
+            color: white;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            background: #34495e;
+            border-bottom: 1px solid #4a5f7a;
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.4rem;
+            margin-bottom: 5px;
+        }
+        
+        .user-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #27ae60;
+        }
+        
+        .sidebar-nav {
+            padding: 20px 0;
+        }
+        
+        .nav-section {
+            margin-bottom: 25px;
+        }
+        
+        .nav-title {
+            color: #bdc3c7;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            padding: 0 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: #34495e;
+            border-right: 3px solid #3498db;
+        }
+        
+        .nav-icon {
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+        
+        .nav-text {
+            flex: 1;
+        }
+        
+        .nav-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        .channels-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .channel-item {
+            display: flex;
+            align-items: center;
+            padding: 8px 20px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .channel-item:hover, .channel-item.active {
+            background: #34495e;
+        }
+        
+        .channel-icon {
+            margin-right: 8px;
+            opacity: 0.7;
+        }
+        
+        .channel-name {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+        
+        .unread-count {
+            background: #e74c3c;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+        
+        /* Main Chat Area */
+        .chat-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+        
+        .chat-header {
+            padding: 20px 25px;
+            background: white;
+            border-bottom: 1px solid #e1e5e9;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .chat-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .chat-title h2 {
+            font-size: 1.3rem;
+            color: #333;
+        }
+        
+        .chat-subtitle {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .chat-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #666;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .action-btn:hover {
+            background: #f8f9fa;
+            border-color: #3498db;
+            color: #3498db;
+        }
+        
+        .action-btn.video {
+            background: #27ae60;
+            color: white;
+            border-color: #27ae60;
+        }
+        
+        .action-btn.video:hover {
+            background: #229954;
+        }
+        
+        /* Messages Area */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 25px;
+            background: #fafbfc;
+        }
+        
+        .message {
+            margin-bottom: 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+        
+        .message.own {
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+        
+        .message-avatar.ai {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+        }
+        
+        .message-content {
+            flex: 1;
+            max-width: 70%;
+        }
+        
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 5px;
+        }
+        
+        .message-author {
+            font-weight: 600;
+            color: #333;
+            font-size: 0.9rem;
+        }
+        
+        .message-time {
+            color: #999;
+            font-size: 0.8rem;
+        }
+        
+        .message-text {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e1e5e9;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .message.own .message-text {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .message-reactions {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+            flex-wrap: wrap;
+        }
+        
+        .reaction {
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+            border-radius: 15px;
+            padding: 3px 8px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .reaction:hover {
+            background: #e9ecef;
+        }
+        
+        .reaction.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
+        }
+        
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 25px;
+            font-style: italic;
+            color: #666;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #3498db;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+        
+        /* Message Input */
+        .message-input-container {
+            padding: 20px 25px;
+            background: white;
+            border-top: 1px solid #e1e5e9;
+        }
+        
+        .input-tools {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .tool-btn {
+            padding: 6px 10px;
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            color: #666;
+            transition: all 0.2s;
+        }
+        
+        .tool-btn:hover {
+            background: #f8f9fa;
+            border-color: #3498db;
+            color: #3498db;
+        }
+        
+        .message-input-wrapper {
+            display: flex;
+            align-items: flex-end;
+            gap: 12px;
+            background: #f8f9fa;
+            border-radius: 25px;
+            padding: 8px 15px;
+            border: 2px solid transparent;
+            transition: border-color 0.2s;
+        }
+        
+        .message-input-wrapper:focus-within {
+            border-color: #3498db;
+        }
+        
+        .message-input {
+            flex: 1;
+            border: none;
+            background: none;
+            outline: none;
+            padding: 8px 0;
+            font-size: 0.9rem;
+            resize: none;
+            max-height: 100px;
+            min-height: 20px;
+        }
+        
+        .send-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .send-btn:hover {
+            background: #2980b9;
+            transform: scale(1.05);
+        }
+        
+        .send-btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Video Call Modal */
+        .video-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+        }
+        
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .video-header {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .video-info h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        
+        .video-time {
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
+        
+        .video-controls {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .video-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .video-btn.mute {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .video-btn.camera {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .video-btn.screen {
+            background: #9b59b6;
+            color: white;
+        }
+        
+        .video-btn.end {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .video-main {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+        
+        .video-placeholder {
+            width: 80%;
+            height: 70%;
+            background: #34495e;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .video-participants {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .participant-video {
+            width: 150px;
+            height: 100px;
+            background: #2c3e50;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            border: 2px solid transparent;
+        }
+        
+        .participant-video.speaking {
+            border-color: #27ae60;
+        }
+        
+        /* AI Assistant Panel */
+        .ai-assistant {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            height: 400px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 500;
+        }
+        
+        .ai-assistant.open {
+            display: flex;
+        }
+        
+        .ai-assistant-header {
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ai-assistant-header h4 {
+            margin: 0;
+            font-size: 1rem;
+        }
+        
+        .ai-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .ai-suggestions {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        
+        .ai-suggestion {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-left: 3px solid #e74c3c;
+        }
+        
+        .suggestion-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .suggestion-text {
+            color: #666;
+            font-size: 0.8rem;
+            line-height: 1.4;
+        }
+        
+        .ai-quick-actions {
+            padding: 15px;
+            border-top: 1px solid #e1e5e9;
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .quick-action {
+            padding: 6px 12px;
+            background: #f8f9fa;
+            border: 1px solid #e1e5e9;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .quick-action:hover {
+            background: #e74c3c;
+            color: white;
+            border-color: #e74c3c;
+        }
+        
+        .ai-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(231, 76, 60, 0.3);
+            transition: all 0.3s ease;
+            z-index: 499;
+        }
+        
+        .ai-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .ai-toggle.hidden {
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .communication-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: 60px;
+                flex-direction: row;
+                overflow-x: auto;
+            }
+            
+            .sidebar-nav {
+                display: flex;
+                padding: 0 20px;
+                align-items: center;
+            }
+            
+            .nav-section {
+                margin: 0 20px 0 0;
+            }
+            
+            .ai-assistant {
+                width: calc(100% - 40px);
+                height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="communication-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>💬 Team Chat</h1>
+                <div class="user-status">
+                    <div class="status-indicator"></div>
+                    <span>John Developer - Online</span>
+                </div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-title">Communication</div>
+                    <div class="nav-item active" onclick="switchView('chat')">
+                        <span class="nav-icon">💬</span>
+                        <span class="nav-text">Team Chat</span>
+                        <span class="nav-badge">5</span>
+                    </div>
+                    <div class="nav-item" onclick="switchView('video')">
+                        <span class="nav-icon">📹</span>
+                        <span class="nav-text">Video Calls</span>
+                    </div>
+                    <div class="nav-item" onclick="switchView('voice')">
+                        <span class="nav-icon">🎤</span>
+                        <span class="nav-text">Voice Channels</span>
+                    </div>
+                    <div class="nav-item" onclick="switchView('screen')">
+                        <span class="nav-icon">🖥️</span>
+                        <span class="nav-text">Screen Share</span>
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="nav-title">AI Features</div>
+                    <div class="nav-item" onclick="toggleAI()">
+                        <span class="nav-icon">🤖</span>
+                        <span class="nav-text">AI Assistant</span>
+                    </div>
+                    <div class="nav-item" onclick="showTranscriptions()">
+                        <span class="nav-icon">📝</span>
+                        <span class="nav-text">Transcriptions</span>
+                    </div>
+                    <div class="nav-item" onclick="showAnalytics()">
+                        <span class="nav-icon">📊</span>
+                        <span class="nav-text">Analytics</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="channels-list">
+                <div class="nav-title" style="padding: 10px 20px 5px;">Channels</div>
+                
+                <div class="channel-item active" onclick="switchChannel('general')">
+                    <span class="channel-icon">#</span>
+                    <span class="channel-name">general</span>
+                    <span class="unread-count">3</span>
+                </div>
+                
+                <div class="channel-item" onclick="switchChannel('development')">
+                    <span class="channel-icon">#</span>
+                    <span class="channel-name">development</span>
+                    <span class="unread-count">12</span>
+                </div>
+                
+                <div class="channel-item" onclick="switchChannel('ai-collaboration')">
+                    <span class="channel-icon">#</span>
+                    <span class="channel-name">ai-collaboration</span>
+                    <span class="unread-count">7</span>
+                </div>
+                
+                <div class="channel-item" onclick="switchChannel('project-updates')">
+                    <span class="channel-icon">#</span>
+                    <span class="channel-name">project-updates</span>
+                </div>
+                
+                <div class="channel-item" onclick="switchChannel('random')">
+                    <span class="channel-icon">#</span>
+                    <span class="channel-name">random</span>
+                    <span class="unread-count">2</span>
+                </div>
+                
+                <div class="nav-title" style="padding: 20px 20px 5px;">Direct Messages</div>
+                
+                <div class="channel-item" onclick="switchChannel('sarah-manager')">
+                    <span class="channel-icon">👤</span>
+                    <span class="channel-name">Sarah Manager</span>
+                    <span class="unread-count">1</span>
+                </div>
+                
+                <div class="channel-item" onclick="switchChannel('ray-ben')">
+                    <span class="channel-icon">👤</span>
+                    <span class="channel-name">Ray Ben</span>
+                </div>
+                
+                <div class="channel-item" onclick="switchChannel('ai-assistant')">
+                    <span class="channel-icon">🤖</span>
+                    <span class="channel-name">AI Assistant</span>
+                    <span class="unread-count">5</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Chat Area -->
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="chat-title">
+                    <h2># general</h2>
+                    <div class="chat-subtitle">4 members • AI assistance enabled</div>
+                </div>
+                
+                <div class="chat-actions">
+                    <button class="action-btn" onclick="searchMessages()">
+                        🔍 Search
+                    </button>
+                    <button class="action-btn" onclick="showMembers()">
+                        👥 Members
+                    </button>
+                    <button class="action-btn" onclick="shareScreen()">
+                        🖥️ Share Screen
+                    </button>
+                    <button class="action-btn video" onclick="startVideoCall()">
+                        📹 Video Call
+                    </button>
+                </div>
+            </div>
+            
+            <div class="messages-container" id="messagesContainer">
+                <!-- Messages will be populated here -->
+                <div class="message">
+                    <div class="message-avatar">SM</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-author">Sarah Manager</span>
+                            <span class="message-time">Today at 9:15 AM</span>
+                        </div>
+                        <div class="message-text">
+                            Good morning team! Let's discuss the progress on our AI collaboration features. How's the real-time editor coming along?
+                        </div>
+                        <div class="message-reactions">
+                            <span class="reaction">👍 3</span>
+                            <span class="reaction">👋 2</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="message">
+                    <div class="message-avatar">JD</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-author">John Developer</span>
+                            <span class="message-time">Today at 9:17 AM</span>
+                        </div>
+                        <div class="message-text">
+                            The real-time editor is almost complete! I've implemented WebSocket connections for live collaboration and added AI-powered suggestions. Users can see each other's cursors and edits in real-time.
+                        </div>
+                        <div class="message-reactions">
+                            <span class="reaction active">🚀 5</span>
+                            <span class="reaction">💯 2</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="message">
+                    <div class="message-avatar ai">AI</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-author">AI Assistant</span>
+                            <span class="message-time">Today at 9:18 AM</span>
+                        </div>
+                        <div class="message-text">
+                            Excellent progress, John! I've analyzed the editor performance and suggest adding conflict resolution for simultaneous edits on the same line. I can also implement smart auto-save with version control. Would you like me to create a code snippet?
+                        </div>
+                        <div class="message-reactions">
+                            <span class="reaction">🤖 4</span>
+                            <span class="reaction">💡 3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="message">
+                    <div class="message-avatar">RB</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-author">Ray Ben</span>
+                            <span class="message-time">Today at 9:20 AM</span>
+                        </div>
+                        <div class="message-text">
+                            I love how the AI is actively participating in our development discussions! The task management system is also ready - it includes drag & drop Kanban boards with AI-powered priority suggestions.
+                        </div>
+                        <div class="message-reactions">
+                            <span class="reaction">🎯 6</span>
+                            <span class="reaction">✨ 2</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="message own">
+                    <div class="message-avatar">JD</div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <span class="message-author">You</span>
+                            <span class="message-time">Today at 9:22 AM</span>
+                        </div>
+                        <div class="message-text">
+                            That's fantastic! @AI Assistant, yes please create that conflict resolution snippet. Also, let's schedule a video call to demo all the features we've built so far.
+                        </div>
+                        <div class="message-reactions">
+                            <span class="reaction">📅 3</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="typing-indicator" id="typingIndicator" style="display: none;">
+                    <div class="message-avatar ai">AI</div>
+                    <span>AI Assistant is typing</span>
+                    <div class="typing-dots">
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                        <div class="typing-dot"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="message-input-container">
+                <div class="input-tools">
+                    <button class="tool-btn" onclick="formatMessage('bold')">
+                        <strong>B</strong>
+                    </button>
+                    <button class="tool-btn" onclick="formatMessage('italic')">
+                        <em>I</em>
+                    </button>
+                    <button class="tool-btn" onclick="formatMessage('code')">
+                        { }
+                    </button>
+                    <button class="tool-btn" onclick="addEmoji()">
+                        😀
+                    </button>
+                    <button class="tool-btn" onclick="attachFile()">
+                        📎
+                    </button>
+                    <button class="tool-btn" onclick="addMention()">
+                        @
+                    </button>
+                    <button class="tool-btn" onclick="aiAssist()">
+                        🤖 AI
+                    </button>
+                </div>
+                
+                <div class="message-input-wrapper">
+                    <textarea 
+                        class="message-input" 
+                        id="messageInput"
+                        placeholder="Type a message... (Use @ for mentions, /ai for AI assistance)"
+                        onkeypress="handleKeyPress(event)"
+                        oninput="handleInput()"
+                    ></textarea>
+                    <button class="send-btn" id="sendBtn" onclick="sendMessage()" disabled>
+                        ➤
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Video Call Modal -->
+    <div class="video-modal" id="videoModal">
+        <div class="video-container">
+            <div class="video-header">
+                <div class="video-info">
+                    <h3>Team Video Call</h3>
+                    <div class="video-time" id="videoTime">00:00</div>
+                </div>
+                
+                <div class="video-controls">
+                    <button class="video-btn mute" onclick="toggleMute()">
+                        🎤 Mute
+                    </button>
+                    <button class="video-btn camera" onclick="toggleCamera()">
+                        📹 Camera
+                    </button>
+                    <button class="video-btn screen" onclick="shareScreen()">
+                        🖥️ Share
+                    </button>
+                    <button class="video-btn end" onclick="endVideoCall()">
+                        📞 End Call
+                    </button>
+                </div>
+            </div>
+            
+            <div class="video-main">
+                <div class="video-placeholder">
+                    📹 Video Call Active<br>
+                    <small>4 participants connected</small>
+                </div>
+                
+                <div class="video-participants">
+                    <div class="participant-video speaking">
+                        John Developer
+                    </div>
+                    <div class="participant-video">
+                        Sarah Manager
+                    </div>
+                    <div class="participant-video">
+                        Ray Ben
+                    </div>
+                    <div class="participant-video">
+                        AI Assistant
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Assistant -->
+    <button class="ai-toggle" onclick="toggleAI()">🤖</button>
+    
+    <div class="ai-assistant" id="aiAssistant">
+        <div class="ai-assistant-header">
+            <h4>🤖 Communication AI</h4>
+            <button class="ai-close" onclick="toggleAI()">×</button>
+        </div>
+        
+        <div class="ai-suggestions">
+            <div class="ai-suggestion">
+                <div class="suggestion-title">Meeting Suggestion</div>
+                <div class="suggestion-text">Based on the conversation, I recommend scheduling a video call to demo the new features. I can create a calendar invite for all participants.</div>
+            </div>
+            
+            <div class="ai-suggestion">
+                <div class="suggestion-title">Code Snippet Ready</div>
+                <div class="suggestion-text">I've prepared a conflict resolution algorithm for the real-time editor. Would you like me to share it in the channel?</div>
+            </div>
+            
+            <div class="ai-suggestion">
+                <div class="suggestion-title">Team Productivity</div>
+                <div class="suggestion-text">The team's communication velocity has increased 40% this week. Consider implementing structured standups for even better coordination.</div>
+            </div>
+            
+            <div class="ai-suggestion">
+                <div class="suggestion-title">Smart Reminder</div>
+                <div class="suggestion-text">Ray mentioned the task management system is ready. This blocks 3 other team members - suggest prioritizing the demo.</div>
+            </div>
+        </div>
+        
+        <div class="ai-quick-actions">
+            <span class="quick-action" onclick="aiAction('summarize')">Summarize Chat</span>
+            <span class="quick-action" onclick="aiAction('schedule')">Schedule Meeting</span>
+            <span class="quick-action" onclick="aiAction('code')">Generate Code</span>
+            <span class="quick-action" onclick="aiAction('translate')">Translate</span>
+            <span class="quick-action" onclick="aiAction('transcribe')">Transcribe</span>
+        </div>
+    </div>
+    
+    <script>
+        // Global state
+        const communicationState = {
+            currentChannel: 'general',
+            currentUser: 'John Developer',
+            isTyping: false,
+            videoCallActive: false,
+            aiAssistantOpen: false,
+            messages: [],
+            participants: ['John Developer', 'Sarah Manager', 'Ray Ben', 'AI Assistant']
+        };
+        
+        let videoCallDuration = 0;
+        let videoTimer = null;
+        
+        // Message handling
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        }
+        
+        function handleInput() {
+            const input = document.getElementById('messageInput');
+            const sendBtn = document.getElementById('sendBtn');
+            
+            // Enable/disable send button
+            sendBtn.disabled = input.value.trim() === '';
+            
+            // Show typing indicator
+            if (!communicationState.isTyping && input.value.trim() !== '') {
+                communicationState.isTyping = true;
+                simulateTypingResponse();
+            } else if (communicationState.isTyping && input.value.trim() === '') {
+                communicationState.isTyping = false;
+            }
+        }
+        
+        function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (message === '') return;
+            
+            // Add message to chat
+            addMessage(message, communicationState.currentUser, true);
+            
+            // Clear input
+            input.value = '';
+            document.getElementById('sendBtn').disabled = true;
+            communicationState.isTyping = false;
+            
+            // Simulate AI or team responses
+            setTimeout(() => {
+                simulateResponse(message);
+            }, 1000 + Math.random() * 2000);
+            
+            // Auto-scroll to bottom
+            scrollToBottom();
+        }
+        
+        function addMessage(text, author, isOwnMessage = false) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message${isOwnMessage ? ' own' : ''}`;
+            
+            const authorInitials = author === 'AI Assistant' ? 'AI' : 
+                                   author.split(' ').map(n => n[0]).join('');
+            const avatarClass = author === 'AI Assistant' ? 'message-avatar ai' : 'message-avatar';
+            const displayAuthor = isOwnMessage ? 'You' : author;
+            const currentTime = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            messageDiv.innerHTML = `
+                <div class="${avatarClass}">${authorInitials}</div>
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-author">${displayAuthor}</span>
+                        <span class="message-time">Today at ${currentTime}</span>
+                    </div>
+                    <div class="message-text">${text}</div>
+                    <div class="message-reactions">
+                        <span class="reaction" onclick="toggleReaction(this, '👍')">👍</span>
+                        <span class="reaction" onclick="toggleReaction(this, '❤️')">❤️</span>
+                        <span class="reaction" onclick="toggleReaction(this, '😄')">😄</span>
+                    </div>
+                </div>
+            `;
+            
+            // Remove typing indicator if present
+            const typingIndicator = document.getElementById('typingIndicator');
+            if (typingIndicator.style.display !== 'none') {
+                typingIndicator.style.display = 'none';
+            }
+            
+            messagesContainer.appendChild(messageDiv);
+            scrollToBottom();
+        }
+        
+        function simulateResponse(originalMessage) {
+            const responses = {
+                'AI Assistant': [
+                    'I can help optimize that approach. Let me analyze the requirements and suggest improvements.',
+                    'Great idea! I\'ve prepared some code snippets that might be useful for this implementation.',
+                    'Based on the context, I recommend considering scalability. Here are some architectural suggestions.',
+                    'I notice this relates to our earlier discussion. Let me provide some additional insights.',
+                    'Excellent progress! I can automate parts of this workflow to save development time.'
+                ],
+                'Sarah Manager': [
+                    'This aligns perfectly with our project timeline. Let\'s prioritize this feature.',
+                    'Great work team! I\'ll update the stakeholders on our progress.',
+                    'We should document this approach for future reference.',
+                    'This looks promising. How long do you estimate for completion?',
+                    'I love the collaboration happening here! Keep up the great work.'
+                ],
+                'Ray Ben': [
+                    'I can help with the backend implementation for this feature.',
+                    'This reminds me of a similar pattern we used in the finance tracker project.',
+                    'I\'ve been working on something related. Let me share my findings.',
+                    'We should consider the database implications of this approach.',
+                    'The user experience for this feature should be seamless.'
+                ]
+            };
+            
+            // Determine who responds based on message content and randomness
+            let responder;
+            if (originalMessage.toLowerCase().includes('ai') || originalMessage.toLowerCase().includes('assist')) {
+                responder = 'AI Assistant';
+            } else if (Math.random() > 0.5) {
+                responder = 'AI Assistant';
+            } else {
+                const teamMembers = ['Sarah Manager', 'Ray Ben'];
+                responder = teamMembers[Math.floor(Math.random() * teamMembers.length)];
+            }
+            
+            const responseList = responses[responder];
+            const response = responseList[Math.floor(Math.random() * responseList.length)];
+            
+            // Show typing indicator
+            showTypingIndicator(responder);
+            
+            setTimeout(() => {
+                addMessage(response, responder);
+                
+                // Sometimes add follow-up AI suggestions
+                if (responder === 'AI Assistant' && Math.random() > 0.6) {
+                    setTimeout(() => {
+                        addAISuggestion(originalMessage);
+                    }, 2000);
+                }
+            }, 2000 + Math.random() * 3000);
+        }
+        
+        function showTypingIndicator(author) {
+            const typingIndicator = document.getElementById('typingIndicator');
+            const authorInitials = author === 'AI Assistant' ? 'AI' : 
+                                   author.split(' ').map(n => n[0]).join('');
+            
+            typingIndicator.innerHTML = `
+                <div class="message-avatar${author === 'AI Assistant' ? ' ai' : ''}">${authorInitials}</div>
+                <span>${author} is typing</span>
+                <div class="typing-dots">
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                    <div class="typing-dot"></div>
+                </div>
+            `;
+            
+            typingIndicator.style.display = 'flex';
+            scrollToBottom();
+        }
+        
+        function simulateTypingResponse() {
+            if (Math.random() > 0.7) {
+                setTimeout(() => {
+                    showTypingIndicator('AI Assistant');
+                }, 1000);
+            }
+        }
+        
+        function scrollToBottom() {
+            const container = document.getElementById('messagesContainer');
+            container.scrollTop = container.scrollHeight;
+        }
+        
+        // Reaction handling
+        function toggleReaction(element, emoji) {
+            const currentText = element.textContent;
+            const hasReaction = currentText.includes(emoji);
+            
+            if (hasReaction) {
+                const count = parseInt(currentText.split(' ')[1]) || 1;
+                if (count > 1) {
+                    element.textContent = `${emoji} ${count - 1}`;
+                    element.classList.remove('active');
+                } else {
+                    element.style.display = 'none';
+                }
+            } else {
+                element.textContent = `${emoji} 1`;
+                element.classList.add('active');
+            }
+        }
+        
+        // Video call functionality
+        function startVideoCall() {
+            document.getElementById('videoModal').style.display = 'block';
+            communicationState.videoCallActive = true;
+            videoCallDuration = 0;
+            
+            videoTimer = setInterval(() => {
+                videoCallDuration++;
+                updateVideoTimer();
+            }, 1000);
+            
+            // Simulate joining notification
+            setTimeout(() => {
+                addMessage('📹 Video call started! All team members have joined.', 'System');
+            }, 1000);
+        }
+        
+        function endVideoCall() {
+            document.getElementById('videoModal').style.display = 'none';
+            communicationState.videoCallActive = false;
+            
+            if (videoTimer) {
+                clearInterval(videoTimer);
+                videoTimer = null;
+            }
+            
+            // Add call summary
+            const duration = formatDuration(videoCallDuration);
+            addMessage(`📹 Video call ended. Duration: ${duration}. AI transcript and summary available.`, 'System');
+        }
+        
+        function updateVideoTimer() {
+            const timeElement = document.getElementById('videoTime');
+            timeElement.textContent = formatDuration(videoCallDuration);
+        }
+        
+        function formatDuration(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+        
+        function toggleMute() {
+            const btn = event.target;
+            if (btn.textContent.includes('Mute')) {
+                btn.textContent = '🔇 Unmute';
+                btn.style.background = '#e74c3c';
+                addMessage('🔇 You muted your microphone', 'System');
+            } else {
+                btn.textContent = '🎤 Mute';
+                btn.style.background = '#f39c12';
+                addMessage('🎤 You unmuted your microphone', 'System');
+            }
+        }
+        
+        function toggleCamera() {
+            const btn = event.target;
+            if (btn.textContent.includes('Camera')) {
+                btn.textContent = '📷 Camera Off';
+                btn.style.background = '#e74c3c';
+                addMessage('📷 You turned off your camera', 'System');
+            } else {
+                btn.textContent = '📹 Camera';
+                btn.style.background = '#27ae60';
+                addMessage('📹 You turned on your camera', 'System');
+            }
+        }
+        
+        // AI Assistant functionality
+        function toggleAI() {
+            const assistant = document.getElementById('aiAssistant');
+            const toggle = document.querySelector('.ai-toggle');
+            
+            communicationState.aiAssistantOpen = !communicationState.aiAssistantOpen;
+            
+            if (communicationState.aiAssistantOpen) {
+                assistant.classList.add('open');
+                toggle.classList.add('hidden');
+            } else {
+                assistant.classList.remove('open');
+                toggle.classList.remove('hidden');
+            }
+        }
+        
+        function aiAction(action) {
+            let message = '';
+            
+            switch(action) {
+                case 'summarize':
+                    message = '🤖 AI Summary: The team discussed progress on real-time collaboration features. Key points: WebSocket implementation complete, task management ready for demo, conflict resolution needed for simultaneous edits. Recommended next steps: schedule demo call, implement AI suggestions.';
+                    break;
+                case 'schedule':
+                    message = '📅 AI Scheduler: I\'ve analyzed everyone\'s calendars. Optimal meeting time: Tomorrow 2:00 PM (1 hour). I can send calendar invites to all participants. Meeting agenda: Demo real-time editor, review task management system, plan integration testing.';
+                    break;
+                case 'code':
+                    message = '💻 AI Code Generator: Based on the conversation, here\'s a conflict resolution snippet for the real-time editor:\n\n```javascript\nfunction resolveConflict(localEdit, remoteEdit) {\n  if (localEdit.timestamp > remoteEdit.timestamp) {\n    return mergeEdits(remoteEdit, localEdit);\n  }\n  return mergeEdits(localEdit, remoteEdit);\n}\n```';
+                    break;
+                case 'translate':
+                    message = '🌍 AI Translator: Ready to translate messages in real-time. Supported languages: English, Spanish, French, German, Chinese, Japanese. Team members can communicate in their preferred language.';
+                    break;
+                case 'transcribe':
+                    message = '📝 AI Transcription: Live transcription enabled for video calls. Real-time captions, meeting notes, and action item extraction available. Transcripts are automatically saved and searchable.';
+                    break;
+            }
+            
+            addMessage(message, 'AI Assistant');
+            
+            // Add follow-up suggestion
+            setTimeout(() => {
+                addAISuggestion(`AI ${action} completed`);
+            }, 1000);
+        }
+        
+        async function addAISuggestion(context) {
+            try {
+                const aiPrompt = `Based on this team communication context: "${context}", provide a helpful, actionable suggestion for the team. 
+                Focus on:
+                1. Project productivity improvements
+                2. Collaboration optimization
+                3. Code quality suggestions
+                4. Process improvements
+                5. Next steps recommendations
+                
+                Keep the suggestion concise and specific to software development and project management.`;
+                
+                const result = await geminiAPI.generateContent(aiPrompt, {
+                    temperature: 0.6,
+                    maxTokens: 200
+                });
+                
+                const aiSuggestions = document.querySelector('.ai-suggestions');
+                const newSuggestion = document.createElement('div');
+                newSuggestion.className = 'ai-suggestion';
+                newSuggestion.innerHTML = `
+                    <div class="suggestion-title">Smart AI Suggestion</div>
+                    <div class="suggestion-text">${result.text}</div>
+                `;
+                
+                aiSuggestions.insertBefore(newSuggestion, aiSuggestions.firstChild);
+            } catch (error) {
+                console.error('AI suggestion error:', error);
+                // Fallback to static suggestions
+                const suggestions = [
+                    'Would you like me to create a detailed project timeline based on this discussion?',
+                    'I can generate automated tests for the features mentioned. Shall I proceed?',
+                    'Based on the conversation, I recommend setting up monitoring for the new features.',
+                    'I notice potential optimization opportunities. Would you like a performance analysis?',
+                    'This discussion contains actionable items. Shall I create tasks in the project management system?'
+                ];
+                
+                const suggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+                
+                const aiSuggestions = document.querySelector('.ai-suggestions');
+                const newSuggestion = document.createElement('div');
+                newSuggestion.className = 'ai-suggestion';
+                newSuggestion.innerHTML = `
+                    <div class="suggestion-title">Smart Suggestion</div>
+                    <div class="suggestion-text">${suggestion}</div>
+                `;
+                
+                aiSuggestions.insertBefore(newSuggestion, aiSuggestions.firstChild);
+            }
+        }
+        
+        // Message formatting
+        function formatMessage(type) {
+            const input = document.getElementById('messageInput');
+            const start = input.selectionStart;
+            const end = input.selectionEnd;
+            const selectedText = input.value.substring(start, end);
+            
+            if (selectedText) {
+                let formattedText = selectedText;
+                switch(type) {
+                    case 'bold':
+                        formattedText = `**${selectedText}**`;
+                        break;
+                    case 'italic':
+                        formattedText = `*${selectedText}*`;
+                        break;
+                    case 'code':
+                        formattedText = `\`${selectedText}\``;
+                        break;
+                }
+                
+                input.setRangeText(formattedText);
+                input.focus();
+            }
+        }
+        
+        function addEmoji() {
+            const emojis = ['😀', '😂', '👍', '❤️', '🎉', '🚀', '💯', '🔥', '💡', '⭐'];
+            const randomEmoji = emojis[Math.floor(Math.random() * emojis.length)];
+            const input = document.getElementById('messageInput');
+            input.value += randomEmoji;
+            input.focus();
+            handleInput();
+        }
+        
+        function addMention() {
+            const members = ['@everyone', '@Sarah Manager', '@Ray Ben', '@AI Assistant'];
+            const randomMention = members[Math.floor(Math.random() * members.length)];
+            const input = document.getElementById('messageInput');
+            input.value += randomMention + ' ';
+            input.focus();
+            handleInput();
+        }
+        
+        function aiAssist() {
+            const input = document.getElementById('messageInput');
+            input.value += '/ai ';
+            input.focus();
+            handleInput();
+            
+            // Show AI suggestions for completing the message
+            setTimeout(() => {
+                addMessage('🤖 AI Assistant: I\'m ready to help! You can ask me to:\n• Generate code snippets\n• Summarize discussions\n• Schedule meetings\n• Create documentation\n• Analyze performance\n• Suggest improvements', 'AI Assistant');
+            }, 500);
+        }
+        
+        // Navigation functions
+        function switchView(view) {
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            event.target.classList.add('active');
+            
+            // Handle view switching
+            switch(view) {
+                case 'chat':
+                    showNotification('💬 Switched to Team Chat');
+                    break;
+                case 'video':
+                    startVideoCall();
+                    break;
+                case 'voice':
+                    showNotification('🎤 Voice channels coming soon!');
+                    break;
+                case 'screen':
+                    shareScreen();
+                    break;
+            }
+        }
+        
+        function switchChannel(channel) {
+            // Update active channel
+            document.querySelectorAll('.channel-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            // Clear unread count
+            const unreadBadge = event.target.querySelector('.unread-count');
+            if (unreadBadge) {
+                unreadBadge.remove();
+            }
+            
+            communicationState.currentChannel = channel;
+            
+            // Update chat header
+            const channelDisplay = channel.startsWith('ai-') ? `# ${channel}` : 
+                                   channel.includes('-') ? `# ${channel}` : 
+                                   channel === 'general' ? '# general' : `👤 ${channel}`;
+            
+            document.querySelector('.chat-title h2').textContent = channelDisplay;
+            
+            // Simulate loading channel messages
+            showNotification(`📝 Switched to ${channelDisplay}`);
+            
+            if (channel === 'ai-assistant') {
+                setTimeout(() => {
+                    addMessage('Hello! I\'m your AI collaboration assistant. I can help with code generation, project analysis, meeting summaries, and much more. What would you like to work on today?', 'AI Assistant');
+                }, 1000);
+            }
+        }
+        
+        // Additional features
+        function searchMessages() {
+            const query = prompt('Search messages:');
+            if (query) {
+                showNotification(`🔍 Searching for "${query}"... AI-powered search with context understanding enabled.`);
+                setTimeout(() => {
+                    addMessage(`🔍 Search Results for "${query}": Found 7 messages across 3 channels. AI has highlighted relevant context and relationships.`, 'System');
+                }, 2000);
+            }
+        }
+        
+        function showMembers() {
+            addMessage('👥 Channel Members:\n• John Developer (You) - Online\n• Sarah Manager - Online\n• Ray Ben - Online\n• AI Assistant - Always Available\n\nTotal: 4 members, AI assistance active', 'System');
+        }
+        
+        function shareScreen() {
+            showNotification('🖥️ Screen sharing initiated...');
+            setTimeout(() => {
+                addMessage('🖥️ John Developer is sharing their screen. AI is automatically generating captions and highlights for accessibility.', 'System');
+            }, 1500);
+        }
+        
+        function attachFile() {
+            const fileTypes = ['📄 Project Documentation.pdf', '🖼️ UI Mockups.png', '💻 Code Review.zip', '📊 Analytics Report.xlsx'];
+            const randomFile = fileTypes[Math.floor(Math.random() * fileTypes.length)];
+            
+            addMessage(`📎 File attached: ${randomFile}\n\nAI has automatically scanned the content and can provide summaries, extract key information, or answer questions about the file.`, communicationState.currentUser, true);
+        }
+        
+        function showTranscriptions() {
+            addMessage('📝 AI Transcription Service:\n\n• Real-time speech-to-text for video calls\n• Automatic meeting summaries\n• Action item extraction\n• Multi-language support\n• Searchable transcript history\n\nAll conversations are transcribed with 95% accuracy and enhanced with AI insights.', 'AI Assistant');
+        }
+        
+        function showAnalytics() {
+            addMessage('📊 Communication Analytics:\n\n• Team response time: 2.3 minutes average\n• Most active channel: #development\n• AI assistance usage: 67% of conversations\n• Meeting efficiency: +34% with AI transcripts\n• Collaboration score: 9.2/10\n\nAI recommendations for improving team communication available.', 'AI Assistant');
+        }
+        
+        // Utility functions
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #2c3e50;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 2000;
+                font-size: 0.9rem;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+                backdrop-filter: blur(10px);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(-50%) translateY(-20px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            scrollToBottom();
+            
+            // Simulate periodic team activity
+            setInterval(() => {
+                if (Math.random() > 0.8 && !communicationState.videoCallActive) {
+                    const activities = [
+                        'Ray Ben is working on the database optimization',
+                        'Sarah Manager updated the project timeline',
+                        'AI Assistant identified a potential code improvement',
+                        'New team member joined the collaboration platform'
+                    ];
+                    
+                    const activity = activities[Math.floor(Math.random() * activities.length)];
+                    addMessage(`ℹ️ ${activity}`, 'System');
+                }
+            }, 45000);
+            
+            // Auto-suggestion from AI
+            setTimeout(() => {
+                addAISuggestion('Welcome to the enhanced communication platform');
+            }, 5000);
+            
+            console.log('💬 Team Communication Hub initialized');
+            console.log('Features: Real-time chat, Video calls, AI assistance, Screen sharing');
+        });
+        
+        // Enhanced AI meeting analysis
+        async function analyzeMeetingTranscript() {
+            try {
+                // Simulate getting meeting transcript
+                const transcript = `
+                Team Discussion - Project Review Meeting
+                
+                Sarah: Good morning team! Let's discuss the progress on our AI collaboration features. How's the real-time editor coming along?
+                
+                John: The real-time editor is almost complete! I've implemented WebSocket connections for live collaboration and added AI-powered suggestions. Users can see each other's cursors and edits in real-time.
+                
+                AI Assistant: Excellent progress! Based on the implementation, I recommend adding conflict resolution for simultaneous edits and implementing operational transformation algorithms for consistency.
+                
+                Sarah: Great point! What about the task management system?
+                
+                John: Task management is integrated with drag-and-drop functionality. Next, we need to implement smart scheduling and AI-powered task prioritization.
+                `;
+                
+                const analysis = await geminiAPI.analyzeMeeting(transcript);
+                
+                addMessage(`📝 AI Meeting Analysis:\n\n**Summary:** ${analysis.summary}\n\n**Key Points:**\n${analysis.keyPoints.map(point => `• ${point}`).join('\n')}\n\n**Action Items:**\n${analysis.actionItems.map(item => `• ${item}`).join('\n')}\n\n**Sentiment:** ${analysis.sentiment}`, 'AI Assistant');
+            } catch (error) {
+                console.error('Meeting analysis error:', error);
+                addMessage('📝 AI Transcription Service:\n\n• Real-time speech-to-text for video calls\n• Automatic meeting summaries\n• Action item extraction\n• Multi-language support\n• Searchable transcript history\n\nAll conversations are transcribed with 95% accuracy and enhanced with AI insights.', 'AI Assistant');
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'k':
+                        e.preventDefault();
+                        searchMessages();
+                        break;
+                    case 'Enter':
+                        if (e.shiftKey) {
+                            e.preventDefault();
+                            startVideoCall();
+                        }
+                        break;
+                }
+            }
+        });
+        
+        // Initialize Gemini AI service
+        document.addEventListener('DOMContentLoaded', async function() {
+            try {
+                await geminiAPI.initializeService();
+                if (geminiAPI.isInitialized()) {
+                    console.log('✅ Gemini AI service initialized for team communication');
+                    // Generate initial AI suggestion
+                    addAISuggestion('Team starting new communication session');
+                } else {
+                    console.warn('⚠️ Gemini AI service not available - using fallback features');
+                }
+            } catch (error) {
+                console.error('❌ Failed to initialize Gemini AI service:', error);
+            }
+        });
+    </script>
+    
+    <!-- Include Gemini AI Service -->
+    <script src="js/gemini-api.js"></script>
+    
+    <!-- Real-Time Status Bar -->
+    <script src="js/status-bar.js"></script>
+</body>
+</html>

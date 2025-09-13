@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile - AI-Human Collaboration Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+        
+        .header p {
+            color: #636e72;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .project-card {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            border-color: #667eea;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.1);
+        }
+        
+        .project-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+        }
+        
+        .project-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #2d3436;
+        }
+        
+        .project-description {
+            color: #636e72;
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        
+        .project-link {
+            display: inline-block;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        
+        .project-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+        
+        .stat {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 20px;
+            border-radius: 15px;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #636e72;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Mobile Projects</h1>
+            <p>Discover amazing mobile built with AI-human collaboration</p>
+            
+            <div class="nav-links">
+                <a href="/index.html" class="nav-link">🏠 Home</a>
+                <a href="/projects/examples/collaboration-demo.html" class="nav-link">🚀 Live Demo</a>
+                <a href="https://github.com/RayBen445/Collab-with-AI" class="nav-link">📦 GitHub</a>
+            </div>
+        </div>
+        
+        <div class="stats">
+            <div class="stat">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Projects</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">100%</div>
+                <div class="stat-label">Open Source</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">Free</div>
+                <div class="stat-label">to Use</div>
+            </div>
+            <div class="stat">
+                <div class="stat-number">AI+Human</div>
+                <div class="stat-label">Built</div>
+            </div>
+        </div>
+        
+        <div class="projects-grid">
+            
+        <div class="project-card">
+            <div class="project-icon">📱</div>
+            <h3 class="project-title">PWA Starter Kit</h3>
+            <p class="project-description">Progressive Web App template</p>
+            <a href="pwa-starter.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+            <div class="project-icon">📲</div>
+            <h3 class="project-title">Mobile UI Kit</h3>
+            <p class="project-description">Touch-friendly interface components</p>
+            <a href="mobile-ui.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+            <div class="project-icon">📷</div>
+            <h3 class="project-title">Camera App</h3>
+            <p class="project-description">Take photos and apply filters</p>
+            <a href="camera-app.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+            <div class="project-icon">📍</div>
+            <h3 class="project-title">GPS Tracker</h3>
+            <p class="project-description">Location tracking and mapping</p>
+            <a href="gps-tracker.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+            <div class="project-icon">📴</div>
+            <h3 class="project-title">Offline-First App</h3>
+            <p class="project-description">Works without internet connection</p>
+            <a href="offline-app.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+            <div class="project-icon">🔔</div>
+            <h3 class="project-title">Push Notifications</h3>
+            <p class="project-description">Real-time notification system</p>
+            <a href="push-notifications.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+            <div class="project-icon">💳</div>
+            <h3 class="project-title">Mobile Payments</h3>
+            <p class="project-description">Secure payment processing</p>
+            <a href="mobile-payments.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+            <div class="project-icon">📱</div>
+            <h3 class="project-title">Barcode Scanner</h3>
+            <p class="project-description">Scan QR codes and barcodes</p>
+            <a href="barcode-scanner.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+            <div class="project-icon">🎤</div>
+            <h3 class="project-title">Voice Notes</h3>
+            <p class="project-description">Record and transcribe voice memos</p>
+            <a href="voice-notes.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+            <div class="project-icon">🏃</div>
+            <h3 class="project-title">Fitness Tracking</h3>
+            <p class="project-description">Track steps and activities</p>
+            <a href="fitness-app.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+            <div class="project-icon">🌤️</div>
+            <h3 class="project-title">Weather Widget</h3>
+            <p class="project-description">Location-based weather info</p>
+            <a href="weather-widget.html" class="project-link">View Project →</a>
+        </div>
+
+        <div class="project-card">
+            <div class="project-icon">📰</div>
+            <h3 class="project-title">News Reader</h3>
+            <p class="project-description">Personalized news aggregator</p>
+            <a href="news-reader.html" class="project-link">View Project →</a>
+        </div>
+        </div>
+    </div>
+    
+    <script>
+        // Add animation to project cards
+        document.querySelectorAll('.project-card').forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+            card.style.transition = 'all 0.6s ease';
+            
+            setTimeout(() => {
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, index * 100);
+        });
+        
+        console.log('Welcome to Mobile projects!');
+        console.log('Built with AI-Human collaboration');
+    </script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "version": 2,
+  "name": "collab-with-ai",
+  "builds": [
+    {
+      "src": "*.html",
+      "use": "@vercel/static"
+    },
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ],
+  "env": {
+    "GEMINI_API_KEY": "@gemini-api-key"
+  },
+  "functions": {
+    "api/get-gemini-key.js": {
+      "maxDuration": 10
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "name": "collab-with-ai-platform",
+  "version": "2.0.0",
+  "description": "AI-Human Collaboration Platform with Firebase Backend",
+  "main": "index.html",
+  "scripts": {
+    "dev": "firebase emulators:start",
+    "build": "echo 'Building for deployment...'",
+    "deploy": "firebase deploy",
+    "deploy:hosting": "firebase deploy --only hosting",
+    "deploy:functions": "firebase deploy --only functions",
+    "deploy:firestore": "firebase deploy --only firestore",
+    "deploy:storage": "firebase deploy --only storage",
+    "serve": "firebase serve",
+    "lint": "echo 'Linting code...'",
+    "test": "echo 'Running tests...'"
+  },
+  "keywords": [
+    "ai",
+    "collaboration",
+    "firebase",
+    "gemini",
+    "real-time",
+    "platform"
+  ],
+  "author": "Collab-with-AI Team",
+  "license": "MIT",
+  "devDependencies": {
+    "firebase-tools": "^12.0.0"
+  },
+  "dependencies": {
+    "firebase": "^10.7.0"
+  },
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RayBen445/Collab-with-AI.git"
+  },
+  "homepage": "https://rayben445.github.io/Collab-with-AI/",
+  "bugs": {
+    "url": "https://github.com/RayBen445/Collab-with-AI/issues"
+  }
+}

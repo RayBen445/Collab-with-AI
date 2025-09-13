@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini AI Integration Demo - Collab-with-AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 20px;
+        }
+        
+        .demo-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .demo-section {
+            background: white;
+            border-radius: 15px;
+            padding: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #667eea;
+        }
+        
+        .demo-section h3 {
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+        
+        .demo-controls {
+            margin-bottom: 20px;
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+        }
+        
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #555;
+        }
+        
+        .input-group input,
+        .input-group textarea,
+        .input-group select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+        
+        .input-group input:focus,
+        .input-group textarea:focus,
+        .input-group select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .demo-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+            width: 100%;
+            margin-bottom: 15px;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .demo-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result-area {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 100px;
+            border: 2px solid #e5e7eb;
+            font-family: 'Courier New', monospace;
+            white-space: pre-wrap;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        
+        .loading {
+            color: #667eea;
+            font-style: italic;
+        }
+        
+        .error {
+            color: #dc3545;
+            background: #f8d7da;
+            border-color: #f5c6cb;
+        }
+        
+        .success {
+            color: #155724;
+            background: #d4edda;
+            border-color: #c3e6cb;
+        }
+        
+        .api-status {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 30px;
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+        
+        .api-status.connected {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .api-status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .back-btn {
+            position: fixed;
+            top: 30px;
+            left: 30px;
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 25px;
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .back-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .setup-guide {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .setup-guide h3 {
+            color: #856404;
+            margin-bottom: 15px;
+        }
+        
+        .setup-guide ul {
+            color: #856404;
+            margin-left: 20px;
+        }
+        
+        .setup-guide li {
+            margin-bottom: 8px;
+        }
+        
+        .code-snippet {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="back-btn">← Back to Hub</a>
+    
+    <div class="container">
+        <div class="header">
+            <h1>🤖 Gemini AI Integration Demo</h1>
+            <p>Experience the power of Google Gemini API in collaborative workflows</p>
+        </div>
+        
+        <div class="setup-guide">
+            <h3>🔧 Setup Instructions</h3>
+            <ul>
+                <li>Set your <code>GEMINI_API_KEY</code> environment variable on Vercel</li>
+                <li>For local development, create a <code>.env.local</code> file with your API key</li>
+                <li>Ensure proper authentication is configured in the login system</li>
+                <li>API calls are secured through the backend endpoint at <code>/api/get-gemini-key</code></li>
+            </ul>
+        </div>
+        
+        <div class="api-status disconnected" id="apiStatus">
+            <span>🔴</span>
+            <span id="statusText">Initializing Gemini API...</span>
+        </div>
+        
+        <div class="demo-sections">
+            <!-- Code Generation Demo -->
+            <div class="demo-section">
+                <h3>💻 AI Code Generation</h3>
+                <div class="demo-controls">
+                    <div class="input-group">
+                        <label for="codeLanguage">Programming Language:</label>
+                        <select id="codeLanguage">
+                            <option value="javascript">JavaScript</option>
+                            <option value="python">Python</option>
+                            <option value="html">HTML</option>
+                            <option value="css">CSS</option>
+                            <option value="java">Java</option>
+                            <option value="cpp">C++</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="codeDescription">Describe what you want to build:</label>
+                        <textarea id="codeDescription" rows="3" placeholder="e.g., A function that calculates the factorial of a number"></textarea>
+                    </div>
+                    <button class="demo-btn" onclick="generateCode()">Generate Code</button>
+                </div>
+                <div class="result-area" id="codeResult">Generated code will appear here...</div>
+            </div>
+            
+            <!-- Documentation Generation Demo -->
+            <div class="demo-section">
+                <h3>📚 Documentation Generator</h3>
+                <div class="demo-controls">
+                    <div class="input-group">
+                        <label for="projectName">Project Name:</label>
+                        <input type="text" id="projectName" placeholder="My Awesome Project">
+                    </div>
+                    <div class="input-group">
+                        <label for="projectDesc">Project Description:</label>
+                        <textarea id="projectDesc" rows="2" placeholder="Brief description of your project"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="projectTech">Technologies Used:</label>
+                        <input type="text" id="projectTech" placeholder="React, Node.js, MongoDB">
+                    </div>
+                    <button class="demo-btn" onclick="generateDocs()">Generate Documentation</button>
+                </div>
+                <div class="result-area" id="docsResult">Generated documentation will appear here...</div>
+            </div>
+            
+            <!-- Task Suggestion Demo -->
+            <div class="demo-section">
+                <h3>✅ Smart Task Suggestions</h3>
+                <div class="demo-controls">
+                    <div class="input-group">
+                        <label for="projectContext">Project Context:</label>
+                        <textarea id="projectContext" rows="3" placeholder="Describe your current project and goals"></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="completedTasks">Completed Tasks (one per line):</label>
+                        <textarea id="completedTasks" rows="3" placeholder="- Setup project structure
+- Created user authentication
+- Built landing page"></textarea>
+                    </div>
+                    <button class="demo-btn" onclick="suggestTasks()">Get Task Suggestions</button>
+                </div>
+                <div class="result-area" id="tasksResult">Task suggestions will appear here...</div>
+            </div>
+            
+            <!-- Natural Language Commands Demo -->
+            <div class="demo-section">
+                <h3>🗣️ Natural Language Commands</h3>
+                <div class="demo-controls">
+                    <div class="input-group">
+                        <label for="nlCommand">Enter a natural language command:</label>
+                        <textarea id="nlCommand" rows="2" placeholder="Create a task to review the homepage design by Friday"></textarea>
+                    </div>
+                    <button class="demo-btn" onclick="processCommand()">Process Command</button>
+                </div>
+                <div class="result-area" id="commandResult">Command interpretation will appear here...</div>
+            </div>
+            
+            <!-- Meeting Analysis Demo -->
+            <div class="demo-section">
+                <h3>🎤 Meeting Analysis</h3>
+                <div class="demo-controls">
+                    <div class="input-group">
+                        <label for="meetingTranscript">Meeting Transcript:</label>
+                        <textarea id="meetingTranscript" rows="4" placeholder="Paste your meeting transcript here..."></textarea>
+                    </div>
+                    <button class="demo-btn" onclick="analyzeMeeting()">Analyze Meeting</button>
+                </div>
+                <div class="result-area" id="meetingResult">Meeting analysis will appear here...</div>
+            </div>
+            
+            <!-- Risk Assessment Demo -->
+            <div class="demo-section">
+                <h3>⚠️ Project Risk Assessment</h3>
+                <div class="demo-controls">
+                    <div class="input-group">
+                        <label for="riskProjectName">Project Name:</label>
+                        <input type="text" id="riskProjectName" placeholder="E-commerce Platform">
+                    </div>
+                    <div class="input-group">
+                        <label for="riskTimeline">Timeline (weeks):</label>
+                        <input type="number" id="riskTimeline" placeholder="12">
+                    </div>
+                    <div class="input-group">
+                        <label for="riskTeamSize">Team Size:</label>
+                        <input type="number" id="riskTeamSize" placeholder="5">
+                    </div>
+                    <div class="input-group">
+                        <label for="riskTechnologies">Technologies:</label>
+                        <input type="text" id="riskTechnologies" placeholder="React, Node.js, PostgreSQL">
+                    </div>
+                    <button class="demo-btn" onclick="assessRisks()">Assess Risks</button>
+                </div>
+                <div class="result-area" id="riskResult">Risk assessment will appear here...</div>
+            </div>
+        </div>
+        
+        <div class="setup-guide">
+            <h3>🔗 Integration Example</h3>
+            <p>Here's how to use the Gemini API service in your own code:</p>
+            <div class="code-snippet">// Include the Gemini API service
+&lt;script src="js/gemini-api.js"&gt;&lt;/script&gt;
+
+// Use AI features in your application
+async function useAI() {
+    try {
+        // Generate code
+        const codeResult = await geminiAPI.generateCode('javascript', 'Sort an array');
+        console.log(codeResult.code);
+        
+        // Get task suggestions
+        const tasks = await geminiAPI.suggestTasks('Building a web app', ['Setup complete']);
+        console.log(tasks);
+        
+        // Process natural language
+        const command = await geminiAPI.processNaturalLanguageCommand('Schedule meeting tomorrow');
+        console.log(command);
+    } catch (error) {
+        console.error('AI operation failed:', error);
+    }
+}</div>
+        </div>
+    </div>
+
+    <script src="js/gemini-api.js"></script>
+    <script>
+        // Initialize API status
+        let apiInitialized = false;
+
+        async function initializeAPI() {
+            try {
+                await geminiAPI.initializeService();
+                if (geminiAPI.isInitialized()) {
+                    updateAPIStatus(true, 'Gemini API Connected');
+                    apiInitialized = true;
+                } else {
+                    updateAPIStatus(false, 'API Key Required - Check Configuration');
+                }
+            } catch (error) {
+                updateAPIStatus(false, 'Connection Failed - ' + error.message);
+            }
+        }
+
+        function updateAPIStatus(connected, message) {
+            const statusElement = document.getElementById('apiStatus');
+            const statusText = document.getElementById('statusText');
+            
+            statusElement.className = `api-status ${connected ? 'connected' : 'disconnected'}`;
+            statusText.textContent = message;
+            
+            // Update icon
+            const icon = statusElement.querySelector('span');
+            icon.textContent = connected ? '🟢' : '🔴';
+        }
+
+        async function generateCode() {
+            const language = document.getElementById('codeLanguage').value;
+            const description = document.getElementById('codeDescription').value;
+            const resultArea = document.getElementById('codeResult');
+            
+            if (!description.trim()) {
+                resultArea.textContent = 'Please enter a description for the code you want to generate.';
+                resultArea.className = 'result-area error';
+                return;
+            }
+            
+            try {
+                resultArea.textContent = 'Generating code...';
+                resultArea.className = 'result-area loading';
+                
+                const result = await geminiAPI.generateCode(language, description);
+                resultArea.textContent = `// Generated ${language} code:\n\n${result.code}\n\n// Explanation:\n${result.explanation}`;
+                resultArea.className = 'result-area success';
+            } catch (error) {
+                resultArea.textContent = 'Error generating code: ' + error.message;
+                resultArea.className = 'result-area error';
+            }
+        }
+
+        async function generateDocs() {
+            const projectName = document.getElementById('projectName').value;
+            const projectDesc = document.getElementById('projectDesc').value;
+            const projectTech = document.getElementById('projectTech').value;
+            const resultArea = document.getElementById('docsResult');
+            
+            if (!projectName.trim()) {
+                resultArea.textContent = 'Please enter a project name.';
+                resultArea.className = 'result-area error';
+                return;
+            }
+            
+            try {
+                resultArea.textContent = 'Generating documentation...';
+                resultArea.className = 'result-area loading';
+                
+                const projectData = {
+                    name: projectName,
+                    description: projectDesc,
+                    technologies: projectTech.split(',').map(t => t.trim()).filter(t => t)
+                };
+                
+                const docs = await geminiAPI.generateDocumentation(projectData);
+                resultArea.textContent = docs;
+                resultArea.className = 'result-area success';
+            } catch (error) {
+                resultArea.textContent = 'Error generating documentation: ' + error.message;
+                resultArea.className = 'result-area error';
+            }
+        }
+
+        async function suggestTasks() {
+            const context = document.getElementById('projectContext').value;
+            const completed = document.getElementById('completedTasks').value;
+            const resultArea = document.getElementById('tasksResult');
+            
+            if (!context.trim()) {
+                resultArea.textContent = 'Please provide project context.';
+                resultArea.className = 'result-area error';
+                return;
+            }
+            
+            try {
+                resultArea.textContent = 'Generating task suggestions...';
+                resultArea.className = 'result-area loading';
+                
+                const completedTasks = completed.split('\n')
+                    .map(line => line.replace(/^-\s*/, '').trim())
+                    .filter(task => task);
+                
+                const suggestions = await geminiAPI.suggestTasks(context, completedTasks);
+                
+                let output = 'Suggested Tasks:\n\n';
+                suggestions.forEach((task, index) => {
+                    output += `${index + 1}. ${task.title}\n`;
+                    if (task.description) {
+                        output += `   ${task.description}\n`;
+                    }
+                    output += `   Priority: ${task.priority}\n\n`;
+                });
+                
+                resultArea.textContent = output;
+                resultArea.className = 'result-area success';
+            } catch (error) {
+                resultArea.textContent = 'Error generating task suggestions: ' + error.message;
+                resultArea.className = 'result-area error';
+            }
+        }
+
+        async function processCommand() {
+            const command = document.getElementById('nlCommand').value;
+            const resultArea = document.getElementById('commandResult');
+            
+            if (!command.trim()) {
+                resultArea.textContent = 'Please enter a command.';
+                resultArea.className = 'result-area error';
+                return;
+            }
+            
+            try {
+                resultArea.textContent = 'Processing command...';
+                resultArea.className = 'result-area loading';
+                
+                const result = await geminiAPI.processNaturalLanguageCommand(command);
+                
+                let output = `Command: "${command}"\n\n`;
+                output += `Action: ${result.action}\n`;
+                output += `Confidence: ${(result.confidence * 100).toFixed(1)}%\n`;
+                output += `Parameters: ${JSON.stringify(result.parameters, null, 2)}\n`;
+                
+                if (result.clarifications && result.clarifications.length > 0) {
+                    output += `\nClarifications needed:\n`;
+                    result.clarifications.forEach(clarification => {
+                        output += `- ${clarification}\n`;
+                    });
+                }
+                
+                resultArea.textContent = output;
+                resultArea.className = 'result-area success';
+            } catch (error) {
+                resultArea.textContent = 'Error processing command: ' + error.message;
+                resultArea.className = 'result-area error';
+            }
+        }
+
+        async function analyzeMeeting() {
+            const transcript = document.getElementById('meetingTranscript').value;
+            const resultArea = document.getElementById('meetingResult');
+            
+            if (!transcript.trim()) {
+                resultArea.textContent = 'Please provide a meeting transcript.';
+                resultArea.className = 'result-area error';
+                return;
+            }
+            
+            try {
+                resultArea.textContent = 'Analyzing meeting...';
+                resultArea.className = 'result-area loading';
+                
+                const analysis = await geminiAPI.analyzeMeeting(transcript);
+                
+                let output = 'Meeting Analysis:\n\n';
+                output += `Summary: ${analysis.summary}\n\n`;
+                
+                if (analysis.keyPoints.length > 0) {
+                    output += 'Key Discussion Points:\n';
+                    analysis.keyPoints.forEach(point => {
+                        output += `- ${point}\n`;
+                    });
+                    output += '\n';
+                }
+                
+                if (analysis.actionItems.length > 0) {
+                    output += 'Action Items:\n';
+                    analysis.actionItems.forEach(item => {
+                        output += `- ${item}\n`;
+                    });
+                    output += '\n';
+                }
+                
+                if (analysis.decisions.length > 0) {
+                    output += 'Decisions Made:\n';
+                    analysis.decisions.forEach(decision => {
+                        output += `- ${decision}\n`;
+                    });
+                    output += '\n';
+                }
+                
+                if (analysis.sentiment) {
+                    output += `Sentiment: ${analysis.sentiment}\n`;
+                }
+                
+                resultArea.textContent = output;
+                resultArea.className = 'result-area success';
+            } catch (error) {
+                resultArea.textContent = 'Error analyzing meeting: ' + error.message;
+                resultArea.className = 'result-area error';
+            }
+        }
+
+        async function assessRisks() {
+            const projectName = document.getElementById('riskProjectName').value;
+            const timeline = document.getElementById('riskTimeline').value;
+            const teamSize = document.getElementById('riskTeamSize').value;
+            const technologies = document.getElementById('riskTechnologies').value;
+            const resultArea = document.getElementById('riskResult');
+            
+            if (!projectName.trim()) {
+                resultArea.textContent = 'Please enter a project name.';
+                resultArea.className = 'result-area error';
+                return;
+            }
+            
+            try {
+                resultArea.textContent = 'Assessing project risks...';
+                resultArea.className = 'result-area loading';
+                
+                const projectData = {
+                    name: projectName,
+                    timeline: timeline ? parseInt(timeline) : null,
+                    teamSize: teamSize ? parseInt(teamSize) : null,
+                    technologies: technologies.split(',').map(t => t.trim()).filter(t => t)
+                };
+                
+                const assessment = await geminiAPI.assessRisks(projectData);
+                
+                let output = `Risk Assessment for: ${projectName}\n\n`;
+                output += `Overall Risk Level: ${assessment.overallRiskLevel.toUpperCase()}\n\n`;
+                
+                if (assessment.risks.length > 0) {
+                    output += 'Identified Risks:\n';
+                    assessment.risks.forEach((risk, index) => {
+                        output += `${index + 1}. ${risk.description}\n`;
+                        output += `   Probability: ${risk.probability}\n`;
+                        output += `   Impact: ${risk.impact}\n\n`;
+                    });
+                }
+                
+                output += `\nDetailed Analysis:\n${assessment.summary}`;
+                
+                resultArea.textContent = output;
+                resultArea.className = 'result-area success';
+            } catch (error) {
+                resultArea.textContent = 'Error assessing risks: ' + error.message;
+                resultArea.className = 'result-area error';
+            }
+        }
+
+        // Initialize the API when the page loads
+        window.addEventListener('load', initializeAPI);
+
+        // Add demo data for testing
+        function loadDemoData() {
+            document.getElementById('codeDescription').value = 'A function that calculates the Fibonacci sequence up to n numbers';
+            document.getElementById('projectName').value = 'Task Management App';
+            document.getElementById('projectDesc').value = 'A collaborative task management application with real-time updates';
+            document.getElementById('projectTech').value = 'React, Node.js, Socket.io, MongoDB';
+            document.getElementById('projectContext').value = 'Building a modern web application for team collaboration with real-time features';
+            document.getElementById('completedTasks').value = '- Project setup and initial structure\n- User authentication system\n- Basic task CRUD operations\n- Real-time WebSocket integration';
+            document.getElementById('nlCommand').value = 'Create a high-priority task to fix the login bug and assign it to the development team by tomorrow';
+            document.getElementById('meetingTranscript').value = 'John: Good morning everyone. Today we need to discuss the upcoming product launch.\nSarah: I think we should focus on the marketing strategy first.\nMike: Agreed. We also need to finalize the technical documentation.\nJohn: Great points. Sarah, can you prepare the marketing plan by Friday?\nSarah: Yes, I can do that.\nMike: I\'ll work on the technical docs this week.\nJohn: Perfect. Let\'s meet again next Tuesday to review progress.';
+            document.getElementById('riskProjectName').value = 'E-commerce Platform';
+            document.getElementById('riskTimeline').value = '16';
+            document.getElementById('riskTeamSize').value = '6';
+            document.getElementById('riskTechnologies').value = 'React, Node.js, PostgreSQL, Redis, AWS';
+        }
+
+        // Add a button to load demo data
+        setTimeout(() => {
+            const demoBtn = document.createElement('button');
+            demoBtn.textContent = '📝 Load Demo Data';
+            demoBtn.className = 'demo-btn';
+            demoBtn.style.position = 'fixed';
+            demoBtn.style.top = '30px';
+            demoBtn.style.right = '30px';
+            demoBtn.style.width = 'auto';
+            demoBtn.onclick = loadDemoData;
+            document.body.appendChild(demoBtn);
+        }, 1000);
+    </script>
+</body>
+</html>

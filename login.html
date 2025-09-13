@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Human Collaboration Platform - Login</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .login-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .login-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .login-header h1 {
+            font-size: 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .login-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.3s;
+            background: rgba(255, 255, 255, 0.8);
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .login-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-bottom: 20px;
+        }
+        
+        .login-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .error-message {
+            background: #ffe6e6;
+            color: #d63031;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .success-message {
+            background: #e8f5e8;
+            color: #00b894;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        
+        .admin-badge {
+            background: linear-gradient(135deg, #00b894, #55a3ff);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .features-info {
+            text-align: center;
+            margin-top: 20px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .back-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .back-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .back-link a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="login-header">
+            <h1>🤖 Welcome Back</h1>
+            <p>Sign in to access the collaboration platform</p>
+        </div>
+        
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required placeholder="Enter password">
+            </div>
+            
+            <button type="submit" class="login-btn">Sign In</button>
+        </form>
+        
+        <div class="features-info">
+            <p>✨ Access 235+ AI-powered collaboration tools</p>
+            <p>🎯 Enterprise features with admin controls</p>
+        </div>
+        
+        <div class="back-link">
+            <a href="index.html">← Back to Homepage</a>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        import { authService } from './js/firebase-auth.js';
+        
+        class LoginSystem {
+            constructor() {
+                this.form = document.getElementById('loginForm');
+                this.errorMessage = document.getElementById('errorMessage');
+                this.successMessage = document.getElementById('successMessage');
+                this.authService = authService;
+                
+                this.initializeEventListeners();
+                this.setupAuthStateListener();
+                this.addGoogleSignInButton();
+                this.addSignUpOption();
+            }
+            
+            initializeEventListeners() {
+                this.form.addEventListener('submit', (e) => this.handleLogin(e));
+            }
+            
+            setupAuthStateListener() {
+                // Listen for authentication state changes
+                window.addEventListener('userSignedIn', (event) => {
+                    const { user, isAdmin } = event.detail;
+                    this.showSuccess(`Welcome ${user.displayName || user.email}${isAdmin ? ' (Admin)' : ''}! Redirecting...`);
+                    
+                    setTimeout(() => {
+                        this.redirectToApp({ isAdmin });
+                    }, 1500);
+                });
+
+                window.addEventListener('userSignedOut', () => {
+                    // User signed out, stay on login page
+                });
+            }
+            
+            addGoogleSignInButton() {
+                const googleBtn = document.createElement('button');
+                googleBtn.type = 'button';
+                googleBtn.className = 'google-btn';
+                googleBtn.innerHTML = `
+                    <svg width="18" height="18" viewBox="0 0 18 18">
+                        <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+                        <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-7.18-2.53H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+                        <path fill="#FBBC05" d="M4.5 10.49a4.8 4.8 0 0 1 0-3.07V5.35H1.83a8 8 0 0 0 0 7.28l2.67-2.14z"/>
+                        <path fill="#EA4335" d="M8.98 3.54c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.35L4.5 7.42a4.77 4.77 0 0 1 4.48-3.88z"/>
+                    </svg>
+                    Continue with Google
+                `;
+                
+                googleBtn.addEventListener('click', () => this.handleGoogleSignIn());
+                
+                // Add Google button after the form
+                const googleContainer = document.createElement('div');
+                googleContainer.className = 'google-signin-container';
+                googleContainer.appendChild(googleBtn);
+                
+                this.form.parentNode.insertBefore(googleContainer, this.form.nextSibling);
+            }
+            
+            addSignUpOption() {
+                const signUpContainer = document.createElement('div');
+                signUpContainer.className = 'signup-container';
+                signUpContainer.innerHTML = `
+                    <p>Don't have an account? <button type="button" class="link-btn" id="showSignUp">Create Account</button></p>
+                    
+                    <div id="signUpForm" style="display: none;">
+                        <h3>Create New Account</h3>
+                        <div class="form-group">
+                            <label for="signUpName">Display Name</label>
+                            <input type="text" id="signUpName" placeholder="Enter your name">
+                        </div>
+                        <div class="form-group">
+                            <label for="signUpEmail">Email Address</label>
+                            <input type="email" id="signUpEmail" required placeholder="Enter your email">
+                        </div>
+                        <div class="form-group">
+                            <label for="signUpPassword">Password</label>
+                            <input type="password" id="signUpPassword" required placeholder="Enter password (min 6 characters)">
+                        </div>
+                        <button type="button" class="login-btn" id="signUpBtn">Create Account</button>
+                        <button type="button" class="link-btn" id="showSignIn">Back to Sign In</button>
+                    </div>
+                `;
+                
+                this.form.parentNode.appendChild(signUpContainer);
+                
+                // Add event listeners for sign up
+                document.getElementById('showSignUp').addEventListener('click', () => {
+                    document.getElementById('signUpForm').style.display = 'block';
+                    this.form.style.display = 'none';
+                });
+                
+                document.getElementById('showSignIn').addEventListener('click', () => {
+                    document.getElementById('signUpForm').style.display = 'none';
+                    this.form.style.display = 'block';
+                });
+                
+                document.getElementById('signUpBtn').addEventListener('click', () => this.handleSignUp());
+            }
+            
+            async handleLogin(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                
+                this.hideMessages();
+                
+                if (!email || !password) {
+                    this.showError('Please enter both email and password.');
+                    return;
+                }
+                
+                // Show loading state
+                this.showLoading('Signing in...');
+                
+                try {
+                    // Use Firebase Authentication
+                    const result = await this.authService.signInWithEmail(email, password);
+                    
+                    if (result.success) {
+                        // Success message will be shown by auth state listener
+                    } else {
+                        this.showError(result.error);
+                    }
+                } catch (error) {
+                    this.showError('Login failed. Please try again.');
+                    console.error('Login error:', error);
+                }
+            }
+            
+            async handleSignUp() {
+                const name = document.getElementById('signUpName').value.trim();
+                const email = document.getElementById('signUpEmail').value.trim();
+                const password = document.getElementById('signUpPassword').value;
+                
+                this.hideMessages();
+                
+                if (!email || !password) {
+                    this.showError('Please enter both email and password.');
+                    return;
+                }
+                
+                if (password.length < 6) {
+                    this.showError('Password must be at least 6 characters long.');
+                    return;
+                }
+                
+                this.showLoading('Creating account...');
+                
+                try {
+                    const result = await this.authService.signUpWithEmail(email, password, name);
+                    
+                    if (result.success) {
+                        // Success message will be shown by auth state listener
+                    } else {
+                        this.showError(result.error);
+                    }
+                } catch (error) {
+                    this.showError('Account creation failed. Please try again.');
+                    console.error('Sign up error:', error);
+                }
+            }
+            
+            async handleGoogleSignIn() {
+                this.hideMessages();
+                this.showLoading('Signing in with Google...');
+                
+                try {
+                    const result = await this.authService.signInWithGoogle();
+                    
+                    if (result.success) {
+                        // Success message will be shown by auth state listener
+                    } else {
+                        this.showError(result.error);
+                    }
+                } catch (error) {
+                    this.showError('Google sign-in failed. Please try again.');
+                    console.error('Google sign-in error:', error);
+                }
+            }
+            
+            redirectToApp(userData) {
+                if (userData.isAdmin) {
+                    window.location.href = 'admin-dashboard.html';
+                } else {
+                    window.location.href = 'collaboration.html';
+                }
+            }
+            
+            showError(message) {
+                this.errorMessage.textContent = message;
+                this.errorMessage.style.display = 'block';
+                this.successMessage.style.display = 'none';
+            }
+            
+            showSuccess(message) {
+                this.successMessage.textContent = message;
+                this.successMessage.style.display = 'block';
+                this.errorMessage.style.display = 'none';
+            }
+            
+            showLoading(message) {
+                this.successMessage.textContent = message;
+                this.successMessage.style.display = 'block';
+                this.errorMessage.style.display = 'none';
+            }
+            
+            hideMessages() {
+                this.errorMessage.style.display = 'none';
+                this.successMessage.style.display = 'none';
+            }
+        }
+        
+        // Initialize login system when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new LoginSystem();
+        });
+    </script>
+    
+    <style>
+        .google-signin-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .google-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #dadce0;
+            border-radius: 8px;
+            background: white;
+            color: #3c4043;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .google-btn:hover {
+            border-color: #4285f4;
+            box-shadow: 0 2px 8px rgba(66, 133, 244, 0.1);
+        }
+        
+        .google-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .signup-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .link-btn {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: inherit;
+        }
+        
+        .link-btn:hover {
+            color: #764ba2;
+        }
+        
+        #signUpForm {
+            margin-top: 20px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        
+        #signUpForm h3 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+    </style>
+</body>
+</html>

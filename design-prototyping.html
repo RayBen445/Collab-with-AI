@@ -1,0 +1,1102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Design & Prototyping Tools - AI-Human Collaboration Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .design-container {
+            padding: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+        
+        .tools-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 20px;
+            height: calc(100vh - 200px);
+        }
+        
+        /* Left Sidebar - Tools */
+        .tools-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .tool-category {
+            margin-bottom: 25px;
+        }
+        
+        .category-title {
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .tool-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 8px;
+            border: 2px solid transparent;
+        }
+        
+        .tool-item:hover {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: rgba(102, 126, 234, 0.3);
+        }
+        
+        .tool-item.active {
+            background: rgba(102, 126, 234, 0.2);
+            border-color: #667eea;
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        .tool-icon {
+            font-size: 1.2rem;
+        }
+        
+        .tool-name {
+            font-size: 0.9rem;
+        }
+        
+        /* Main Canvas */
+        .design-canvas {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .canvas-toolbar {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(0, 0, 0, 0.05);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .toolbar-group {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        .toolbar-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            background: white;
+            color: #333;
+            border: 1px solid #ddd;
+        }
+        
+        .toolbar-btn:hover {
+            background: #f0f0f0;
+            border-color: #667eea;
+        }
+        
+        .toolbar-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .canvas-area {
+            flex: 1;
+            position: relative;
+            overflow: auto;
+            background: #f8f9fa;
+            background-image: 
+                radial-gradient(circle, #ddd 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .artboard {
+            width: 800px;
+            height: 600px;
+            background: white;
+            margin: 50px auto;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .design-element {
+            position: absolute;
+            border: 2px solid transparent;
+            cursor: move;
+            transition: border-color 0.3s;
+        }
+        
+        .design-element:hover {
+            border-color: #667eea;
+        }
+        
+        .design-element.selected {
+            border-color: #667eea;
+        }
+        
+        .resize-handle {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: #667eea;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .resize-handle.top-left { top: -4px; left: -4px; cursor: nw-resize; }
+        .resize-handle.top-right { top: -4px; right: -4px; cursor: ne-resize; }
+        .resize-handle.bottom-left { bottom: -4px; left: -4px; cursor: sw-resize; }
+        .resize-handle.bottom-right { bottom: -4px; right: -4px; cursor: se-resize; }
+        
+        /* Right Sidebar - Properties */
+        .properties-sidebar {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .properties-section {
+            margin-bottom: 25px;
+        }
+        
+        .section-title {
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 15px;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .property-group {
+            margin-bottom: 15px;
+        }
+        
+        .property-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .property-input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+        }
+        
+        .property-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        .color-picker {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        
+        .color-option {
+            width: 30px;
+            height: 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 2px solid white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s;
+        }
+        
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        
+        .color-option.selected {
+            border-color: #667eea;
+        }
+        
+        /* AI Suggestions Panel */
+        .ai-suggestions {
+            background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+            border: 1px solid rgba(102, 126, 234, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .ai-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 12px;
+        }
+        
+        .suggestion-item {
+            background: white;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+        }
+        
+        .suggestion-item:hover {
+            background: rgba(102, 126, 234, 0.05);
+            border-color: #667eea;
+        }
+        
+        .suggestion-text {
+            font-size: 0.9rem;
+            color: #333;
+        }
+        
+        /* Version Control */
+        .version-control {
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .version-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .version-item:hover {
+            background: #f8f9fa;
+        }
+        
+        .version-item.current {
+            background: rgba(102, 126, 234, 0.1);
+            border: 1px solid rgba(102, 126, 234, 0.3);
+        }
+        
+        .version-timestamp {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .version-author {
+            font-size: 0.8rem;
+            color: #667eea;
+            font-weight: 500;
+        }
+        
+        /* Interactive Prototype Mode */
+        .prototype-mode {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .prototype-viewer {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            max-width: 90vw;
+            max-height: 90vh;
+            position: relative;
+        }
+        
+        .prototype-header {
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+        
+        .prototype-controls {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .prototype-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .prototype-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+        
+        .close-prototype {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        /* Navigation */
+        .nav-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        @media (max-width: 1200px) {
+            .tools-layout {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr auto;
+                height: auto;
+            }
+            
+            .tools-sidebar, .properties-sidebar {
+                order: 2;
+            }
+            
+            .design-canvas {
+                order: 1;
+                min-height: 500px;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .artboard {
+                width: 95%;
+                height: 400px;
+                margin: 20px auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="design-container">
+        <div class="header">
+            <h1>🎨 Design & Prototyping Tools</h1>
+            <p>Create, collaborate, and prototype with AI-powered design assistance</p>
+        </div>
+        
+        <div class="nav-buttons">
+            <a href="collaboration.html" class="nav-btn">🏠 Dashboard</a>
+            <a href="advanced-ai.html" class="nav-btn">🤖 AI Features</a>
+            <a href="gamification.html" class="nav-btn">🎮 Gamification</a>
+            <a href="financial-management.html" class="nav-btn">💰 Finance</a>
+        </div>
+        
+        <div class="tools-layout">
+            <!-- Left Sidebar - Tools -->
+            <div class="tools-sidebar">
+                <div class="tool-category">
+                    <div class="category-title">Design Tools</div>
+                    <div class="tool-item active" data-tool="select">
+                        <span class="tool-icon">👆</span>
+                        <span class="tool-name">Select</span>
+                    </div>
+                    <div class="tool-item" data-tool="rectangle">
+                        <span class="tool-icon">⬜</span>
+                        <span class="tool-name">Rectangle</span>
+                    </div>
+                    <div class="tool-item" data-tool="circle">
+                        <span class="tool-icon">⭕</span>
+                        <span class="tool-name">Circle</span>
+                    </div>
+                    <div class="tool-item" data-tool="text">
+                        <span class="tool-icon">📝</span>
+                        <span class="tool-name">Text</span>
+                    </div>
+                    <div class="tool-item" data-tool="image">
+                        <span class="tool-icon">🖼️</span>
+                        <span class="tool-name">Image</span>
+                    </div>
+                </div>
+                
+                <div class="tool-category">
+                    <div class="category-title">Components</div>
+                    <div class="tool-item" data-tool="button">
+                        <span class="tool-icon">🔘</span>
+                        <span class="tool-name">Button</span>
+                    </div>
+                    <div class="tool-item" data-tool="input">
+                        <span class="tool-icon">📄</span>
+                        <span class="tool-name">Input Field</span>
+                    </div>
+                    <div class="tool-item" data-tool="navbar">
+                        <span class="tool-icon">📊</span>
+                        <span class="tool-name">Navigation</span>
+                    </div>
+                    <div class="tool-item" data-tool="card">
+                        <span class="tool-icon">🃏</span>
+                        <span class="tool-name">Card</span>
+                    </div>
+                </div>
+                
+                <div class="tool-category">
+                    <div class="category-title">AI Tools</div>
+                    <div class="tool-item" data-tool="ai-layout">
+                        <span class="tool-icon">🤖</span>
+                        <span class="tool-name">AI Layout</span>
+                    </div>
+                    <div class="tool-item" data-tool="ai-colors">
+                        <span class="tool-icon">🎨</span>
+                        <span class="tool-name">AI Colors</span>
+                    </div>
+                    <div class="tool-item" data-tool="ai-copy">
+                        <span class="tool-icon">✍️</span>
+                        <span class="tool-name">AI Copy</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Canvas -->
+            <div class="design-canvas">
+                <div class="canvas-toolbar">
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" onclick="designTool.undo()">↶ Undo</button>
+                        <button class="toolbar-btn" onclick="designTool.redo()">↷ Redo</button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" onclick="designTool.zoomIn()">🔍+ Zoom In</button>
+                        <button class="toolbar-btn" onclick="designTool.zoomOut()">🔍- Zoom Out</button>
+                        <button class="toolbar-btn" onclick="designTool.resetZoom()">⚡ Reset</button>
+                    </div>
+                    <div class="toolbar-group">
+                        <button class="toolbar-btn" onclick="designTool.preview()">👁️ Preview</button>
+                        <button class="toolbar-btn" onclick="designTool.export()">📤 Export</button>
+                        <button class="toolbar-btn" onclick="designTool.share()">🔗 Share</button>
+                    </div>
+                </div>
+                
+                <div class="canvas-area" id="canvasArea">
+                    <div class="artboard" id="artboard">
+                        <!-- Design elements will be added here -->
+                        <div class="design-element" style="top: 50px; left: 50px; width: 200px; height: 60px; background: #667eea; color: white; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-weight: bold;">
+                            Welcome to Design Studio
+                        </div>
+                        <div class="design-element" style="top: 150px; left: 50px; width: 300px; height: 40px; background: white; border: 2px solid #ddd; border-radius: 6px; display: flex; align-items: center; padding: 0 15px; color: #666;">
+                            Enter your email address...
+                        </div>
+                        <div class="design-element" style="top: 220px; left: 50px; width: 120px; height: 40px; background: #00b894; color: white; display: flex; align-items: center; justify-content: center; border-radius: 6px; font-weight: 500; cursor: pointer;">
+                            Get Started
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Sidebar - Properties -->
+            <div class="properties-sidebar">
+                <div class="ai-suggestions">
+                    <div class="ai-title">
+                        <span>🤖</span>
+                        <span>AI Suggestions</span>
+                    </div>
+                    <div class="suggestion-item" onclick="designTool.applySuggestion('colors')">
+                        <div class="suggestion-text">💡 Improve color contrast for accessibility</div>
+                    </div>
+                    <div class="suggestion-item" onclick="designTool.applySuggestion('spacing')">
+                        <div class="suggestion-text">📏 Optimize element spacing for better UX</div>
+                    </div>
+                    <div class="suggestion-item" onclick="designTool.applySuggestion('layout')">
+                        <div class="suggestion-text">📱 Add responsive layout breakpoints</div>
+                    </div>
+                </div>
+                
+                <div class="properties-section">
+                    <div class="section-title">
+                        <span>⚙️</span>
+                        <span>Properties</span>
+                    </div>
+                    
+                    <div class="property-group">
+                        <label class="property-label">Width</label>
+                        <input type="number" class="property-input" value="200" id="elementWidth">
+                    </div>
+                    
+                    <div class="property-group">
+                        <label class="property-label">Height</label>
+                        <input type="number" class="property-input" value="60" id="elementHeight">
+                    </div>
+                    
+                    <div class="property-group">
+                        <label class="property-label">X Position</label>
+                        <input type="number" class="property-input" value="50" id="elementX">
+                    </div>
+                    
+                    <div class="property-group">
+                        <label class="property-label">Y Position</label>
+                        <input type="number" class="property-input" value="50" id="elementY">
+                    </div>
+                    
+                    <div class="property-group">
+                        <label class="property-label">Background Color</label>
+                        <div class="color-picker">
+                            <div class="color-option selected" style="background: #667eea;" data-color="#667eea"></div>
+                            <div class="color-option" style="background: #00b894;" data-color="#00b894"></div>
+                            <div class="color-option" style="background: #fd79a8;" data-color="#fd79a8"></div>
+                            <div class="color-option" style="background: #ffc107;" data-color="#ffc107"></div>
+                            <div class="color-option" style="background: #6c757d;" data-color="#6c757d"></div>
+                            <div class="color-option" style="background: #ffffff; border: 1px solid #ddd;" data-color="#ffffff"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="properties-section">
+                    <div class="section-title">
+                        <span>🔄</span>
+                        <span>Version Control</span>
+                    </div>
+                    
+                    <div class="version-control">
+                        <div class="version-item current">
+                            <div>
+                                <div style="font-weight: 500;">Current Version</div>
+                                <div class="version-timestamp">2 minutes ago</div>
+                                <div class="version-author">by You</div>
+                            </div>
+                        </div>
+                        <div class="version-item">
+                            <div>
+                                <div style="font-weight: 500;">v1.2 - Updated colors</div>
+                                <div class="version-timestamp">1 hour ago</div>
+                                <div class="version-author">by Sarah</div>
+                            </div>
+                        </div>
+                        <div class="version-item">
+                            <div>
+                                <div style="font-weight: 500;">v1.1 - Initial layout</div>
+                                <div class="version-timestamp">3 hours ago</div>
+                                <div class="version-author">by Mike</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="properties-section">
+                    <div class="section-title">
+                        <span>💬</span>
+                        <span>Comments</span>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                        <div style="font-weight: 500; color: #667eea; margin-bottom: 5px;">Emily Davis</div>
+                        <div style="font-size: 0.9rem; color: #333; margin-bottom: 5px;">Love the new color scheme! Maybe increase the button size?</div>
+                        <div style="font-size: 0.8rem; color: #666;">30 minutes ago</div>
+                    </div>
+                    
+                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                        <div style="font-weight: 500; color: #667eea; margin-bottom: 5px;">Alex Thompson</div>
+                        <div style="font-size: 0.9rem; color: #333; margin-bottom: 5px;">The spacing looks much better now. Ready for review!</div>
+                        <div style="font-size: 0.8rem; color: #666;">1 hour ago</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Prototype Mode -->
+    <div class="prototype-mode" id="prototypeMode">
+        <div class="prototype-viewer">
+            <div class="prototype-header">
+                <h3>Interactive Prototype</h3>
+                <div class="prototype-controls">
+                    <button class="prototype-btn">📱 Mobile</button>
+                    <button class="prototype-btn">💻 Desktop</button>
+                    <button class="prototype-btn">🔗 Share</button>
+                </div>
+                <button class="close-prototype" onclick="designTool.closePrototype()">&times;</button>
+            </div>
+            <div style="padding: 20px; height: 600px; overflow: auto; background: #f8f9fa;">
+                <div style="background: white; border-radius: 8px; padding: 40px; margin: 0 auto; max-width: 800px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+                    <h2 style="color: #667eea; margin-bottom: 20px;">Interactive Design Preview</h2>
+                    <p style="color: #666; margin-bottom: 30px;">This is how your design will look and behave in the real application. All interactions are fully functional.</p>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <input type="email" placeholder="Enter your email address..." style="width: 100%; padding: 12px; border: 2px solid #ddd; border-radius: 6px; font-size: 1rem;">
+                    </div>
+                    
+                    <button style="background: #00b894; color: white; border: none; padding: 12px 30px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#019874'" onmouseout="this.style.background='#00b894'">
+                        Get Started
+                    </button>
+                    
+                    <div style="margin-top: 40px; padding: 20px; background: #f8f9fa; border-radius: 8px;">
+                        <h4 style="color: #333; margin-bottom: 10px;">✨ Interactive Features:</h4>
+                        <ul style="color: #666; line-height: 1.6;">
+                            <li>Hover effects and animations</li>
+                            <li>Form validation and feedback</li>
+                            <li>Responsive layout adaptation</li>
+                            <li>Real-time user interaction simulation</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class DesignTool {
+            constructor() {
+                this.currentTool = 'select';
+                this.selectedElement = null;
+                this.zoom = 1;
+                this.history = [];
+                this.historyIndex = -1;
+                
+                this.initializeEventListeners();
+                this.saveState();
+            }
+            
+            initializeEventListeners() {
+                // Tool selection
+                document.querySelectorAll('.tool-item').forEach(tool => {
+                    tool.addEventListener('click', (e) => {
+                        this.selectTool(tool.dataset.tool);
+                    });
+                });
+                
+                // Design element selection
+                document.querySelectorAll('.design-element').forEach(element => {
+                    element.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.selectElement(element);
+                    });
+                    
+                    // Make elements draggable
+                    this.makeDraggable(element);
+                });
+                
+                // Color picker
+                document.querySelectorAll('.color-option').forEach(color => {
+                    color.addEventListener('click', (e) => {
+                        this.changeColor(color.dataset.color);
+                    });
+                });
+                
+                // Property inputs
+                document.getElementById('elementWidth').addEventListener('input', () => this.updateProperty('width'));
+                document.getElementById('elementHeight').addEventListener('input', () => this.updateProperty('height'));
+                document.getElementById('elementX').addEventListener('input', () => this.updateProperty('x'));
+                document.getElementById('elementY').addEventListener('input', () => this.updateProperty('y'));
+                
+                // Canvas click to deselect
+                document.getElementById('artboard').addEventListener('click', (e) => {
+                    if (e.target === e.currentTarget) {
+                        this.deselectAll();
+                    }
+                });
+            }
+            
+            selectTool(toolName) {
+                this.currentTool = toolName;
+                
+                // Update active tool visual
+                document.querySelectorAll('.tool-item').forEach(tool => {
+                    tool.classList.remove('active');
+                });
+                document.querySelector(`[data-tool="${toolName}"]`).classList.add('active');
+                
+                // Change cursor based on tool
+                const artboard = document.getElementById('artboard');
+                artboard.style.cursor = toolName === 'select' ? 'default' : 'crosshair';
+                
+                this.showNotification(`🔧 Tool changed to: ${toolName}`, 'info');
+            }
+            
+            selectElement(element) {
+                this.deselectAll();
+                this.selectedElement = element;
+                element.classList.add('selected');
+                
+                // Update properties panel
+                this.updatePropertiesPanel(element);
+                
+                // Add resize handles
+                this.addResizeHandles(element);
+            }
+            
+            deselectAll() {
+                document.querySelectorAll('.design-element').forEach(el => {
+                    el.classList.remove('selected');
+                    // Remove resize handles
+                    el.querySelectorAll('.resize-handle').forEach(handle => handle.remove());
+                });
+                this.selectedElement = null;
+            }
+            
+            addResizeHandles(element) {
+                const handles = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
+                handles.forEach(position => {
+                    const handle = document.createElement('div');
+                    handle.className = `resize-handle ${position}`;
+                    element.appendChild(handle);
+                });
+            }
+            
+            updatePropertiesPanel(element) {
+                const style = element.style;
+                const rect = element.getBoundingClientRect();
+                
+                document.getElementById('elementWidth').value = parseInt(style.width) || rect.width;
+                document.getElementById('elementHeight').value = parseInt(style.height) || rect.height;
+                document.getElementById('elementX').value = parseInt(style.left) || 0;
+                document.getElementById('elementY').value = parseInt(style.top) || 0;
+                
+                // Update color picker
+                const bgColor = style.backgroundColor || style.background;
+                this.updateColorPicker(bgColor);
+            }
+            
+            updateColorPicker(color) {
+                document.querySelectorAll('.color-option').forEach(option => {
+                    option.classList.remove('selected');
+                    if (option.dataset.color === color) {
+                        option.classList.add('selected');
+                    }
+                });
+            }
+            
+            updateProperty(property) {
+                if (!this.selectedElement) return;
+                
+                const value = document.getElementById(`element${property.charAt(0).toUpperCase() + property.slice(1)}`).value;
+                
+                switch(property) {
+                    case 'width':
+                        this.selectedElement.style.width = value + 'px';
+                        break;
+                    case 'height':
+                        this.selectedElement.style.height = value + 'px';
+                        break;
+                    case 'x':
+                        this.selectedElement.style.left = value + 'px';
+                        break;
+                    case 'y':
+                        this.selectedElement.style.top = value + 'px';
+                        break;
+                }
+                
+                this.saveState();
+            }
+            
+            changeColor(color) {
+                if (!this.selectedElement) return;
+                
+                this.selectedElement.style.background = color;
+                this.updateColorPicker(color);
+                
+                // Update color picker visual
+                document.querySelectorAll('.color-option').forEach(option => {
+                    option.classList.remove('selected');
+                });
+                document.querySelector(`[data-color="${color}"]`).classList.add('selected');
+                
+                this.saveState();
+            }
+            
+            makeDraggable(element) {
+                let isDragging = false;
+                let startX, startY, initialX, initialY;
+                
+                element.addEventListener('mousedown', (e) => {
+                    if (this.currentTool !== 'select') return;
+                    
+                    isDragging = true;
+                    startX = e.clientX;
+                    startY = e.clientY;
+                    initialX = parseInt(element.style.left) || 0;
+                    initialY = parseInt(element.style.top) || 0;
+                    
+                    element.style.zIndex = 1000;
+                });
+                
+                document.addEventListener('mousemove', (e) => {
+                    if (!isDragging) return;
+                    
+                    const deltaX = e.clientX - startX;
+                    const deltaY = e.clientY - startY;
+                    
+                    element.style.left = (initialX + deltaX) + 'px';
+                    element.style.top = (initialY + deltaY) + 'px';
+                    
+                    // Update properties panel if selected
+                    if (element === this.selectedElement) {
+                        document.getElementById('elementX').value = initialX + deltaX;
+                        document.getElementById('elementY').value = initialY + deltaY;
+                    }
+                });
+                
+                document.addEventListener('mouseup', () => {
+                    if (isDragging) {
+                        isDragging = false;
+                        element.style.zIndex = 'auto';
+                        this.saveState();
+                    }
+                });
+            }
+            
+            applySuggestion(type) {
+                switch(type) {
+                    case 'colors':
+                        this.showNotification('🎨 AI optimized colors for better accessibility!', 'success');
+                        // Apply color optimizations
+                        if (this.selectedElement) {
+                            this.selectedElement.style.background = '#4a6cf7'; // More accessible blue
+                        }
+                        break;
+                    case 'spacing':
+                        this.showNotification('📏 AI improved element spacing for better UX!', 'success');
+                        // Apply spacing optimizations
+                        document.querySelectorAll('.design-element').forEach((el, index) => {
+                            const newTop = 50 + (index * 80); // Better spacing
+                            el.style.top = newTop + 'px';
+                        });
+                        break;
+                    case 'layout':
+                        this.showNotification('📱 AI added responsive layout breakpoints!', 'success');
+                        // Apply responsive layout
+                        break;
+                }
+                this.saveState();
+            }
+            
+            // Toolbar functions
+            undo() {
+                if (this.historyIndex > 0) {
+                    this.historyIndex--;
+                    this.restoreState(this.history[this.historyIndex]);
+                    this.showNotification('↶ Undid last action', 'info');
+                }
+            }
+            
+            redo() {
+                if (this.historyIndex < this.history.length - 1) {
+                    this.historyIndex++;
+                    this.restoreState(this.history[this.historyIndex]);
+                    this.showNotification('↷ Redid last action', 'info');
+                }
+            }
+            
+            zoomIn() {
+                this.zoom = Math.min(this.zoom * 1.2, 3);
+                this.applyZoom();
+                this.showNotification(`🔍 Zoomed to ${Math.round(this.zoom * 100)}%`, 'info');
+            }
+            
+            zoomOut() {
+                this.zoom = Math.max(this.zoom / 1.2, 0.3);
+                this.applyZoom();
+                this.showNotification(`🔍 Zoomed to ${Math.round(this.zoom * 100)}%`, 'info');
+            }
+            
+            resetZoom() {
+                this.zoom = 1;
+                this.applyZoom();
+                this.showNotification('⚡ Zoom reset to 100%', 'info');
+            }
+            
+            applyZoom() {
+                const artboard = document.getElementById('artboard');
+                artboard.style.transform = `scale(${this.zoom})`;
+                artboard.style.transformOrigin = 'top left';
+            }
+            
+            preview() {
+                document.getElementById('prototypeMode').style.display = 'flex';
+                this.showNotification('👁️ Entering preview mode', 'success');
+            }
+            
+            closePrototype() {
+                document.getElementById('prototypeMode').style.display = 'none';
+            }
+            
+            export() {
+                // Simulate export functionality
+                const formats = ['PNG', 'JPG', 'SVG', 'PDF'];
+                const format = formats[Math.floor(Math.random() * formats.length)];
+                this.showNotification(`📤 Design exported as ${format}!`, 'success');
+            }
+            
+            share() {
+                // Simulate sharing functionality
+                const shareUrl = 'https://design-platform.com/shared/abc123';
+                navigator.clipboard.writeText(shareUrl).then(() => {
+                    this.showNotification('🔗 Share link copied to clipboard!', 'success');
+                }).catch(() => {
+                    this.showNotification('🔗 Share link: ' + shareUrl, 'info');
+                });
+            }
+            
+            saveState() {
+                const state = document.getElementById('artboard').innerHTML;
+                
+                // Remove future history if we're not at the end
+                if (this.historyIndex < this.history.length - 1) {
+                    this.history = this.history.slice(0, this.historyIndex + 1);
+                }
+                
+                this.history.push(state);
+                this.historyIndex++;
+                
+                // Limit history size
+                if (this.history.length > 50) {
+                    this.history.shift();
+                    this.historyIndex--;
+                }
+            }
+            
+            restoreState(state) {
+                const artboard = document.getElementById('artboard');
+                artboard.innerHTML = state;
+                
+                // Re-attach event listeners
+                document.querySelectorAll('.design-element').forEach(element => {
+                    element.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this.selectElement(element);
+                    });
+                    this.makeDraggable(element);
+                });
+                
+                this.deselectAll();
+            }
+            
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.style.cssText = `
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: ${type === 'success' ? 'linear-gradient(135deg, #00b894, #55a3ff)' : 
+                                   type === 'info' ? 'linear-gradient(135deg, #667eea, #764ba2)' : 
+                                   'linear-gradient(135deg, #fd79a8, #e84393)'};
+                    color: white;
+                    padding: 15px 25px;
+                    border-radius: 10px;
+                    font-weight: 500;
+                    z-index: 2000;
+                    animation: slideIn 0.5s ease;
+                    max-width: 350px;
+                    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                `;
+                notification.textContent = message;
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.5s ease';
+                    setTimeout(() => notification.remove(), 500);
+                }, 3000);
+            }
+        }
+        
+        // CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideIn {
+                from { transform: translateX(100%); opacity: 0; }
+                to { transform: translateX(0); opacity: 1; }
+            }
+            
+            @keyframes slideOut {
+                from { transform: translateX(0); opacity: 1; }
+                to { transform: translateX(100%); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Initialize design tool
+        const designTool = new DesignTool();
+    </script>
+</body>
+</html>
