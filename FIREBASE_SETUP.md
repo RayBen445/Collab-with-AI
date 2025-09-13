@@ -9,7 +9,7 @@ This guide documents the comprehensive Firebase integration that has been implem
 ### 1. Firebase Authentication ✅
 - **Email/Password Authentication** - Users can sign up and log in with email
 - **Google Sign-In** - One-click authentication with Google accounts  
-- **Admin Role Management** - Automatic admin privileges for `oladoyeheritage445@gmail.com`
+- **Admin Role Management** - Configurable admin privileges via environment variables
 - **Secure Session Management** - JWT tokens and automatic session handling
 
 ### 2. Cloud Firestore ✅
@@ -87,7 +87,7 @@ match /projects/{projectId} {
 
 // Admin-only access for sensitive data
 match /admin/{document=**} {
-  allow read, write: if request.auth.token.email == 'oladoyeheritage445@gmail.com';
+  allow read, write: if request.auth.token.email == resource.data.adminEmail;
 }
 ```
 
@@ -131,7 +131,7 @@ const firebaseConfig = {
 Set these environment variables in Firebase Functions:
 ```bash
 firebase functions:config:set gemini.api_key="your-gemini-api-key"
-firebase functions:config:set admin.email="oladoyeheritage445@gmail.com"
+firebase functions:config:set admin.email="your-admin-email@example.com"
 ```
 
 ### 4. Deploy to Firebase
@@ -214,7 +214,7 @@ if (result.success) {
 
 ## 📊 Admin Dashboard Integration
 
-The admin user (`oladoyeheritage445@gmail.com`) now has access to:
+The admin user (configured via environment variables) now has access to:
 - Real-time platform analytics
 - User management capabilities  
 - Project oversight tools
@@ -245,11 +245,19 @@ The admin user (`oladoyeheritage445@gmail.com`) now has access to:
 
 ## 🚨 Important Notes
 
-1. **API Keys**: Never commit API keys to version control
-2. **Security Rules**: Test thoroughly before deploying to production
-3. **Indexes**: Monitor Firestore usage and optimize indexes as needed
-4. **Functions**: Monitor function execution and optimize for cost
-5. **Storage**: Implement file size limits and content moderation
+1. **API Keys**: Never commit API keys to version control - use environment variables
+2. **Admin Email**: Configure admin email via environment variables, not hardcoded values
+3. **Admin Token**: Use secure, randomly generated tokens for admin authentication
+4. **Security Rules**: Test thoroughly before deploying to production
+5. **Indexes**: Monitor Firestore usage and optimize indexes as needed
+6. **Functions**: Monitor function execution and optimize for cost
+7. **Storage**: Implement file size limits and content moderation
+
+### 🔒 Security Best Practices
+- Use Firebase Functions config for sensitive data: `firebase functions:config:set`
+- Use Vercel environment variables for client-side configuration
+- Regularly rotate API keys and admin tokens
+- Monitor authentication logs for suspicious activity
 
 ## 🛠️ Development Workflow
 
