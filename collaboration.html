@@ -1158,19 +1158,22 @@
                     this.showAuthRequired();
                 });
 
-                // Check if user is already authenticated
-                if (this.authService.currentUser) {
+                // Check if user is already authenticated (only if authService exists)
+                if (this.authService && this.authService.currentUser) {
                     this.currentUser = this.authService.currentUser;
                     await this.loadUserData();
                     this.initializePlatform();
+                } else if (!this.authService) {
+                    // If no authService, wait for userSignedIn event from AuthenticationManager
+                    console.log('Waiting for authentication event...');
                 } else {
                     this.showAuthRequired();
                 }
             }
             
             setupAuthGuard() {
-                // Show authentication required overlay
-                this.showAuthRequired();
+                // Don't automatically show auth required - let the authentication manager handle it
+                console.log('Auth guard setup complete');
             }
             
             showAuthRequired() {
@@ -1814,7 +1817,16 @@
     
     <!-- Include Firebase Configuration and Authentication -->
     <script type="module">
-        import { authService } from './js/firebase-auth.js';
+        let authService = null;
+        
+        try {
+            const { authService: importedAuthService } = await import('./js/firebase-auth.js');
+            authService = importedAuthService;
+            console.log('Firebase auth service loaded successfully');
+        } catch (error) {
+            console.log('Firebase auth service not available:', error.message);
+            authService = null;
+        }
         
         // Enhanced Authentication Manager for Collaboration Platform
         class AuthenticationManager {
@@ -1825,7 +1837,24 @@
             }
             
             async initializeAuthentication() {
+                console.log('Initializing authentication...');
+                
                 try {
+                    // Check for universal authentication first
+                    const universalAuth = this.checkUniversalAuth();
+                    if (universalAuth) {
+                        console.log('Universal authentication found:', universalAuth);
+                        await this.handleUniversalAuth(universalAuth);
+                        return;
+                    }
+                    
+                    // Check if Firebase auth service is available
+                    if (!this.authService) {
+                        console.log('Firebase auth service not available, showing auth required');
+                        this.showAuthRequired();
+                        return;
+                    }
+                    
                     // Wait for auth service to initialize
                     await this.authService.waitForInitialization();
                     
@@ -1842,6 +1871,51 @@
                     console.error('Failed to initialize authentication:', error);
                     this.showAuthRequired();
                 }
+            }
+            
+            checkUniversalAuth() {
+                try {
+                    const universalAuthData = localStorage.getItem('universalAuth');
+                    if (!universalAuthData) return null;
+                    
+                    const authData = JSON.parse(universalAuthData);
+                    
+                    // Check if authentication is still valid (24 hours)
+                    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+                    if (Date.now() - authData.loginTime > TWENTY_FOUR_HOURS) {
+                        localStorage.removeItem('universalAuth');
+                        return null;
+                    }
+                    
+                    return authData;
+                } catch (error) {
+                    console.error('Error checking universal auth:', error);
+                    localStorage.removeItem('universalAuth');
+                    return null;
+                }
+            }
+            
+            async handleUniversalAuth(authData) {
+                // Create a mock user object compatible with the existing system
+                const mockUser = {
+                    email: authData.email,
+                    displayName: authData.displayName,
+                    uid: 'universal_' + authData.email.replace(/[^a-zA-Z0-9]/g, '_'),
+                    isUniversalAuth: true
+                };
+                
+                this.currentUser = mockUser;
+                
+                // Update UI with universal auth user
+                this.updateUserProfile(mockUser, null, authData.isAdmin);
+                this.hideAuthRequired();
+                
+                // Dispatch signed in event for other components
+                window.dispatchEvent(new CustomEvent('userSignedIn', {
+                    detail: { user: mockUser, isAdmin: authData.isAdmin, isUniversalAuth: true }
+                }));
+                
+                console.log('Universal authentication successful for:', authData.email);
             }
             
             setupAuthEventListeners() {
@@ -1902,7 +1976,7 @@
                 }
                 
                 // Add admin badge if user is admin
-                if (isAdmin || this.authService.isCurrentUserAdmin()) {
+                if (isAdmin || (this.authService && this.authService.isCurrentUserAdmin && this.authService.isCurrentUserAdmin())) {
                     this.addAdminBadge();
                 }
             }
@@ -1942,7 +2016,16 @@
             
             async signOut() {
                 try {
-                    await this.authService.signOutUser();
+                    // Clear universal authentication if it exists
+                    localStorage.removeItem('universalAuth');
+                    
+                    // Sign out from Firebase if user is authenticated there
+                    if (this.authService && this.authService.currentUser) {
+                        await this.authService.signOutUser();
+                    } else {
+                        // If using universal auth only, redirect immediately
+                        window.location.href = 'login.html';
+                    }
                 } catch (error) {
                     console.error('Sign out error:', error);
                     // Force redirect to login on error
@@ -1954,8 +2037,10 @@
         // Initialize authentication manager
         window.authManager = new AuthenticationManager();
         
-        // Make auth service available globally for other scripts
-        window.authService = authService;
+        // Make auth service available globally for other scripts (only if it exists)
+        if (typeof authService !== 'undefined') {
+            window.authService = authService;
+        }
     </script>
     
     <!-- Include Fixed Gemini AI Service -->

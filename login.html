@@ -463,6 +463,16 @@
                     console.log('Professor password detected, redirecting...');
                     showMessage('Welcome! Using universal access. Redirecting...', 'success');
                     
+                    // Store universal authentication state
+                    const universalAuthData = {
+                        email: email,
+                        displayName: email.split('@')[0],
+                        isUniversalAuth: true,
+                        loginTime: Date.now(),
+                        isAdmin: email.toLowerCase() === 'oladoyeheritage445@gmail.com'
+                    };
+                    localStorage.setItem('universalAuth', JSON.stringify(universalAuthData));
+                    
                     setTimeout(function() {
                         // Check if admin email matches
                         const adminEmail = 'oladoyeheritage445@gmail.com'; // Default admin email
@@ -728,6 +738,17 @@
                 // Check for universal "professor" password
                 if (password === 'professor') {
                     this.showSuccess(`Welcome! Using universal access. Redirecting...`);
+                    
+                    // Store universal authentication state
+                    const universalAuthData = {
+                        email: email,
+                        displayName: email.split('@')[0],
+                        isUniversalAuth: true,
+                        loginTime: Date.now(),
+                        isAdmin: this.isAdmin(email)
+                    };
+                    localStorage.setItem('universalAuth', JSON.stringify(universalAuthData));
+                    
                     // Redirect directly without Firebase authentication
                     setTimeout(() => {
                         this.redirectToApp(this.isAdmin(email));
