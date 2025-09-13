@@ -43,12 +43,6 @@
             margin-bottom: 20px;
         }
         
-        .header p {
-            color: #636e72;
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-        }
-        
         .nav-links {
             display: flex;
             justify-content: center;
@@ -80,24 +74,519 @@
             border: 2px solid #e9ecef;
         }
         
-        .demo-area {
-            background: #f8f9fa;
-            border-radius: 15px;
+        .rps-game {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 20px;
             padding: 30px;
-            margin-bottom: 30px;
+            color: white;
             text-align: center;
-            min-height: 300px;
+            box-shadow: 0 15px 35px rgba(102, 126, 234, 0.3);
+        }
+        
+        .game-header h3 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .game-score {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin-bottom: 30px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            flex-wrap: wrap;
+        }
+        
+        .score-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 25px;
+            border-radius: 15px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .battle-area {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            backdrop-filter: blur(10px);
+        }
+        
+        .choices {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .choice-display {
+            text-align: center;
+            min-width: 120px;
+        }
+        
+        .choice-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
+            display: block;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .choice-label {
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+        
+        .vs {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+        
+        .player-choices {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            max-width: 400px;
+            margin: 0 auto 30px;
+        }
+        
+        .choice-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: 3px solid transparent;
+            border-radius: 20px;
+            padding: 20px;
+            font-size: 3rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .choice-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+            border-color: #ffd700;
+        }
+        
+        .choice-btn:active {
+            transform: scale(0.95);
+        }
+        
+        .game-result {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+            min-height: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
         }
         
-        .demo-placeholder {
-            font-size: 4rem;
-            color: #667eea;
-            margin-bottom: 20px;
+        .win {
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
         }
+        
+        .lose {
+            color: #ff0000;
+            text-shadow: 0 0 10px #ff0000;
+        }
+        
+        .draw {
+            color: #ffd700;
+            text-shadow: 0 0 10px #ffd700;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 12px 25px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .stats {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 30px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stats h4 {
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+        }
+        
+        .stat-item {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px;
+            border-radius: 10px;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff00;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="icon">✂️</div>
+            <h1>Rock Paper Scissors</h1>
+            <p>Classic hand game with AI</p>
+            
+            <div class="nav-links">
+                <a href="/index.html" class="nav-link">🏠 Home</a>
+                <a href="/projects/games/" class="nav-link">📁 Games</a>
+                <a href="/projects/examples/collaboration-demo.html" class="nav-link">🚀 Live Demo</a>
+                <a href="https://github.com/RayBen445/Collab-with-AI" class="nav-link">📦 GitHub</a>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="rps-game">
+                <div class="game-header">
+                    <h3>✂️ Rock Paper Scissors</h3>
+                    <div class="game-score">
+                        <div class="score-item">Player: <span id="playerScore">0</span></div>
+                        <div class="score-item">AI: <span id="aiScore">0</span></div>
+                        <div class="score-item">Draws: <span id="drawScore">0</span></div>
+                    </div>
+                </div>
+                
+                <div class="battle-area">
+                    <div class="choices">
+                        <div class="choice-display">
+                            <span class="choice-icon" id="playerChoice">❓</span>
+                            <div class="choice-label">Your Choice</div>
+                        </div>
+                        <div class="vs">VS</div>
+                        <div class="choice-display">
+                            <span class="choice-icon" id="aiChoice">❓</span>
+                            <div class="choice-label">AI Choice</div>
+                        </div>
+                    </div>
+                    
+                    <div class="game-result" id="gameResult">
+                        Choose your weapon!
+                    </div>
+                    
+                    <div class="player-choices">
+                        <button class="choice-btn" onclick="playGame('rock')" title="Rock">🪨</button>
+                        <button class="choice-btn" onclick="playGame('paper')" title="Paper">📄</button>
+                        <button class="choice-btn" onclick="playGame('scissors')" title="Scissors">✂️</button>
+                    </div>
+                </div>
+                
+                <div class="game-controls">
+                    <button class="btn" onclick="resetStats()">🔄 Reset Stats</button>
+                    <button class="btn" onclick="showStrategy()">🧠 AI Strategy</button>
+                </div>
+                
+                <div class="stats">
+                    <h4>Game Statistics</h4>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalGames">0</div>
+                            <div class="stat-label">Total Games</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="winRate">0%</div>
+                            <div class="stat-label">Win Rate</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="playerRock">0</div>
+                            <div class="stat-label">Rock Played</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="playerPaper">0</div>
+                            <div class="stat-label">Paper Played</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="playerScissors">0</div>
+                            <div class="stat-label">Scissors Played</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        class RPSGame {
+            constructor() {
+                this.playerScore = 0;
+                this.aiScore = 0;
+                this.drawScore = 0;
+                this.playerChoices = { rock: 0, paper: 0, scissors: 0 };
+                this.history = [];
+                
+                this.choices = {
+                    rock: { icon: '🪨', beats: 'scissors' },
+                    paper: { icon: '📄', beats: 'rock' },
+                    scissors: { icon: '✂️', beats: 'paper' }
+                };
+                
+                this.loadStats();
+                this.updateDisplay();
+            }
+            
+            playGame(playerChoice) {
+                // Record player choice
+                this.playerChoices[playerChoice]++;
+                this.history.push(playerChoice);
+                
+                // Keep only last 10 moves for AI analysis
+                if (this.history.length > 10) {
+                    this.history.shift();
+                }
+                
+                // AI makes choice based on strategy
+                const aiChoice = this.getAIChoice();
+                
+                // Update display
+                document.getElementById('playerChoice').textContent = this.choices[playerChoice].icon;
+                document.getElementById('aiChoice').textContent = this.choices[aiChoice].icon;
+                
+                // Determine winner
+                const result = this.determineWinner(playerChoice, aiChoice);
+                this.displayResult(result);
+                
+                // Update scores
+                if (result === 'win') {
+                    this.playerScore++;
+                } else if (result === 'lose') {
+                    this.aiScore++;
+                } else {
+                    this.drawScore++;
+                }
+                
+                this.updateDisplay();
+                this.saveStats();
+            }
+            
+            getAIChoice() {
+                // AI uses multiple strategies based on player history
+                if (this.history.length < 3) {
+                    // Random choice for first few games
+                    return this.getRandomChoice();
+                }
+                
+                // Pattern matching strategy
+                const lastThree = this.history.slice(-3).join('');
+                const patterns = {};
+                
+                for (let i = 0; i < this.history.length - 3; i++) {
+                    const pattern = this.history.slice(i, i + 3).join('');
+                    const nextChoice = this.history[i + 3];
+                    if (patterns[pattern]) {
+                        patterns[pattern].push(nextChoice);
+                    } else {
+                        patterns[pattern] = [nextChoice];
+                    }
+                }
+                
+                if (patterns[lastThree] && patterns[lastThree].length > 0) {
+                    // Predict based on pattern
+                    const predictions = patterns[lastThree];
+                    const mostCommon = this.getMostCommon(predictions);
+                    return this.getCounterChoice(mostCommon);
+                }
+                
+                // Frequency analysis strategy
+                const mostPlayed = this.getMostPlayedChoice();
+                if (Math.random() < 0.7) {
+                    return this.getCounterChoice(mostPlayed);
+                }
+                
+                // Random fallback
+                return this.getRandomChoice();
+            }
+            
+            getRandomChoice() {
+                const choices = ['rock', 'paper', 'scissors'];
+                return choices[Math.floor(Math.random() * choices.length)];
+            }
+            
+            getMostCommon(arr) {
+                const counts = {};
+                arr.forEach(choice => {
+                    counts[choice] = (counts[choice] || 0) + 1;
+                });
+                
+                return Object.keys(counts).reduce((a, b) => counts[a] > counts[b] ? a : b);
+            }
+            
+            getMostPlayedChoice() {
+                const choices = this.playerChoices;
+                return Object.keys(choices).reduce((a, b) => choices[a] > choices[b] ? a : b);
+            }
+            
+            getCounterChoice(choice) {
+                const counters = {
+                    rock: 'paper',
+                    paper: 'scissors',
+                    scissors: 'rock'
+                };
+                return counters[choice];
+            }
+            
+            determineWinner(playerChoice, aiChoice) {
+                if (playerChoice === aiChoice) {
+                    return 'draw';
+                }
+                
+                if (this.choices[playerChoice].beats === aiChoice) {
+                    return 'win';
+                } else {
+                    return 'lose';
+                }
+            }
+            
+            displayResult(result) {
+                const resultElement = document.getElementById('gameResult');
+                
+                if (result === 'win') {
+                    resultElement.textContent = '🎉 You Win!';
+                    resultElement.className = 'game-result win';
+                } else if (result === 'lose') {
+                    resultElement.textContent = '😞 You Lose!';
+                    resultElement.className = 'game-result lose';
+                } else {
+                    resultElement.textContent = '🤝 It\'s a Draw!';
+                    resultElement.className = 'game-result draw';
+                }
+            }
+            
+            updateDisplay() {
+                document.getElementById('playerScore').textContent = this.playerScore;
+                document.getElementById('aiScore').textContent = this.aiScore;
+                document.getElementById('drawScore').textContent = this.drawScore;
+                
+                const totalGames = this.playerScore + this.aiScore + this.drawScore;
+                document.getElementById('totalGames').textContent = totalGames;
+                
+                const winRate = totalGames > 0 ? Math.round((this.playerScore / totalGames) * 100) : 0;
+                document.getElementById('winRate').textContent = winRate + '%';
+                
+                document.getElementById('playerRock').textContent = this.playerChoices.rock;
+                document.getElementById('playerPaper').textContent = this.playerChoices.paper;
+                document.getElementById('playerScissors').textContent = this.playerChoices.scissors;
+            }
+            
+            resetStats() {
+                this.playerScore = 0;
+                this.aiScore = 0;
+                this.drawScore = 0;
+                this.playerChoices = { rock: 0, paper: 0, scissors: 0 };
+                this.history = [];
+                
+                document.getElementById('playerChoice').textContent = '❓';
+                document.getElementById('aiChoice').textContent = '❓';
+                document.getElementById('gameResult').textContent = 'Choose your weapon!';
+                document.getElementById('gameResult').className = 'game-result';
+                
+                this.updateDisplay();
+                this.saveStats();
+            }
+            
+            showStrategy() {
+                const strategies = [
+                    "AI analyzes your last 3 moves to predict patterns",
+                    "AI counters your most frequently played choice",
+                    "AI uses random selection to stay unpredictable",
+                    "AI adapts its strategy based on game history"
+                ];
+                
+                const randomStrategy = strategies[Math.floor(Math.random() * strategies.length)];
+                alert("🧠 AI Strategy Hint: " + randomStrategy);
+            }
+            
+            saveStats() {
+                const stats = {
+                    playerScore: this.playerScore,
+                    aiScore: this.aiScore,
+                    drawScore: this.drawScore,
+                    playerChoices: this.playerChoices,
+                    history: this.history
+                };
+                localStorage.setItem('rpsStats', JSON.stringify(stats));
+            }
+            
+            loadStats() {
+                const saved = localStorage.getItem('rpsStats');
+                if (saved) {
+                    const stats = JSON.parse(saved);
+                    this.playerScore = stats.playerScore || 0;
+                    this.aiScore = stats.aiScore || 0;
+                    this.drawScore = stats.drawScore || 0;
+                    this.playerChoices = stats.playerChoices || { rock: 0, paper: 0, scissors: 0 };
+                    this.history = stats.history || [];
+                }
+            }
+        }
+        
+        let game;
+        
+        function playGame(choice) {
+            game.playGame(choice);
+        }
+        
+        function resetStats() {
+            game.resetStats();
+        }
+        
+        function showStrategy() {
+            game.showStrategy();
+        }
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            game = new RPSGame();
+        });
+    </script>
+</body>
+</html>
         
         .demo-text {
             color: #636e72;
