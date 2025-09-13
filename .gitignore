@@ -9,6 +9,7 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.env
 
 # Build outputs
 dist/
@@ -48,4 +49,19 @@ temp/
 # API keys and sensitive data
 *.key
 *.pem
-.env
+
+# Firebase
+.firebase/
+.firebaserc
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Firebase Functions
+functions/node_modules/
+functions/.env
+functions/lib/
+
+# Firebase emulators
+firebase-export-*/
+firestore-export-*/

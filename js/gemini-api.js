@@ -1,53 +1,485 @@
 /**
  * Google Gemini API Integration Service
- * Handles all AI functionality using the Google Gemini API
+ * Now uses Firebase Cloud Functions for secure API calls
  */
+
+import { httpsCallable } from 'firebase/functions';
+import { functions } from './firebase-config.js';
+import { authService } from './firebase-auth.js';
 
 class GeminiAPIService {
     constructor() {
-        this.apiKey = this.getApiKey();
-        this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models';
-        this.model = 'gemini-1.5-flash-latest'; // Default model
+        this.functions = functions;
+        this.authService = authService;
         this.initialized = false;
         this.initializeService();
     }
 
     /**
-     * Get API key from environment variables
-     * Supports both client-side and server-side environments
+     * Initialize the service
      */
-    getApiKey() {
-        // For client-side applications, the key would need to be passed from server
-        // This is a placeholder - in production, implement proper key management
-        if (typeof process !== 'undefined' && process.env) {
-            return process.env.GEMINI_API_KEY;
+    async initializeService() {
+        try {
+            // The API key is now handled securely by Cloud Functions
+            this.initialized = true;
+            console.log('Gemini API service initialized with Firebase Cloud Functions');
+        } catch (error) {
+            console.error('Failed to initialize Gemini API service:', error);
+            this.initialized = false;
         }
-        
-        // For client-side, implement secure key retrieval
-        return this.getClientSideApiKey();
     }
 
     /**
-     * Secure API key retrieval for client-side
-     * In production, this should fetch from your secure backend
+     * Check if service is ready
      */
-    async getClientSideApiKey() {
+    isReady() {
+        return this.initialized && this.authService.currentUser;
+    }
+
+    /**
+     * Make secure API call through Firebase Cloud Functions
+     */
+    async makeSecureAPICall(prompt, model = 'gemini-1.5-flash-latest', features = []) {
         try {
-            // This would call your backend endpoint that securely provides the API key
-            const response = await fetch('/api/get-gemini-key', {
+            if (!this.isReady()) {
+                throw new Error('Service not ready or user not authenticated');
+            }
+
+            // Get user ID token for authentication
+            const idToken = await this.authService.auth.currentUser.getIdToken();
+            
+            // Call the Cloud Function
+            const response = await fetch(`${this.getFunctionURL()}/geminiApiProxy`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${this.getUserToken()}`
-                }
+                    'Authorization': `Bearer ${idToken}`
+                },
+                body: JSON.stringify({
+                    prompt,
+                    model,
+                    features
+                })
             });
-            
-            if (response.ok) {
-                const data = await response.json();
-                return data.apiKey;
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'API request failed');
             }
+
+            const data = await response.json();
+            return data;
+
         } catch (error) {
-            console.error('Failed to retrieve API key:', error);
+            console.error('Secure API call failed:', error);
+            throw error;
+        }
+    }
+
+    /**
+     * Get the Cloud Functions URL
+     */
+    getFunctionURL() {
+        // In development, use local emulator
+        if (window.location.hostname === 'localhost') {
+            return 'http://localhost:5001/collab-with-ai/us-central1';
+        }
+        
+        // In production, use deployed functions
+        return 'https://us-central1-collab-with-ai.cloudfunctions.net';
+    }
+
+    /**
+     * Generate text content using Gemini
+     */
+    async generateContent(prompt, options = {}) {
+        try {
+            const {
+                model = 'gemini-1.5-flash-latest',
+                maxTokens = 2048,
+                temperature = 0.7
+            } = options;
+
+            const fullPrompt = `${prompt}\n\nPlease provide a helpful and detailed response.`;
+            
+            const result = await this.makeSecureAPICall(fullPrompt, model, ['content_generation']);
+            
+            if (result.success && result.data.candidates && result.data.candidates[0]) {
+                return {
+                    success: true,
+                    content: result.data.candidates[0].content.parts[0].text,
+                    model: model,
+                    timestamp: result.timestamp
+                };
+            }
+            
+            throw new Error('Invalid response format from Gemini API');
+
+        } catch (error) {
+            console.error('Content generation failed:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to generate content'
+            };
+        }
+    }
+
+    /**
+     * Generate code with explanations
+     */
+    async generateCode(prompt, language = 'javascript') {
+        try {
+            const codePrompt = `Generate ${language} code for the following request: ${prompt}
+
+Please provide:
+1. Clean, well-commented code
+2. Brief explanation of how it works
+3. Usage examples if applicable
+4. Any important considerations or best practices
+
+Format your response with clear code blocks.`;
+
+            const result = await this.generateContent(codePrompt);
+            
+            if (result.success) {
+                return {
+                    ...result,
+                    language: language,
+                    type: 'code_generation'
+                };
+            }
+            
+            return result;
+
+        } catch (error) {
+            console.error('Code generation failed:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to generate code'
+            };
+        }
+    }
+
+    /**
+     * Generate documentation
+     */
+    async generateDocumentation(codeOrPrompt, format = 'markdown') {
+        try {
+            const docPrompt = `Generate comprehensive documentation for the following:
+
+${codeOrPrompt}
+
+Please provide documentation in ${format} format including:
+1. Overview/Description
+2. Parameters/Arguments (if applicable)
+3. Return values (if applicable)
+4. Usage examples
+5. Notes and considerations
+
+Make it clear and professional.`;
+
+            const result = await this.generateContent(docPrompt);
+            
+            if (result.success) {
+                return {
+                    ...result,
+                    format: format,
+                    type: 'documentation'
+                };
+            }
+            
+            return result;
+
+        } catch (error) {
+            console.error('Documentation generation failed:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to generate documentation'
+            };
+        }
+    }
+
+    /**
+     * Optimize tasks and workflows
+     */
+    async optimizeTask(taskDescription, context = '') {
+        try {
+            const optimizationPrompt = `Analyze and optimize the following task:
+
+Task: ${taskDescription}
+Context: ${context}
+
+Please provide:
+1. Analysis of the current task
+2. Suggested optimizations and improvements
+3. Step-by-step optimized workflow
+4. Potential time savings
+5. Tools or resources that could help
+6. Risk assessment and mitigation strategies
+
+Be practical and actionable.`;
+
+            const result = await this.generateContent(optimizationPrompt);
+            
+            if (result.success) {
+                return {
+                    ...result,
+                    type: 'task_optimization'
+                };
+            }
+            
+            return result;
+
+        } catch (error) {
+            console.error('Task optimization failed:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to optimize task'
+            };
+        }
+    }
+
+    /**
+     * Process natural language commands
+     */
+    async processNLCommand(command, context = {}) {
+        try {
+            const nlPrompt = `Process the following natural language command and provide a structured response:
+
+Command: "${command}"
+Context: ${JSON.stringify(context, null, 2)}
+
+Please provide:
+1. Intent analysis (what the user wants to do)
+2. Required parameters or information
+3. Suggested actions or next steps
+4. Any clarifying questions if the command is ambiguous
+5. Confidence level in your interpretation
+
+Format as JSON-like structure for easy parsing.`;
+
+            const result = await this.generateContent(nlPrompt);
+            
+            if (result.success) {
+                return {
+                    ...result,
+                    command: command,
+                    type: 'natural_language_processing'
+                };
+            }
+            
+            return result;
+
+        } catch (error) {
+            console.error('Natural language processing failed:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to process natural language command'
+            };
+        }
+    }
+
+    /**
+     * Analyze meeting content
+     */
+    async analyzeMeeting(transcript, analysisType = 'summary') {
+        try {
+            let prompt;
+            
+            switch (analysisType) {
+                case 'summary':
+                    prompt = `Analyze the following meeting transcript and provide a comprehensive summary:
+
+${transcript}
+
+Please provide:
+1. Meeting overview
+2. Key discussion points
+3. Decisions made
+4. Action items with responsible parties
+5. Follow-up required
+6. Important deadlines mentioned
+
+Format clearly with bullet points and sections.`;
+                    break;
+                    
+                case 'action_items':
+                    prompt = `Extract action items from this meeting transcript:
+
+${transcript}
+
+Please identify:
+1. Specific tasks assigned
+2. Who is responsible for each task
+3. Deadlines mentioned
+4. Priority levels
+5. Dependencies between tasks
+
+Format as a clear, actionable list.`;
+                    break;
+                    
+                case 'insights':
+                    prompt = `Provide insights and analysis of this meeting:
+
+${transcript}
+
+Please analyze:
+1. Meeting effectiveness
+2. Participation levels
+3. Communication patterns
+4. Potential issues or concerns
+5. Recommendations for improvement
+6. Strategic insights
+
+Be objective and constructive.`;
+                    break;
+                    
+                default:
+                    prompt = `Analyze this meeting transcript: ${transcript}`;
+            }
+
+            const result = await this.generateContent(prompt);
+            
+            if (result.success) {
+                return {
+                    ...result,
+                    analysisType: analysisType,
+                    type: 'meeting_analysis'
+                };
+            }
+            
+            return result;
+
+        } catch (error) {
+            console.error('Meeting analysis failed:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to analyze meeting'
+            };
+        }
+    }
+
+    /**
+     * Assess project risks
+     */
+    async assessRisk(projectData, riskCategories = ['technical', 'timeline', 'resource', 'business']) {
+        try {
+            const riskPrompt = `Conduct a comprehensive risk assessment for the following project:
+
+Project Data: ${JSON.stringify(projectData, null, 2)}
+
+Please analyze risks in these categories: ${riskCategories.join(', ')}
+
+For each risk category, provide:
+1. Identified risks (High/Medium/Low severity)
+2. Probability of occurrence
+3. Potential impact
+4. Mitigation strategies
+5. Contingency plans
+6. Early warning indicators
+
+Provide an overall risk score and recommendations.`;
+
+            const result = await this.generateContent(riskPrompt);
+            
+            if (result.success) {
+                return {
+                    ...result,
+                    riskCategories: riskCategories,
+                    type: 'risk_assessment'
+                };
+            }
+            
+            return result;
+
+        } catch (error) {
+            console.error('Risk assessment failed:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to assess risks'
+            };
+        }
+    }
+
+    /**
+     * Get usage statistics (from Cloud Functions)
+     */
+    async getUsageStats() {
+        try {
+            if (!this.authService.currentUser) {
+                throw new Error('User not authenticated');
+            }
+
+            const userData = await this.authService.getCurrentUserData();
+            
+            return {
+                success: true,
+                stats: userData?.apiUsage || {
+                    totalRequests: 0,
+                    lastRequestAt: null
+                }
+            };
+
+        } catch (error) {
+            console.error('Failed to get usage stats:', error);
+            return {
+                success: false,
+                error: error.message || 'Failed to get usage statistics'
+            };
+        }
+    }
+
+    /**
+     * Batch process multiple requests
+     */
+    async batchProcess(requests) {
+        try {
+            const results = await Promise.allSettled(
+                requests.map(request => {
+                    const { type, prompt, options = {} } = request;
+                    
+                    switch (type) {
+                        case 'generate':
+                            return this.generateContent(prompt, options);
+                        case 'code':
+                            return this.generateCode(prompt, options.language);
+                        case 'documentation':
+                            return this.generateDocumentation(prompt, options.format);
+                        case 'optimize':
+                            return this.optimizeTask(prompt, options.context);
+                        case 'nlp':
+                            return this.processNLCommand(prompt, options.context);
+                        case 'meeting':
+                            return this.analyzeMeeting(prompt, options.analysisType);
+                        case 'risk':
+                            return this.assessRisk(prompt, options.categories);
+                        default:
+                            throw new Error(`Unknown request type: ${type}`);
+                    }
+                })
+            );
+
+            return {
+                success: true,
+                results: results.map(result => 
+                    result.status === 'fulfilled' ? result.value : { success: false, error: result.reason.message }
+                ),
+                totalRequests: requests.length
+            };
+
+        } catch (error) {
+            console.error('Batch processing failed:', error);
+            return {
+                success: false,
+                error: error.message || 'Batch processing failed'
+            };
+        }
+    }
+}
+
+// Export singleton instance
+export const geminiService = new GeminiAPIService();
+export default geminiService;
         }
         
         return null;
