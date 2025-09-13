@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication System Tests</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-result {
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            border-left: 4px solid;
+        }
+        .test-pass {
+            background: #d4edda;
+            border-color: #28a745;
+            color: #155724;
+        }
+        .test-fail {
+            background: #f8d7da;
+            border-color: #dc3545;
+            color: #721c24;
+        }
+        .test-warning {
+            background: #fff3cd;
+            border-color: #ffc107;
+            color: #856404;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🔐 Authentication System Tests</h1>
+        <p>This page tests various authentication system components to ensure they're working correctly.</p>
+        
+        <button onclick="runAllTests()">Run All Tests</button>
+        <button onclick="clearResults()">Clear Results</button>
+        
+        <div id="test-results"></div>
+    </div>
+
+    <!-- Environment Configuration -->
+    <script src="../js/env-config.js"></script>
+    
+    <script>
+        class AuthenticationTester {
+            constructor() {
+                this.results = [];
+                this.testContainer = document.getElementById('test-results');
+            }
+            
+            async runAllTests() {
+                this.clearResults();
+                this.addResult('info', 'Starting authentication system tests...');
+                
+                // Test environment configuration
+                await this.testEnvironmentConfig();
+                
+                // Test authentication service availability
+                await this.testAuthServiceAvailability();
+                
+                // Test admin email configuration
+                await this.testAdminEmailConfig();
+                
+                // Test authentication guards
+                await this.testAuthGuards();
+                
+                // Test API security
+                await this.testAPISecurity();
+                
+                // Test module loading
+                await this.testModuleLoading();
+                
+                this.addResult('info', 'All tests completed!');
+            }
+            
+            async testEnvironmentConfig() {
+                this.addResult('info', 'Testing environment configuration...');
+                
+                try {
+                    // Wait for environment config to load
+                    let attempts = 0;
+                    while (!window.ENV && attempts < 50) {
+                        await new Promise(resolve => setTimeout(resolve, 100));
+                        attempts++;
+                    }
+                    
+                    if (window.ENV) {
+                        this.addResult('pass', '✅ Environment configuration loaded successfully');
+                        
+                        if (window.ENV.ADMIN_EMAIL) {
+                            this.addResult('pass', `✅ Admin email configured: ${window.ENV.ADMIN_EMAIL.substring(0, 3)}***`);
+                        } else {
+                            this.addResult('fail', '❌ Admin email not configured');
+                        }
+                        
+                        if (window.ENV.PLATFORM_NAME) {
+                            this.addResult('pass', `✅ Platform name: ${window.ENV.PLATFORM_NAME}`);
+                        } else {
+                            this.addResult('warning', '⚠️ Platform name not configured');
+                        }
+                    } else {
+                        this.addResult('fail', '❌ Environment configuration failed to load');
+                    }
+                } catch (error) {
+                    this.addResult('fail', `❌ Environment config test failed: ${error.message}`);
+                }
+            }
+            
+            async testAuthServiceAvailability() {
+                this.addResult('info', 'Testing authentication service availability...');
+                
+                try {
+                    // Test if Firebase modules are loadable
+                    const hasFirebaseApp = typeof window.firebase !== 'undefined';
+                    if (hasFirebaseApp) {
+                        this.addResult('pass', '✅ Firebase SDK available');
+                    } else {
+                        this.addResult('warning', '⚠️ Firebase SDK not loaded (expected in test environment)');
+                    }
+                    
+                    // Test if our auth module files exist
+                    const response = await fetch('../js/firebase-auth.js');
+                    if (response.ok) {
+                        this.addResult('pass', '✅ Firebase auth module file accessible');
+                    } else {
+                        this.addResult('fail', '❌ Firebase auth module file not accessible');
+                    }
+                    
+                    // Test config file
+                    const configResponse = await fetch('../js/firebase-config.js');
+                    if (configResponse.ok) {
+                        this.addResult('pass', '✅ Firebase config module file accessible');
+                    } else {
+                        this.addResult('fail', '❌ Firebase config module file not accessible');
+                    }
+                    
+                } catch (error) {
+                    this.addResult('fail', `❌ Auth service availability test failed: ${error.message}`);
+                }
+            }
+            
+            async testAdminEmailConfig() {
+                this.addResult('info', 'Testing admin email configuration...');
+                
+                try {
+                    if (window.ENV?.ADMIN_EMAIL) {
+                        // Test email format
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (emailRegex.test(window.ENV.ADMIN_EMAIL)) {
+                            this.addResult('pass', '✅ Admin email format is valid');
+                        } else {
+                            this.addResult('fail', '❌ Admin email format is invalid');
+                        }
+                        
+                        // Test if it's not a default/placeholder
+                        if (window.ENV.ADMIN_EMAIL.includes('example.com') || 
+                            window.ENV.ADMIN_EMAIL.includes('placeholder')) {
+                            this.addResult('warning', '⚠️ Admin email appears to be a placeholder');
+                        } else {
+                            this.addResult('pass', '✅ Admin email appears to be properly configured');
+                        }
+                    } else {
+                        this.addResult('fail', '❌ Admin email not configured');
+                    }
+                } catch (error) {
+                    this.addResult('fail', `❌ Admin email config test failed: ${error.message}`);
+                }
+            }
+            
+            async testAuthGuards() {
+                this.addResult('info', 'Testing authentication guards...');
+                
+                try {
+                    // Test if protected pages have auth checks
+                    const protectedPages = [
+                        '../collaboration.html',
+                        '../admin-dashboard.html',
+                        '../user-profile.html'
+                    ];
+                    
+                    for (const page of protectedPages) {
+                        const response = await fetch(page);
+                        if (response.ok) {
+                            const content = await response.text();
+                            
+                            // Check for authentication-related code
+                            if (content.includes('auth') || content.includes('firebase') || content.includes('login')) {
+                                this.addResult('pass', `✅ ${page.split('/').pop()} has authentication code`);
+                            } else {
+                                this.addResult('warning', `⚠️ ${page.split('/').pop()} may lack authentication protection`);
+                            }
+                        }
+                    }
+                } catch (error) {
+                    this.addResult('fail', `❌ Auth guards test failed: ${error.message}`);
+                }
+            }
+            
+            async testAPISecurity() {
+                this.addResult('info', 'Testing API security...');
+                
+                try {
+                    // Test environment config API
+                    const envResponse = await fetch('../api/get-env-config.js');
+                    if (envResponse.ok) {
+                        this.addResult('pass', '✅ Environment config API file exists');
+                    } else {
+                        this.addResult('warning', '⚠️ Environment config API not accessible (expected in test environment)');
+                    }
+                    
+                    // Test Gemini API security
+                    const geminiResponse = await fetch('../api/get-gemini-key.js');
+                    if (geminiResponse.ok) {
+                        const content = await geminiResponse.text();
+                        
+                        // Check for security features
+                        if (content.includes('validateUserToken')) {
+                            this.addResult('pass', '✅ Gemini API has token validation');
+                        } else {
+                            this.addResult('fail', '❌ Gemini API lacks token validation');
+                        }
+                        
+                        if (content.includes('rate') && content.includes('limit')) {
+                            this.addResult('pass', '✅ Gemini API has rate limiting');
+                        } else {
+                            this.addResult('warning', '⚠️ Gemini API may lack rate limiting');
+                        }
+                        
+                        if (content.includes('constantTimeCompare')) {
+                            this.addResult('pass', '✅ Gemini API uses secure token comparison');
+                        } else {
+                            this.addResult('warning', '⚠️ Gemini API may use insecure token comparison');
+                        }
+                    } else {
+                        this.addResult('warning', '⚠️ Gemini API file not accessible');
+                    }
+                } catch (error) {
+                    this.addResult('fail', `❌ API security test failed: ${error.message}`);
+                }
+            }
+            
+            async testModuleLoading() {
+                this.addResult('info', 'Testing module loading...');
+                
+                try {
+                    // Test if critical JS files are accessible
+                    const criticalFiles = [
+                        '../js/env-config.js',
+                        '../js/firebase-config.js',
+                        '../js/firebase-auth.js'
+                    ];
+                    
+                    for (const file of criticalFiles) {
+                        const response = await fetch(file);
+                        if (response.ok) {
+                            this.addResult('pass', `✅ ${file.split('/').pop()} is accessible`);
+                        } else {
+                            this.addResult('fail', `❌ ${file.split('/').pop()} is not accessible`);
+                        }
+                    }
+                } catch (error) {
+                    this.addResult('fail', `❌ Module loading test failed: ${error.message}`);
+                }
+            }
+            
+            addResult(type, message) {
+                const result = document.createElement('div');
+                result.className = `test-result test-${type === 'info' ? 'warning' : type}`;
+                result.textContent = message;
+                this.testContainer.appendChild(result);
+                
+                // Auto-scroll to bottom
+                this.testContainer.scrollTop = this.testContainer.scrollHeight;
+            }
+            
+            clearResults() {
+                this.testContainer.innerHTML = '';
+            }
+        }
+        
+        const tester = new AuthenticationTester();
+        
+        function runAllTests() {
+            tester.runAllTests();
+        }
+        
+        function clearResults() {
+            tester.clearResults();
+        }
+        
+        // Auto-run tests when page loads
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                runAllTests();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
