@@ -283,6 +283,9 @@
             <p>Join the AI-Human collaboration revolution</p>
         </div>
         
+        <div id="signUpErrorMessage" class="error-message"></div>
+        <div id="signUpSuccessMessage" class="success-message"></div>
+        
         <form id="signUpFormElement">
             <div class="form-group">
                 <label for="signUpName">Display Name</label>
@@ -294,7 +297,10 @@
             </div>
             <div class="form-group">
                 <label for="signUpPassword">Password</label>
-                <input type="password" id="signUpPassword" required placeholder="Enter password (min 6 characters)">
+                <input type="password" id="signUpPassword" required placeholder="Enter password (must be 'professor')">
+                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                    Don't have the authorized password? <a href="password-request.html" style="color: #667eea; text-decoration: none;">Request access from admin</a>
+                </div>
             </div>
             <button type="button" class="login-btn" id="signUpBtn">Create Account</button>
         </form>
@@ -421,8 +427,9 @@
                         return;
                     }
                     
-                    if (password.length < 6) {
-                        showMessage('Password must be at least 6 characters long.', 'error');
+                    // Check if password is exactly "professor"
+                    if (password !== 'professor') {
+                        showMessage('Account creation is restricted. Only the authorized password is allowed. Please contact the admin if you need access.', 'error');
                         return;
                     }
                     
@@ -515,6 +522,22 @@
         }
         
         function showMessage(message, type) {
+            // Try to show message in signup form first if it's visible
+            const signUpForm = document.getElementById('signUpForm');
+            if (signUpForm && signUpForm.style.display !== 'none') {
+                const messageDiv = document.getElementById(type === 'error' ? 'signUpErrorMessage' : 'signUpSuccessMessage');
+                if (messageDiv) {
+                    messageDiv.textContent = message;
+                    messageDiv.style.display = 'block';
+                    
+                    // Hide other signup message
+                    const otherDiv = document.getElementById(type === 'error' ? 'signUpSuccessMessage' : 'signUpErrorMessage');
+                    if (otherDiv) otherDiv.style.display = 'none';
+                    return;
+                }
+            }
+            
+            // Fallback to login messages
             const messageDiv = document.getElementById(type === 'error' ? 'errorMessage' : 'successMessage');
             if (messageDiv) {
                 messageDiv.textContent = message;
@@ -809,8 +832,9 @@
                     return;
                 }
                 
-                if (password.length < 6) {
-                    this.showError('Password must be at least 6 characters long.');
+                // Check if password is exactly "professor"
+                if (password !== 'professor') {
+                    this.showError('Account creation is restricted. Only the authorized password is allowed. Please contact the admin if you need access.');
                     return;
                 }
                 
