@@ -1810,7 +1810,153 @@
     </div>
     
     <!-- Include Environment Configuration -->
-    <script src="js/env-loader.js"></script>
+    <script src="js/env-config.js"></script>
+    
+    <!-- Include Firebase Configuration and Authentication -->
+    <script type="module">
+        import { authService } from './js/firebase-auth.js';
+        
+        // Enhanced Authentication Manager for Collaboration Platform
+        class AuthenticationManager {
+            constructor() {
+                this.authService = authService;
+                this.currentUser = null;
+                this.initializeAuthentication();
+            }
+            
+            async initializeAuthentication() {
+                try {
+                    // Wait for auth service to initialize
+                    await this.authService.waitForInitialization();
+                    
+                    // Set up authentication event listeners
+                    this.setupAuthEventListeners();
+                    
+                    // Check current authentication state
+                    if (this.authService.currentUser) {
+                        await this.handleUserSignedIn(this.authService.currentUser);
+                    } else {
+                        this.showAuthRequired();
+                    }
+                } catch (error) {
+                    console.error('Failed to initialize authentication:', error);
+                    this.showAuthRequired();
+                }
+            }
+            
+            setupAuthEventListeners() {
+                window.addEventListener('userSignedIn', async (event) => {
+                    const { user, isAdmin } = event.detail;
+                    await this.handleUserSignedIn(user, isAdmin);
+                });
+
+                window.addEventListener('userSignedOut', () => {
+                    this.handleUserSignedOut();
+                });
+
+                window.addEventListener('authError', (event) => {
+                    console.error('Authentication error:', event.detail.error);
+                    this.showAuthRequired();
+                });
+            }
+            
+            async handleUserSignedIn(user, isAdmin = false) {
+                this.currentUser = user;
+                
+                try {
+                    // Load user data from Firestore
+                    const userData = await this.authService.getCurrentUserData();
+                    
+                    // Update UI
+                    this.updateUserProfile(user, userData, isAdmin);
+                    this.hideAuthRequired();
+                    
+                    // Initialize the collaboration platform
+                    if (window.CollaborationPlatform) {
+                        window.CollaborationPlatform.initializePlatform(user, userData);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error loading user data:', error);
+                    // Continue with basic user info
+                    this.updateUserProfile(user, null, isAdmin);
+                    this.hideAuthRequired();
+                }
+            }
+            
+            handleUserSignedOut() {
+                this.currentUser = null;
+                this.showAuthRequired();
+            }
+            
+            updateUserProfile(user, userData, isAdmin) {
+                // Update user profile in sidebar
+                const userNameElement = document.querySelector('.user-name');
+                const userEmailElement = document.querySelector('.user-email');
+                
+                if (userNameElement) {
+                    userNameElement.textContent = user.displayName || user.email.split('@')[0];
+                }
+                if (userEmailElement) {
+                    userEmailElement.textContent = user.email;
+                }
+                
+                // Add admin badge if user is admin
+                if (isAdmin || this.authService.isCurrentUserAdmin()) {
+                    this.addAdminBadge();
+                }
+            }
+            
+            addAdminBadge() {
+                const userProfile = document.querySelector('.user-profile');
+                if (userProfile && !userProfile.querySelector('.admin-badge')) {
+                    const adminBadge = document.createElement('span');
+                    adminBadge.className = 'admin-badge';
+                    adminBadge.textContent = 'Admin';
+                    adminBadge.style.cssText = `
+                        background: linear-gradient(135deg, #00b894, #55a3ff);
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 12px;
+                        font-size: 0.8rem;
+                        margin-left: 8px;
+                        display: inline-block;
+                    `;
+                    userProfile.appendChild(adminBadge);
+                }
+            }
+            
+            showAuthRequired() {
+                const authOverlay = document.querySelector('.auth-required');
+                if (authOverlay) {
+                    authOverlay.style.display = 'flex';
+                }
+            }
+            
+            hideAuthRequired() {
+                const authOverlay = document.querySelector('.auth-required');
+                if (authOverlay) {
+                    authOverlay.style.display = 'none';
+                }
+            }
+            
+            async signOut() {
+                try {
+                    await this.authService.signOutUser();
+                } catch (error) {
+                    console.error('Sign out error:', error);
+                    // Force redirect to login on error
+                    window.location.href = 'login.html';
+                }
+            }
+        }
+        
+        // Initialize authentication manager
+        window.authManager = new AuthenticationManager();
+        
+        // Make auth service available globally for other scripts
+        window.authService = authService;
+    </script>
     
     <!-- Include Fixed Gemini AI Service -->
     <script src="js/gemini-api-clean.js"></script>
@@ -1818,61 +1964,64 @@
     <!-- Real-Time Status Bar -->
     <script src="js/status-bar.js"></script>
     
-    <!-- Fallback Firebase Integration (for non-module environments) -->
+    <!-- Collaboration Platform Core Script -->
     <script>
-        // Simplified Firebase integration for demonstration
-        class SimpleAuthService {
+        // Enhanced Collaboration Platform
+        class CollaborationPlatform {
             constructor() {
                 this.currentUser = null;
-                this.checkAuth();
+                this.userProjects = [];
+                this.isInitialized = false;
             }
             
-            checkAuth() {
-                const savedUser = localStorage.getItem('collaborationUser');
-                if (savedUser) {
-                    this.currentUser = JSON.parse(savedUser);
+            async initializePlatform(user, userData) {
+                this.currentUser = user;
+                this.isInitialized = true;
+                
+                try {
+                    // Load user projects
+                    await this.loadUserProjects();
+                    
+                    // Initialize real-time features
+                    this.initializeRealTimeFeatures();
+                    
+                    console.log('Collaboration platform initialized for user:', user.email);
+                } catch (error) {
+                    console.error('Error initializing collaboration platform:', error);
                 }
             }
             
-            async signOutUser() {
-                localStorage.removeItem('collaborationUser');
-                this.currentUser = null;
-                window.location.href = 'login.html';
+            async loadUserProjects() {
+                if (window.authService?.currentUser) {
+                    try {
+                        // In a real implementation, this would load from Firestore
+                        this.userProjects = [
+                            { id: 1, name: 'AI Chat Bot', description: 'Intelligent chatbot with NLP', progress: 75 },
+                            { id: 2, name: 'Data Analytics', description: 'Real-time data visualization', progress: 60 },
+                            { id: 3, name: 'Mobile App', description: 'Cross-platform mobile application', progress: 90 }
+                        ];
+                        
+                        // Update UI with projects
+                        this.updateProjectsList();
+                    } catch (error) {
+                        console.error('Error loading user projects:', error);
+                    }
+                }
+            }
+            
+            updateProjectsList() {
+                // This would update the projects UI
+                console.log('Updated projects list with', this.userProjects.length, 'projects');
+            }
+            
+            initializeRealTimeFeatures() {
+                // Initialize real-time collaboration features
+                console.log('Real-time features initialized');
             }
         }
         
-        class SimpleDbService {
-            async getUserProjects(userId) {
-                // Return sample projects for demo
-                return [
-                    { id: 1, name: 'AI Chat Bot', description: 'Intelligent chatbot with NLP', progress: 75 },
-                    { id: 2, name: 'Data Analytics', description: 'Real-time data visualization', progress: 60 },
-                    { id: 3, name: 'Mobile App', description: 'Cross-platform mobile application', progress: 90 }
-                ];
-            }
-            
-            async createProject(projectData, userId) {
-                console.log('Creating project:', projectData);
-                return 'project_' + Date.now();
-            }
-            
-            async getProject(projectId) {
-                return { id: projectId, name: 'Sample Project', description: 'Demo project' };
-            }
-            
-            listenToUserProjects(userId, callback) {
-                // Simulate real-time updates
-                setTimeout(() => {
-                    callback(this.getUserProjects(userId));
-                }, 1000);
-            }
-        }
-        
-        // Create fallback services
-        window.authService = new SimpleAuthService();
-        window.dbService = new SimpleDbService();
-        window.storageService = { uploadFile: () => Promise.resolve('file_uploaded') };
-        window.geminiService = geminiAPI;
+        // Create global collaboration platform instance
+        window.CollaborationPlatform = new CollaborationPlatform();
     </script>
 </body>
 </html>

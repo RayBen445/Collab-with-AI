@@ -453,6 +453,9 @@
     <!-- Load Status Bar -->
     <script src="js/status-bar.js"></script>
     
+    <!-- Environment Configuration -->
+    <script src="js/env-config.js"></script>
+    
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
@@ -499,8 +502,9 @@
                     document.getElementById('current-avatar').src = user.photoURL;
                 }
                 
-                // Check if user is admin
-                const isAdmin = user.email === 'oladoyeheritage445@gmail.com';
+                // Check if user is admin using environment config
+                const adminEmail = window.ENV?.ADMIN_EMAIL || 'oladoyeheritage445@gmail.com';
+                const isAdmin = user.email?.toLowerCase().trim() === adminEmail?.toLowerCase().trim();
                 document.getElementById('role-value').textContent = isAdmin ? 'Administrator' : 'User';
                 
                 // Load additional profile data from Firestore
