@@ -564,8 +564,362 @@ Happy coding! 🎉`;
         }
         
         function openTool(toolName) {
-            // In a real implementation, this would open the specific tool interface
-            alert(`Opening ${toolName.replace('-', ' ')} tool...`);
+            // Create modal for tool interface
+            const modal = document.createElement('div');
+            modal.className = 'tool-modal';
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0, 0, 0, 0.8); display: flex;
+                align-items: center; justify-content: center; z-index: 10000;
+                padding: 20px;
+            `;
+            
+            let content = '';
+            
+            switch(toolName) {
+                case 'code-formatter':
+                    content = createCodeFormatterInterface();
+                    break;
+                case 'api-tester':
+                    content = createAPITesterInterface();
+                    break;
+                case 'json-validator':
+                    content = createJSONValidatorInterface();
+                    break;
+                case 'regex-builder':
+                    content = createRegexBuilderInterface();
+                    break;
+                default:
+                    content = createDefaultToolInterface(toolName);
+            }
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="background: white; border-radius: 15px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative;">
+                    <button onclick="closeToolModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">×</button>
+                    ${content}
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function createCodeFormatterInterface() {
+            return `
+                <div style="padding: 30px;">
+                    <h2 style="margin-bottom: 20px;">🎨 Code Formatter</h2>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 10px; font-weight: bold;">Input Code:</label>
+                            <textarea id="codeInput" placeholder="Paste your code here..." style="width: 100%; height: 300px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 14px;"></textarea>
+                            <div style="margin-top: 10px;">
+                                <select id="codeLanguage" style="padding: 8px; border: 1px solid #ddd; border-radius: 5px; margin-right: 10px;">
+                                    <option value="javascript">JavaScript</option>
+                                    <option value="python">Python</option>
+                                    <option value="html">HTML</option>
+                                    <option value="css">CSS</option>
+                                    <option value="json">JSON</option>
+                                </select>
+                                <button onclick="formatCode()" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">✨ Format Code</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 10px; font-weight: bold;">Formatted Output:</label>
+                            <textarea id="codeOutput" readonly style="width: 100%; height: 300px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 14px; background: #f8f9fa;"></textarea>
+                            <div style="margin-top: 10px;">
+                                <button onclick="copyFormattedCode()" style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">📋 Copy Formatted</button>
+                                <button onclick="downloadFormattedCode()" style="padding: 8px 16px; background: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">💾 Download</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function createAPITesterInterface() {
+            return `
+                <div style="padding: 30px;">
+                    <h2 style="margin-bottom: 20px;">🔧 API Tester</h2>
+                    <div style="margin-bottom: 20px;">
+                        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                            <select id="apiMethod" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                <option value="GET">GET</option>
+                                <option value="POST">POST</option>
+                                <option value="PUT">PUT</option>
+                                <option value="DELETE">DELETE</option>
+                            </select>
+                            <input type="url" id="apiUrl" placeholder="Enter API URL..." style="flex: 1; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                            <button onclick="testAPI()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">🚀 Send Request</button>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Headers (JSON format):</label>
+                            <textarea id="apiHeaders" placeholder='{"Content-Type": "application/json", "Authorization": "Bearer token"}' style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: monospace;"></textarea>
+                        </div>
+                        <div style="margin-bottom: 15px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold;">Request Body:</label>
+                            <textarea id="apiBody" placeholder='{"key": "value"}' style="width: 100%; height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: monospace;"></textarea>
+                        </div>
+                    </div>
+                    <div>
+                        <h4>Response:</h4>
+                        <div id="apiResponse" style="background: #f8f9fa; padding: 15px; border-radius: 5px; min-height: 200px; font-family: monospace; white-space: pre-wrap; border: 1px solid #ddd;">No response yet. Send a request to see results.</div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function createJSONValidatorInterface() {
+            return `
+                <div style="padding: 30px;">
+                    <h2 style="margin-bottom: 20px;">📋 JSON Validator</h2>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <label style="display: block; margin-bottom: 10px; font-weight: bold;">JSON Input:</label>
+                            <textarea id="jsonInput" placeholder='{"key": "value", "array": [1, 2, 3]}' style="width: 100%; height: 300px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 14px;"></textarea>
+                            <div style="margin-top: 10px;">
+                                <button onclick="validateJSON()" style="padding: 8px 16px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">✅ Validate JSON</button>
+                                <button onclick="formatJSON()" style="padding: 8px 16px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">🎨 Pretty Format</button>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display: block; margin-bottom: 10px; font-weight: bold;">Result:</label>
+                            <div id="jsonResult" style="width: 100%; height: 300px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; background: #f8f9fa; font-family: monospace; font-size: 14px; overflow-y: auto;">Enter JSON to validate</div>
+                            <div style="margin-top: 10px;">
+                                <button onclick="copyValidatedJSON()" style="padding: 8px 16px; background: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer;">📋 Copy Result</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function createRegexBuilderInterface() {
+            return `
+                <div style="padding: 30px;">
+                    <h2 style="margin-bottom: 20px;">🎯 Regex Builder</h2>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: bold;">Regular Expression:</label>
+                        <input type="text" id="regexPattern" placeholder="Enter regex pattern..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px; font-family: monospace;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 10px; font-weight: bold;">Test String:</label>
+                        <textarea id="regexTestString" placeholder="Enter text to test against..." style="width: 100%; height: 100px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;"></textarea>
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <button onclick="testRegex()" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">🔍 Test Regex</button>
+                        <button onclick="generateCommonRegex()" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer; margin-left: 10px;">⚡ Common Patterns</button>
+                    </div>
+                    <div>
+                        <h4>Results:</h4>
+                        <div id="regexResult" style="background: #f8f9fa; padding: 15px; border-radius: 5px; min-height: 150px; border: 1px solid #ddd;">Enter a pattern and test string to see results</div>
+                    </div>
+                    <div style="margin-top: 20px;">
+                        <h4>Common Patterns:</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px; margin-top: 10px;">
+                            <button onclick="insertPattern('^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$')" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; text-align: left;">📧 Email</button>
+                            <button onclick="insertPattern('^[0-9]{3}-[0-9]{3}-[0-9]{4}$')" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; text-align: left;">📞 Phone</button>
+                            <button onclick="insertPattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d@$!%*?&]{8,}$')" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; text-align: left;">🔒 Password</button>
+                            <button onclick="insertPattern('^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)$')" style="padding: 8px; background: #f8f9fa; border: 1px solid #ddd; border-radius: 5px; cursor: pointer; text-align: left;">🌐 URL</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function createDefaultToolInterface(toolName) {
+            return `
+                <div style="padding: 30px; text-align: center;">
+                    <h2 style="margin-bottom: 20px;">🛠️ ${toolName.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())}</h2>
+                    <p style="color: #666; margin-bottom: 20px;">This tool interface is being developed. Check back soon for full functionality!</p>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; border: 1px solid #ddd;">
+                        <h4>Coming Soon Features:</h4>
+                        <ul style="text-align: left; color: #666; margin-top: 15px;">
+                            <li>Interactive ${toolName.replace('-', ' ')} interface</li>
+                            <li>Real-time processing and feedback</li>
+                            <li>Export and save functionality</li>
+                            <li>Integration with other developer tools</li>
+                        </ul>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function closeToolModal() {
+            const modal = document.querySelector('.tool-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        // Tool-specific functions
+        function formatCode() {
+            const input = document.getElementById('codeInput').value;
+            const language = document.getElementById('codeLanguage').value;
+            const output = document.getElementById('codeOutput');
+            
+            if (!input.trim()) {
+                output.value = 'Please enter some code to format.';
+                return;
+            }
+            
+            // Simple formatting logic (in a real app, you'd use a proper formatter library)
+            let formatted = input;
+            
+            if (language === 'json') {
+                try {
+                    const parsed = JSON.parse(input);
+                    formatted = JSON.stringify(parsed, null, 2);
+                } catch (e) {
+                    formatted = 'Invalid JSON: ' + e.message;
+                }
+            } else {
+                // Basic indentation for other languages
+                formatted = input
+                    .split('\n')
+                    .map(line => line.trim())
+                    .join('\n')
+                    .replace(/\{/g, '{\n    ')
+                    .replace(/\}/g, '\n}')
+                    .replace(/;/g, ';\n');
+            }
+            
+            output.value = formatted;
+        }
+        
+        function copyFormattedCode() {
+            const output = document.getElementById('codeOutput');
+            output.select();
+            document.execCommand('copy');
+            alert('Formatted code copied to clipboard!');
+        }
+        
+        function downloadFormattedCode() {
+            const output = document.getElementById('codeOutput').value;
+            const language = document.getElementById('codeLanguage').value;
+            const blob = new Blob([output], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `formatted-code.${language === 'javascript' ? 'js' : language}`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        function testAPI() {
+            const method = document.getElementById('apiMethod').value;
+            const url = document.getElementById('apiUrl').value;
+            const headers = document.getElementById('apiHeaders').value;
+            const body = document.getElementById('apiBody').value;
+            const responseDiv = document.getElementById('apiResponse');
+            
+            if (!url) {
+                responseDiv.textContent = 'Please enter a URL to test.';
+                return;
+            }
+            
+            responseDiv.textContent = 'Sending request...';
+            
+            // Simulate API call (in real app, you'd make actual HTTP request)
+            setTimeout(() => {
+                const mockResponse = {
+                    status: 200,
+                    statusText: 'OK',
+                    headers: {
+                        'content-type': 'application/json',
+                        'access-control-allow-origin': '*'
+                    },
+                    data: {
+                        message: 'Mock API response',
+                        method: method,
+                        url: url,
+                        timestamp: new Date().toISOString()
+                    }
+                };
+                
+                responseDiv.textContent = JSON.stringify(mockResponse, null, 2);
+            }, 1000);
+        }
+        
+        function validateJSON() {
+            const input = document.getElementById('jsonInput').value;
+            const result = document.getElementById('jsonResult');
+            
+            if (!input.trim()) {
+                result.textContent = 'Please enter JSON to validate.';
+                return;
+            }
+            
+            try {
+                JSON.parse(input);
+                result.innerHTML = '<div style="color: #28a745; font-weight: bold;">✅ Valid JSON</div><div style="margin-top: 10px; color: #666;">Your JSON is properly formatted and valid.</div>';
+            } catch (e) {
+                result.innerHTML = `<div style="color: #e74c3c; font-weight: bold;">❌ Invalid JSON</div><div style="margin-top: 10px; color: #666;">Error: ${e.message}</div>`;
+            }
+        }
+        
+        function formatJSON() {
+            const input = document.getElementById('jsonInput').value;
+            const result = document.getElementById('jsonResult');
+            
+            try {
+                const parsed = JSON.parse(input);
+                const formatted = JSON.stringify(parsed, null, 2);
+                result.innerHTML = `<pre style="white-space: pre-wrap; color: #333;">${formatted}</pre>`;
+            } catch (e) {
+                result.innerHTML = `<div style="color: #e74c3c;">❌ Cannot format invalid JSON: ${e.message}</div>`;
+            }
+        }
+        
+        function copyValidatedJSON() {
+            const result = document.getElementById('jsonResult');
+            const text = result.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                alert('JSON copied to clipboard!');
+            });
+        }
+        
+        function testRegex() {
+            const pattern = document.getElementById('regexPattern').value;
+            const testString = document.getElementById('regexTestString').value;
+            const result = document.getElementById('regexResult');
+            
+            if (!pattern) {
+                result.innerHTML = 'Please enter a regex pattern.';
+                return;
+            }
+            
+            try {
+                const regex = new RegExp(pattern, 'g');
+                const matches = testString.match(regex);
+                
+                if (matches) {
+                    result.innerHTML = `
+                        <div style="color: #28a745; font-weight: bold;">✅ Pattern matches found!</div>
+                        <div style="margin-top: 10px;">
+                            <strong>Matches (${matches.length}):</strong><br>
+                            ${matches.map(match => `<code style="background: #e7f3ff; padding: 2px 6px; border-radius: 3px; margin: 2px;">${match}</code>`).join(' ')}
+                        </div>
+                    `;
+                } else {
+                    result.innerHTML = '<div style="color: #ffc107;">⚠️ No matches found for this pattern.</div>';
+                }
+            } catch (e) {
+                result.innerHTML = `<div style="color: #e74c3c;">❌ Invalid regex: ${e.message}</div>`;
+            }
+        }
+        
+        function insertPattern(pattern) {
+            document.getElementById('regexPattern').value = pattern;
+        }
+        
+        function generateCommonRegex() {
+            const patterns = [
+                { name: 'Email', pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$' },
+                { name: 'Phone (XXX-XXX-XXXX)', pattern: '^[0-9]{3}-[0-9]{3}-[0-9]{4}$' },
+                { name: 'Strong Password', pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d@$!%*?&]{8,}$' },
+                { name: 'URL', pattern: '^https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_\\+.~#?&//=]*)$' }
+            ];
+            
+            document.getElementById('regexPattern').value = patterns[Math.floor(Math.random() * patterns.length)].pattern;
         }
         
         // Demo functions

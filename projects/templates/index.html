@@ -634,18 +634,360 @@ my-web-app/
         };
         
         function openTemplate(templateName) {
-            // Navigate to the specific template
+            // Create modal for template interface
+            const modal = document.createElement('div');
+            modal.className = 'template-modal';
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0, 0, 0, 0.8); display: flex;
+                align-items: center; justify-content: center; z-index: 10000;
+                padding: 20px;
+            `;
+            
+            // Navigate to specific template directories that exist
             const templatePaths = {
-                'web-app-basic': '/projects/templates/web-app-basic/',
-                'creative-portfolio': '/projects/templates/creative-portfolio/',
-                'simple-game': '/projects/templates/simple-game/',
+                'web-app-basic': 'web-app-basic/',
+                'creative-portfolio': 'creative-portfolio/',
+                'simple-game': 'simple-game/',
+                'python-script': 'python-script/'
             };
             
             if (templatePaths[templateName]) {
+                // Try to navigate to the template
                 window.location.href = templatePaths[templateName];
-            } else {
-                alert(`Opening ${templateName.replace('-', ' ')} template...`);
+                return;
             }
+            
+            // For templates that don't have directories yet, show template generator
+            const content = createTemplateInterface(templateName);
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="background: white; border-radius: 15px; max-width: 900px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative;">
+                    <button onclick="closeTemplateModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">×</button>
+                    ${content}
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function createTemplateInterface(templateName) {
+            const templateConfigs = {
+                'react-component': {
+                    title: '⚛️ React Component Template',
+                    description: 'Complete React component with TypeScript, testing, and Storybook integration',
+                    code: `import React from 'react';
+import './Component.css';
+
+interface ComponentProps {
+  title: string;
+  children?: React.ReactNode;
+}
+
+const Component: React.FC<ComponentProps> = ({ title, children }) => {
+  return (
+    <div className="component">
+      <h2>{title}</h2>
+      {children}
+    </div>
+  );
+};
+
+export default Component;`,
+                    files: ['Component.tsx', 'Component.css', 'Component.test.tsx', 'Component.stories.tsx']
+                },
+                'node-api': {
+                    title: '🚀 Node.js API Template',
+                    description: 'RESTful API server with Express.js, middleware, and database connectivity',
+                    code: `const express = require('express');
+const cors = require('cors');
+const helmet = require('helmet');
+
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Middleware
+app.use(helmet());
+app.use(cors());
+app.use(express.json());
+
+// Routes
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'OK', timestamp: new Date().toISOString() });
+});
+
+app.get('/api/users', (req, res) => {
+  // Database query would go here
+  res.json([
+    { id: 1, name: 'John Doe', email: 'john@example.com' },
+    { id: 2, name: 'Jane Smith', email: 'jane@example.com' }
+  ]);
+});
+
+app.listen(PORT, () => {
+  console.log(\`Server running on port \${PORT}\`);
+});`,
+                    files: ['server.js', 'package.json', 'routes/', 'middleware/', 'models/']
+                },
+                'data-dashboard': {
+                    title: '📊 Data Dashboard Template',
+                    description: 'Interactive data visualization dashboard with charts, graphs, and real-time updates',
+                    code: `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+    <div class="dashboard">
+        <header class="dashboard-header">
+            <h1>📊 Analytics Dashboard</h1>
+            <div class="update-time">Last updated: <span id="updateTime"></span></div>
+        </header>
+        
+        <div class="dashboard-grid">
+            <div class="chart-container">
+                <canvas id="salesChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <canvas id="usersChart"></canvas>
+            </div>
+            <div class="metrics-panel">
+                <div class="metric">
+                    <h3>Total Revenue</h3>
+                    <p class="metric-value">$45,230</p>
+                </div>
+                <div class="metric">
+                    <h3>Active Users</h3>
+                    <p class="metric-value">1,234</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="dashboard.js"></script>
+</body>
+</html>`,
+                    files: ['index.html', 'dashboard.css', 'dashboard.js', 'data/']
+                },
+                'mobile-pwa': {
+                    title: '📱 Mobile PWA Template',
+                    description: 'Progressive Web App with offline support and mobile-first design',
+                    code: `{
+  "name": "Mobile PWA",
+  "short_name": "PWA",
+  "description": "Progressive Web App Template",
+  "start_url": "/",
+  "display": "standalone",
+  "theme_color": "#667eea",
+  "background_color": "#ffffff",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}`,
+                    files: ['manifest.json', 'sw.js', 'index.html', 'css/', 'js/', 'icons/']
+                }
+            };
+            
+            const config = templateConfigs[templateName] || {
+                title: `📁 ${templateName.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} Template`,
+                description: 'Complete project template with best practices and modern tooling',
+                code: `// ${templateName} template code will be generated here
+console.log('Template: ${templateName}');`,
+                files: ['index.html', 'style.css', 'script.js', 'README.md']
+            };
+            
+            return `
+                <div style="padding: 30px;">
+                    <h2 style="margin-bottom: 20px;">${config.title}</h2>
+                    <p style="color: #666; margin-bottom: 30px; font-size: 1.1rem;">${config.description}</p>
+                    
+                    <div style="display: grid; grid-template-columns: 1fr 300px; gap: 30px;">
+                        <div>
+                            <h4 style="margin-bottom: 15px;">📝 Template Code:</h4>
+                            <textarea readonly style="width: 100%; height: 400px; padding: 15px; border: 1px solid #ddd; border-radius: 8px; font-family: monospace; font-size: 14px; background: #f8f9fa;">${config.code}</textarea>
+                            
+                            <div style="margin-top: 15px; display: flex; gap: 10px;">
+                                <button onclick="copyTemplateCode('${templateName}')" style="padding: 10px 20px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">📋 Copy Code</button>
+                                <button onclick="downloadTemplate('${templateName}')" style="padding: 10px 20px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">💾 Download Template</button>
+                                <button onclick="customizeTemplate('${templateName}')" style="padding: 10px 20px; background: #f39c12; color: white; border: none; border-radius: 5px; cursor: pointer;">⚙️ Customize</button>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h4 style="margin-bottom: 15px;">📁 Template Structure:</h4>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; border: 1px solid #ddd;">
+                                <div style="font-family: monospace; font-size: 14px;">
+                                    📁 ${templateName}/<br>
+                                    ${config.files.map(file => 
+                                        file.includes('/') ? 
+                                        `├── 📁 ${file}<br>` : 
+                                        `├── 📄 ${file}<br>`
+                                    ).join('')}
+                                    └── 📄 README.md
+                                </div>
+                            </div>
+                            
+                            <div style="margin-top: 20px; padding: 15px; background: #e7f3ff; border-radius: 8px; border: 1px solid #b3d9ff;">
+                                <h5 style="margin-bottom: 10px; color: #0066cc;">🎯 Features:</h5>
+                                <ul style="color: #0066cc; font-size: 14px; margin: 0; padding-left: 20px;">
+                                    <li>Modern architecture</li>
+                                    <li>Best practices included</li>
+                                    <li>Ready for deployment</li>
+                                    <li>Fully customizable</li>
+                                    <li>Documentation included</li>
+                                </ul>
+                            </div>
+                            
+                            <div style="margin-top: 15px; padding: 15px; background: #f0f9ff; border-radius: 8px; border: 1px solid #bfdbfe;">
+                                <h5 style="margin-bottom: 10px; color: #0284c7;">🚀 Quick Start:</h5>
+                                <ol style="color: #0284c7; font-size: 14px; margin: 0; padding-left: 20px;">
+                                    <li>Download template</li>
+                                    <li>Customize configuration</li>
+                                    <li>Install dependencies</li>
+                                    <li>Start development</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function closeTemplateModal() {
+            const modal = document.querySelector('.template-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function copyTemplateCode(templateName) {
+            const textarea = document.querySelector('textarea');
+            if (textarea) {
+                textarea.select();
+                document.execCommand('copy');
+                alert('✅ Template code copied to clipboard!');
+            }
+        }
+        
+        function downloadTemplate(templateName) {
+            const code = document.querySelector('textarea').value;
+            const blob = new Blob([code], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${templateName}-template.txt`;
+            a.click();
+            URL.revokeObjectURL(url);
+            alert('💾 Template downloaded successfully!');
+        }
+        
+        function customizeTemplate(templateName) {
+            // Create customization interface
+            const existingModal = document.querySelector('.template-modal .modal-content');
+            if (existingModal) {
+                existingModal.innerHTML = `
+                    <button onclick="closeTemplateModal()" style="position: absolute; top: 15px; right: 15px; background: none; border: none; font-size: 1.5rem; cursor: pointer; color: #666;">×</button>
+                    <div style="padding: 30px;">
+                        <h2 style="margin-bottom: 20px;">⚙️ Customize ${templateName.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase())} Template</h2>
+                        
+                        <form onsubmit="generateCustomTemplate(event, '${templateName}')">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px;">
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Project Name:</label>
+                                    <input type="text" id="projectName" value="my-${templateName}" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                </div>
+                                <div>
+                                    <label style="display: block; margin-bottom: 5px; font-weight: bold;">Author:</label>
+                                    <input type="text" id="authorName" value="Your Name" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: bold;">Description:</label>
+                                <textarea id="projectDescription" style="width: 100%; height: 80px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">A ${templateName.replace('-', ' ')} project built with modern tools and best practices.</textarea>
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 10px; font-weight: bold;">Features to Include:</label>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                                    <label style="display: flex; align-items: center;"><input type="checkbox" checked style="margin-right: 8px;"> TypeScript Support</label>
+                                    <label style="display: flex; align-items: center;"><input type="checkbox" checked style="margin-right: 8px;"> Testing Setup</label>
+                                    <label style="display: flex; align-items: center;"><input type="checkbox" checked style="margin-right: 8px;"> ESLint Configuration</label>
+                                    <label style="display: flex; align-items: center;"><input type="checkbox" checked style="margin-right: 8px;"> Prettier Setup</label>
+                                    <label style="display: flex; align-items: center;"><input type="checkbox" style="margin-right: 8px;"> Docker Support</label>
+                                    <label style="display: flex; align-items: center;"><input type="checkbox" style="margin-right: 8px;"> CI/CD Pipeline</label>
+                                </div>
+                            </div>
+                            
+                            <div style="margin-bottom: 20px;">
+                                <label style="display: block; margin-bottom: 5px; font-weight: bold;">CSS Framework:</label>
+                                <select id="cssFramework" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
+                                    <option value="vanilla">Vanilla CSS</option>
+                                    <option value="bootstrap">Bootstrap</option>
+                                    <option value="tailwind">Tailwind CSS</option>
+                                    <option value="bulma">Bulma</option>
+                                </select>
+                            </div>
+                            
+                            <button type="submit" style="padding: 12px 30px; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;">🚀 Generate Custom Template</button>
+                        </form>
+                    </div>
+                `;
+            }
+        }
+        
+        function generateCustomTemplate(event, templateName) {
+            event.preventDefault();
+            
+            const projectName = document.getElementById('projectName').value;
+            const author = document.getElementById('authorName').value;
+            const description = document.getElementById('projectDescription').value;
+            const cssFramework = document.getElementById('cssFramework').value;
+            
+            // Generate customized template
+            const customCode = `// ${projectName}
+// Author: ${author}
+// Description: ${description}
+// CSS Framework: ${cssFramework}
+
+// Generated template code would go here
+console.log('Custom template generated for: ${projectName}');
+
+// Template configuration
+const config = {
+    name: '${projectName}',
+    author: '${author}',
+    description: '${description}',
+    framework: '${cssFramework}',
+    features: []
+};
+
+export default config;`;
+            
+            // Create download
+            const blob = new Blob([customCode], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${projectName}.js`;
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            alert(`✅ Custom template "${projectName}" generated and downloaded!`);
+            closeTemplateModal();
         }
         
         function showPreview(type) {

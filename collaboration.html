@@ -1199,6 +1199,204 @@
                     <h2 style="margin-bottom: 30px; color: #333;">Task Management</h2>
                     <p>Loading task management interface...</p>
                 </div>
+                
+                <!-- Profile Section -->
+                <div id="profile-section" class="section" style="display: none;">
+                    <h2 style="margin-bottom: 30px; color: #333;">👤 User Profile</h2>
+                    
+                    <div class="profile-container" style="max-width: 800px;">
+                        <div class="profile-header" style="display: flex; align-items: center; margin-bottom: 30px; padding: 20px; background: white; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                            <div class="profile-avatar" style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #667eea, #764ba2); display: flex; align-items: center; justify-content: center; color: white; font-size: 2rem; margin-right: 25px;" id="profileAvatar">
+                                👤
+                            </div>
+                            <div class="profile-info">
+                                <h3 id="profileName" style="margin-bottom: 5px; color: #333;">Current User</h3>
+                                <p id="profileEmail" style="color: #666; margin-bottom: 10px;">user@platform.com</p>
+                                <div class="profile-badges" id="profileBadges">
+                                    <span class="badge" style="background: #28a745; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem;">✅ Active</span>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" onclick="editProfile()" style="margin-left: auto;">✏️ Edit Profile</button>
+                        </div>
+                        
+                        <div class="profile-stats" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                            <div class="stat-card" style="background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2rem; color: #667eea; margin-bottom: 10px;">📊</div>
+                                <h4>Projects</h4>
+                                <p style="font-size: 1.5rem; font-weight: bold; color: #333;">12</p>
+                            </div>
+                            <div class="stat-card" style="background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2rem; color: #28a745; margin-bottom: 10px;">✅</div>
+                                <h4>Tasks Completed</h4>
+                                <p style="font-size: 1.5rem; font-weight: bold; color: #333;">847</p>
+                            </div>
+                            <div class="stat-card" style="background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2rem; color: #e74c3c; margin-bottom: 10px;">🎯</div>
+                                <h4>Goals Achieved</h4>
+                                <p style="font-size: 1.5rem; font-weight: bold; color: #333;">23</p>
+                            </div>
+                            <div class="stat-card" style="background: white; padding: 20px; border-radius: 15px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <div style="font-size: 2rem; color: #f39c12; margin-bottom: 10px;">🏆</div>
+                                <h4>Achievements</h4>
+                                <p style="font-size: 1.5rem; font-weight: bold; color: #333;">45</p>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-sections" style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="profile-details" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <h4 style="margin-bottom: 20px; color: #333;">📋 Personal Information</h4>
+                                <div class="info-item" style="margin-bottom: 15px;">
+                                    <label style="font-weight: bold; color: #666;">Full Name:</label>
+                                    <p id="displayName">Current User</p>
+                                </div>
+                                <div class="info-item" style="margin-bottom: 15px;">
+                                    <label style="font-weight: bold; color: #666;">Email:</label>
+                                    <p id="displayEmail">user@platform.com</p>
+                                </div>
+                                <div class="info-item" style="margin-bottom: 15px;">
+                                    <label style="font-weight: bold; color: #666;">Role:</label>
+                                    <p id="displayRole">Team Member</p>
+                                </div>
+                                <div class="info-item" style="margin-bottom: 15px;">
+                                    <label style="font-weight: bold; color: #666;">Join Date:</label>
+                                    <p id="displayJoinDate">January 2024</p>
+                                </div>
+                            </div>
+                            
+                            <div class="profile-activity" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <h4 style="margin-bottom: 20px; color: #333;">📈 Recent Activity</h4>
+                                <div class="activity-list">
+                                    <div class="activity-item" style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                                        <p style="margin-bottom: 5px;">✅ Completed task "Update project documentation"</p>
+                                        <small style="color: #666;">2 hours ago</small>
+                                    </div>
+                                    <div class="activity-item" style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                                        <p style="margin-bottom: 5px;">🚀 Created new project "Mobile App Design"</p>
+                                        <small style="color: #666;">1 day ago</small>
+                                    </div>
+                                    <div class="activity-item" style="padding: 10px 0; border-bottom: 1px solid #eee;">
+                                        <p style="margin-bottom: 5px;">👥 Joined team "Development Squad"</p>
+                                        <small style="color: #666;">3 days ago</small>
+                                    </div>
+                                    <div class="activity-item" style="padding: 10px 0;">
+                                        <p style="margin-bottom: 5px;">🏆 Earned achievement "Team Player"</p>
+                                        <small style="color: #666;">1 week ago</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Settings Section -->
+                <div id="settings-section" class="section" style="display: none;">
+                    <h2 style="margin-bottom: 30px; color: #333;">⚙️ Platform Settings</h2>
+                    
+                    <div class="settings-container" style="max-width: 800px;">
+                        <div class="settings-grid" style="display: grid; gap: 20px;">
+                            <!-- Account Settings -->
+                            <div class="settings-card" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <h4 style="margin-bottom: 20px; color: #333;">👤 Account Settings</h4>
+                                <div class="setting-item" style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #666;">Profile Visibility</label>
+                                    <select style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                                        <option>Public</option>
+                                        <option>Team Only</option>
+                                        <option>Private</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item" style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #666;">Two-Factor Authentication</label>
+                                    <div style="display: flex; align-items: center;">
+                                        <input type="checkbox" id="twoFactor" style="margin-right: 10px;">
+                                        <label for="twoFactor">Enable 2FA for enhanced security</label>
+                                    </div>
+                                </div>
+                                <button class="btn btn-primary" onclick="saveAccountSettings()">💾 Save Account Settings</button>
+                            </div>
+                            
+                            <!-- Notification Settings -->
+                            <div class="settings-card" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <h4 style="margin-bottom: 20px; color: #333;">🔔 Notification Preferences</h4>
+                                <div class="setting-item" style="margin-bottom: 15px;">
+                                    <label style="display: flex; align-items: center;">
+                                        <input type="checkbox" checked style="margin-right: 10px;">
+                                        Email notifications for project updates
+                                    </label>
+                                </div>
+                                <div class="setting-item" style="margin-bottom: 15px;">
+                                    <label style="display: flex; align-items: center;">
+                                        <input type="checkbox" checked style="margin-right: 10px;">
+                                        Push notifications for team messages
+                                    </label>
+                                </div>
+                                <div class="setting-item" style="margin-bottom: 15px;">
+                                    <label style="display: flex; align-items: center;">
+                                        <input type="checkbox" style="margin-right: 10px;">
+                                        Weekly activity digest
+                                    </label>
+                                </div>
+                                <div class="setting-item" style="margin-bottom: 20px;">
+                                    <label style="display: flex; align-items: center;">
+                                        <input type="checkbox" checked style="margin-right: 10px;">
+                                        AI collaboration suggestions
+                                    </label>
+                                </div>
+                                <button class="btn btn-primary" onclick="saveNotificationSettings()">💾 Save Notification Settings</button>
+                            </div>
+                            
+                            <!-- Theme & Display -->
+                            <div class="settings-card" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <h4 style="margin-bottom: 20px; color: #333;">🎨 Theme & Display</h4>
+                                <div class="setting-item" style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #666;">Theme Mode</label>
+                                    <select style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                                        <option>Light Mode</option>
+                                        <option>Dark Mode</option>
+                                        <option>Auto (System)</option>
+                                    </select>
+                                </div>
+                                <div class="setting-item" style="margin-bottom: 20px;">
+                                    <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #666;">Language</label>
+                                    <select style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                                        <option>English</option>
+                                        <option>Spanish</option>
+                                        <option>French</option>
+                                        <option>German</option>
+                                    </select>
+                                </div>
+                                <button class="btn btn-primary" onclick="saveDisplaySettings()">💾 Save Display Settings</button>
+                            </div>
+                            
+                            <!-- Privacy & Security -->
+                            <div class="settings-card" style="background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);">
+                                <h4 style="margin-bottom: 20px; color: #333;">🔒 Privacy & Security</h4>
+                                <div class="setting-item" style="margin-bottom: 15px;">
+                                    <label style="display: flex; align-items: center;">
+                                        <input type="checkbox" checked style="margin-right: 10px;">
+                                        Allow team members to see online status
+                                    </label>
+                                </div>
+                                <div class="setting-item" style="margin-bottom: 15px;">
+                                    <label style="display: flex; align-items: center;">
+                                        <input type="checkbox" style="margin-right: 10px;">
+                                        Share activity data for platform improvement
+                                    </label>
+                                </div>
+                                <div class="setting-item" style="margin-bottom: 20px;">
+                                    <label style="display: flex; align-items: center;">
+                                        <input type="checkbox" checked style="margin-right: 10px;">
+                                        Encrypt sensitive project data
+                                    </label>
+                                </div>
+                                <div class="setting-actions" style="display: flex; gap: 10px;">
+                                    <button class="btn btn-primary" onclick="savePrivacySettings()">💾 Save Privacy Settings</button>
+                                    <button class="btn" onclick="exportUserData()" style="background: #f8f9fa; color: #666;">📥 Export My Data</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1316,6 +1514,12 @@
                     break;
                 case 'chat':
                     loadChatSection(contentArea);
+                    break;
+                case 'profile':
+                    loadProfileSection();
+                    break;
+                case 'settings':
+                    loadSettingsSection();
                     break;
                 // Add more cases as needed
             }
@@ -1877,6 +2081,162 @@
             }
         });
         
+        // Profile and Settings Functions
+        function loadProfileSection() {
+            // Update profile information with current user data
+            const authData = JSON.parse(localStorage.getItem('collaborationUser')) || {};
+            
+            // Update profile display elements
+            if (authData.email) {
+                document.getElementById('profileEmail').textContent = authData.email;
+                document.getElementById('displayEmail').textContent = authData.email;
+            }
+            if (authData.isAdmin) {
+                document.getElementById('displayRole').textContent = 'Administrator';
+                const badgesContainer = document.getElementById('profileBadges');
+                if (!badgesContainer.querySelector('.admin-badge')) {
+                    const adminBadge = document.createElement('span');
+                    adminBadge.className = 'badge admin-badge';
+                    adminBadge.style.cssText = 'background: #e74c3c; color: white; padding: 4px 12px; border-radius: 20px; font-size: 0.8rem; margin-left: 10px;';
+                    adminBadge.textContent = '🔐 Admin';
+                    badgesContainer.appendChild(adminBadge);
+                }
+            }
+        }
+        
+        function loadSettingsSection() {
+            // Settings are already loaded in the HTML, this function can be used for dynamic loading
+            console.log('Settings section loaded');
+        }
+        
+        function editProfile() {
+            // Create profile edit modal
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0, 0, 0, 0.5); display: flex;
+                align-items: center; justify-content: center; z-index: 10000;
+            `;
+            
+            modal.innerHTML = `
+                <div class="modal-content" style="background: white; padding: 30px; border-radius: 15px; max-width: 500px; width: 90%; max-height: 80vh; overflow-y: auto;">
+                    <h3 style="margin-bottom: 20px; color: #333;">✏️ Edit Profile</h3>
+                    <form onsubmit="saveProfile(event)">
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #666;">Full Name</label>
+                            <input type="text" id="editName" value="Current User" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #666;">Bio</label>
+                            <textarea id="editBio" placeholder="Tell us about yourself..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px; height: 80px; resize: vertical;"></textarea>
+                        </div>
+                        <div style="margin-bottom: 20px;">
+                            <label style="display: block; margin-bottom: 5px; font-weight: bold; color: #666;">Department</label>
+                            <select id="editDepartment" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 8px;">
+                                <option>Development</option>
+                                <option>Design</option>
+                                <option>Marketing</option>
+                                <option>Operations</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                        <div style="display: flex; gap: 10px; justify-content: flex-end;">
+                            <button type="button" onclick="closeModal()" style="padding: 10px 20px; border: 1px solid #ddd; background: #f8f9fa; color: #666; border-radius: 8px; cursor: pointer;">Cancel</button>
+                            <button type="submit" style="padding: 10px 20px; border: none; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 8px; cursor: pointer;">💾 Save Changes</button>
+                        </div>
+                    </form>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function saveProfile(event) {
+            event.preventDefault();
+            const name = document.getElementById('editName').value;
+            const bio = document.getElementById('editBio').value;
+            const department = document.getElementById('editDepartment').value;
+            
+            // Update profile display
+            document.getElementById('profileName').textContent = name;
+            document.getElementById('displayName').textContent = name;
+            
+            // Save to localStorage
+            const authData = JSON.parse(localStorage.getItem('collaborationUser')) || {};
+            authData.fullName = name;
+            authData.bio = bio;
+            authData.department = department;
+            localStorage.setItem('collaborationUser', JSON.stringify(authData));
+            
+            // Show success message
+            alert('✅ Profile updated successfully!');
+            closeModal();
+        }
+        
+        function closeModal() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        }
+        
+        function saveAccountSettings() {
+            const settings = {
+                profileVisibility: document.querySelector('#settings-section select').value,
+                twoFactor: document.getElementById('twoFactor').checked
+            };
+            
+            localStorage.setItem('accountSettings', JSON.stringify(settings));
+            alert('✅ Account settings saved successfully!');
+        }
+        
+        function saveNotificationSettings() {
+            const checkboxes = document.querySelectorAll('#settings-section .settings-card:nth-child(2) input[type="checkbox"]');
+            const settings = Array.from(checkboxes).map(cb => cb.checked);
+            
+            localStorage.setItem('notificationSettings', JSON.stringify(settings));
+            alert('✅ Notification preferences saved successfully!');
+        }
+        
+        function saveDisplaySettings() {
+            const selects = document.querySelectorAll('#settings-section .settings-card:nth-child(3) select');
+            const settings = {
+                theme: selects[0].value,
+                language: selects[1].value
+            };
+            
+            localStorage.setItem('displaySettings', JSON.stringify(settings));
+            alert('✅ Display settings saved successfully!');
+        }
+        
+        function savePrivacySettings() {
+            const checkboxes = document.querySelectorAll('#settings-section .settings-card:nth-child(4) input[type="checkbox"]');
+            const settings = Array.from(checkboxes).map(cb => cb.checked);
+            
+            localStorage.setItem('privacySettings', JSON.stringify(settings));
+            alert('✅ Privacy settings saved successfully!');
+        }
+        
+        function exportUserData() {
+            const userData = {
+                profile: JSON.parse(localStorage.getItem('collaborationUser') || '{}'),
+                accountSettings: JSON.parse(localStorage.getItem('accountSettings') || '{}'),
+                notificationSettings: JSON.parse(localStorage.getItem('notificationSettings') || '[]'),
+                displaySettings: JSON.parse(localStorage.getItem('displaySettings') || '{}'),
+                privacySettings: JSON.parse(localStorage.getItem('privacySettings') || '[]')
+            };
+            
+            const dataStr = JSON.stringify(userData, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(dataBlob);
+            link.download = 'my-platform-data.json';
+            link.click();
+            
+            alert('📥 Your data has been exported successfully!');
+        }
 
         
         // Add logout functionality
