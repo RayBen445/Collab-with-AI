@@ -138,16 +138,19 @@ Click **"Add New"** for each variable:
 - **Name**: `FIREBASE_APP_ID` **Value**: Your Firebase appId
 - **Name**: `FIREBASE_MEASUREMENT_ID` **Value**: Your Firebase measurementId
 
+**Note**: Set all Firebase environment variables as regular environment variables in Vercel, not secret references. The application accesses them directly from the environment.
+
+#### Admin Configuration:
+- **Name**: `ADMIN_EMAIL` **Value**: Your admin email address
+
 #### API Keys:
 - **Name**: `GEMINI_API_KEY` **Value**: Your Google Gemini API key
 
 **Note**: Set this as a regular environment variable in Vercel, not a secret reference. The application accesses it securely through the backend API endpoint.
 
-#### Admin Configuration:
 - **Name**: `ADMIN_TOKEN` **Value**: Your generated secure token
-- **Name**: `ADMIN_EMAIL` **Value**: Your admin email address
 
-**Note**: Set ADMIN_TOKEN as a regular environment variable in Vercel, not a secret reference. The application accesses it securely through the backend API endpoint.
+**Note**: Set ADMIN_TOKEN and ADMIN_EMAIL as regular environment variables in Vercel, not secret references. The application accesses them securely through the backend API endpoint.
 
 ### Step 3: Environment Selection
 For each variable, select:
@@ -204,6 +207,7 @@ Before deploying, ensure you have:
 **"Firebase configuration invalid"**
 - Double-check all Firebase config values are correctly copied
 - Ensure no extra spaces or quotes in environment variables
+- Ensure all Firebase environment variables are set as regular environment variables (not secret references) in Vercel
 
 **"Gemini API key invalid"**
 - Verify API key is active in Google AI Studio
@@ -213,7 +217,7 @@ Before deploying, ensure you have:
 **"Admin authentication failed"**
 - Ensure ADMIN_TOKEN matches exactly (no extra characters)
 - Verify ADMIN_EMAIL matches your login email
-- Ensure ADMIN_TOKEN is set as a regular environment variable (not a secret reference) in Vercel
+- Ensure ADMIN_TOKEN and ADMIN_EMAIL are set as regular environment variables (not secret references) in Vercel
 
 **"Environment variables not loading"**
 - Restart Vercel deployment after adding variables

@@ -114,18 +114,19 @@ match /projects/{projectId}/{allPaths=**} {
 4. Configure authentication providers (Email/Password and Google)
 
 ### 2. Configuration Update
-Update `js/firebase-config.js` with your project's configuration:
-```javascript
-const firebaseConfig = {
-  apiKey: "your-actual-api-key",
-  authDomain: "your-project.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project.appspot.com",
-  messagingSenderId: "your-sender-id",
-  appId: "your-app-id",
-  measurementId: "your-measurement-id"
-};
-```
+Update environment variables with your project's configuration. These should be set as regular environment variables in your deployment platform (Vercel), not as secret references:
+
+**Required Environment Variables:**
+- `FIREBASE_API_KEY` - Your Firebase apiKey
+- `FIREBASE_AUTH_DOMAIN` - Your Firebase authDomain  
+- `FIREBASE_PROJECT_ID` - Your Firebase projectId
+- `FIREBASE_STORAGE_BUCKET` - Your Firebase storageBucket
+- `FIREBASE_MESSAGING_SENDER_ID` - Your Firebase messagingSenderId
+- `FIREBASE_APP_ID` - Your Firebase appId
+- `FIREBASE_MEASUREMENT_ID` - Your Firebase measurementId
+- `ADMIN_EMAIL` - Your admin email address
+- `GEMINI_API_KEY` - Your Google Gemini AI API key
+- `ADMIN_TOKEN` - Your secure admin authentication token
 
 ### 3. Environment Variables
 Set these environment variables in Firebase Functions:
@@ -255,7 +256,8 @@ The admin user (configured via environment variables) now has access to:
 
 ### 🔒 Security Best Practices
 - Use Firebase Functions config for sensitive data: `firebase functions:config:set`
-- Use Vercel environment variables for client-side configuration
+- Use Vercel environment variables (not secret references) for client-side configuration
+- Set all environment variables as regular environment variables in your deployment platform
 - Regularly rotate API keys and admin tokens
 - Monitor authentication logs for suspicious activity
 
