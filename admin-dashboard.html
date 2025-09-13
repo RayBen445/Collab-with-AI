@@ -820,10 +820,40 @@
             
             async checkAuthentication() {
                 return new Promise((resolve, reject) => {
+                    // First check for universal authentication
+                    const universalAuth = localStorage.getItem('universalAuth');
+                    if (universalAuth) {
+                        try {
+                            const authData = JSON.parse(universalAuth);
+                            console.log('Found universal authentication data:', authData);
+                            
+                            // Check if it's admin user
+                            if (authData.isAdmin) {
+                                this.currentUser = {
+                                    email: authData.email,
+                                    displayName: authData.displayName || authData.email.split('@')[0],
+                                    uid: 'universal-' + authData.email,
+                                    isUniversalAuth: true
+                                };
+                                console.log('Universal admin authentication verified');
+                                resolve(this.currentUser);
+                                return;
+                            } else {
+                                alert('Access denied. Administrator privileges required.');
+                                window.location.href = 'collaboration.html';
+                                reject(new Error('Insufficient privileges'));
+                                return;
+                            }
+                        } catch (error) {
+                            console.error('Error parsing universal auth data:', error);
+                        }
+                    }
+                    
+                    // If no universal auth, check Firebase (if available)
                     if (typeof firebase === 'undefined') {
-                        console.error('Firebase not loaded');
+                        console.error('No authentication found');
                         this.redirectToLogin();
-                        return reject(new Error('Firebase not available'));
+                        return reject(new Error('No authentication available'));
                     }
                     
                     firebase.auth().onAuthStateChanged((user) => {
