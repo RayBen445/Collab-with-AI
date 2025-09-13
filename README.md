@@ -65,13 +65,17 @@ When deploying to Vercel, you must set the following environment variables in yo
 - `ADMIN_TOKEN` - Secure admin authentication token
 - `ADMIN_EMAIL` - Admin email address for elevated privileges
 
-### How to Set Environment Variables in Vercel:
+### 📖 Complete Setup Guide
 
-1. Go to your Vercel dashboard
-2. Navigate to your project
-3. Go to **Settings** → **Environment Variables**
-4. Add each variable with its corresponding value
-5. Select appropriate environments (Production, Preview, Development)
+For detailed step-by-step instructions on obtaining all API keys and tokens, see:
+**[🔐 KEYS_AND_TOKENS_GUIDE.md](./KEYS_AND_TOKENS_GUIDE.md)**
+
+### Quick Setup Summary:
+
+1. **Firebase Console**: Get 7 configuration values from your Firebase project settings
+2. **Google AI Studio**: Generate your Gemini API key
+3. **Generate Admin Token**: Create a secure 32+ character token
+4. **Vercel Dashboard**: Add all 10 environment variables in project settings
 
 ### Local Development:
 
