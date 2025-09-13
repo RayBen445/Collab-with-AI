@@ -1104,21 +1104,42 @@
             
             if (message === '') return;
             
-            // Add message to chat
-            addMessage(message, communicationState.currentUser, true);
+            // Show message sending indicator
+            const sendBtn = document.getElementById('sendBtn');
+            const originalText = sendBtn.innerHTML;
+            sendBtn.innerHTML = '⏳';
+            sendBtn.disabled = true;
             
-            // Clear input
-            input.value = '';
-            document.getElementById('sendBtn').disabled = true;
-            communicationState.isTyping = false;
-            
-            // Simulate AI or team responses
-            setTimeout(() => {
-                simulateResponse(message);
-            }, 1000 + Math.random() * 2000);
-            
-            // Auto-scroll to bottom
-            scrollToBottom();
+            try {
+                // Add message to chat
+                addMessage(message, communicationState.currentUser, true);
+                
+                // Clear input
+                input.value = '';
+                communicationState.isTyping = false;
+                
+                // Reset send button
+                sendBtn.innerHTML = '➤';
+                sendBtn.disabled = true;
+                
+                // Show success feedback
+                showNotification('✅ Message sent successfully');
+                
+                // Simulate AI or team responses
+                setTimeout(() => {
+                    simulateResponse(message);
+                }, 1000 + Math.random() * 2000);
+                
+                // Auto-scroll to bottom
+                scrollToBottom();
+            } catch (error) {
+                console.error('Error sending message:', error);
+                showNotification('❌ Failed to send message. Please try again.');
+                
+                // Reset send button
+                sendBtn.innerHTML = originalText;
+                sendBtn.disabled = false;
+            }
         }
         
         function addMessage(text, author, isOwnMessage = false) {
@@ -1378,52 +1399,67 @@
         
         async function addAISuggestion(context) {
             try {
-                const aiPrompt = `Based on this team communication context: "${context}", provide a helpful, actionable suggestion for the team. 
-                Focus on:
-                1. Project productivity improvements
-                2. Collaboration optimization
-                3. Code quality suggestions
-                4. Process improvements
-                5. Next steps recommendations
+                // Check if Gemini API is available
+                if (typeof geminiAPI !== 'undefined' && geminiAPI.isInitialized()) {
+                    const aiPrompt = `Based on this team communication context: "${context}", provide a helpful, actionable suggestion for the team. 
+                    Focus on:
+                    1. Project productivity improvements
+                    2. Collaboration optimization
+                    3. Code quality suggestions
+                    4. Process improvements
+                    5. Next steps recommendations
+                    
+                    Keep the suggestion concise and specific to software development and project management.`;
+                    
+                    const result = await geminiAPI.generateContent(aiPrompt, {
+                        temperature: 0.6,
+                        maxTokens: 200
+                    });
+                    
+                    if (result.success) {
+                        const aiSuggestions = document.querySelector('.ai-suggestions');
+                        const newSuggestion = document.createElement('div');
+                        newSuggestion.className = 'ai-suggestion';
+                        newSuggestion.innerHTML = `
+                            <div class="suggestion-title">💡 Smart AI Suggestion</div>
+                            <div class="suggestion-text">${result.text}</div>
+                        `;
+                        
+                        if (aiSuggestions) {
+                            aiSuggestions.insertBefore(newSuggestion, aiSuggestions.firstChild);
+                        }
+                        return;
+                    }
+                }
                 
-                Keep the suggestion concise and specific to software development and project management.`;
-                
-                const result = await geminiAPI.generateContent(aiPrompt, {
-                    temperature: 0.6,
-                    maxTokens: 200
-                });
-                
-                const aiSuggestions = document.querySelector('.ai-suggestions');
-                const newSuggestion = document.createElement('div');
-                newSuggestion.className = 'ai-suggestion';
-                newSuggestion.innerHTML = `
-                    <div class="suggestion-title">Smart AI Suggestion</div>
-                    <div class="suggestion-text">${result.text}</div>
-                `;
-                
-                aiSuggestions.insertBefore(newSuggestion, aiSuggestions.firstChild);
-            } catch (error) {
-                console.error('AI suggestion error:', error);
                 // Fallback to static suggestions
                 const suggestions = [
-                    'Would you like me to create a detailed project timeline based on this discussion?',
-                    'I can generate automated tests for the features mentioned. Shall I proceed?',
-                    'Based on the conversation, I recommend setting up monitoring for the new features.',
+                    'Consider scheduling a team standup to align on project priorities and blockers',
+                    'I can generate automated tests for the features discussed. Would you like me to proceed?',
+                    'Based on the conversation, I recommend setting up monitoring for the new features',
                     'I notice potential optimization opportunities. Would you like a performance analysis?',
-                    'This discussion contains actionable items. Shall I create tasks in the project management system?'
+                    'This discussion contains actionable items. Shall I create tasks in the project management system?',
+                    'I can help create documentation for the features being discussed',
+                    'Consider implementing code reviews to maintain quality standards',
+                    'Would you like me to schedule a demo session for the completed features?'
                 ];
                 
                 const suggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
                 
                 const aiSuggestions = document.querySelector('.ai-suggestions');
-                const newSuggestion = document.createElement('div');
-                newSuggestion.className = 'ai-suggestion';
-                newSuggestion.innerHTML = `
-                    <div class="suggestion-title">Smart Suggestion</div>
-                    <div class="suggestion-text">${suggestion}</div>
-                `;
-                
-                aiSuggestions.insertBefore(newSuggestion, aiSuggestions.firstChild);
+                if (aiSuggestions) {
+                    const newSuggestion = document.createElement('div');
+                    newSuggestion.className = 'ai-suggestion';
+                    newSuggestion.innerHTML = `
+                        <div class="suggestion-title">🤖 Smart Suggestion</div>
+                        <div class="suggestion-text">${suggestion}</div>
+                    `;
+                    
+                    aiSuggestions.insertBefore(newSuggestion, aiSuggestions.firstChild);
+                }
+            } catch (error) {
+                console.error('AI suggestion error:', error);
+                showNotification('⚠️ AI suggestions temporarily unavailable');
             }
         }
         
@@ -1696,8 +1732,11 @@
         });
     </script>
     
-    <!-- Include Gemini AI Service -->
-    <script src="js/gemini-api.js"></script>
+    <!-- Include Environment Configuration -->
+    <script src="js/env-loader.js"></script>
+    
+    <!-- Include Fixed Gemini AI Service -->
+    <script src="js/gemini-api-clean.js"></script>
     
     <!-- Real-Time Status Bar -->
     <script src="js/status-bar.js"></script>
