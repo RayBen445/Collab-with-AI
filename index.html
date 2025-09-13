@@ -178,6 +178,93 @@
             background: #667eea;
             color: white;
         }
+        
+        .collaboration-platform {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin: 40px 0;
+            color: white;
+            text-align: center;
+        }
+        
+        .platform-title {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+        
+        .platform-subtitle {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .platform-features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .platform-feature {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 25px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .platform-feature:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+        
+        .feature-description {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            line-height: 1.4;
+        }
+        
+        .platform-cta {
+            margin-top: 30px;
+        }
+        
+        .cta-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+        
+        .cta-btn:hover {
+            background: white;
+            color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -331,6 +418,55 @@
                 <p>Cutting-edge demos, prototypes, and research projects</p>
                 <div class="project-count">8 Projects</div>
                 <a href="/projects/experimental/" class="view-projects">View Projects</a>
+            </div>
+        </div>
+        
+        <!-- Collaboration Platform Section -->
+        <div class="collaboration-platform">
+            <div class="platform-title">🚀 Full Collaboration Platform</div>
+            <div class="platform-subtitle">Experience enterprise-grade AI-human collaboration tools</div>
+            
+            <div class="platform-features">
+                <div class="platform-feature" onclick="window.open('collaboration.html', '_blank')">
+                    <span class="feature-icon">🤖</span>
+                    <div class="feature-title">AI Dashboard</div>
+                    <div class="feature-description">Main collaboration hub with AI assistant, project management, and team coordination</div>
+                </div>
+                
+                <div class="platform-feature" onclick="window.open('real-time-editor.html', '_blank')">
+                    <span class="feature-icon">📝</span>
+                    <div class="feature-title">Real-Time Editor</div>
+                    <div class="feature-description">Collaborative document editing with AI suggestions, version control, and live comments</div>
+                </div>
+                
+                <div class="platform-feature" onclick="window.open('task-management.html', '_blank')">
+                    <span class="feature-icon">🎯</span>
+                    <div class="feature-title">Task Management</div>
+                    <div class="feature-description">AI-powered Kanban boards with smart scheduling, priority optimization, and team analytics</div>
+                </div>
+                
+                <div class="platform-feature" onclick="window.open('team-communication.html', '_blank')">
+                    <span class="feature-icon">💬</span>
+                    <div class="feature-title">Team Communication</div>
+                    <div class="feature-description">Real-time chat, video calls, screen sharing, and AI-powered conversation insights</div>
+                </div>
+                
+                <div class="platform-feature" onclick="window.open('analytics-dashboard.html', '_blank')">
+                    <span class="feature-icon">📊</span>
+                    <div class="feature-title">Analytics Dashboard</div>
+                    <div class="feature-description">Comprehensive AI analytics with performance insights, predictions, and custom reports</div>
+                </div>
+                
+                <div class="platform-feature" onclick="alert('🔧 User management, file sharing, integrations, and security features coming soon!')">
+                    <span class="feature-icon">🔒</span>
+                    <div class="feature-title">Enterprise Features</div>
+                    <div class="feature-description">User management, security, integrations, workflow automation, and custom AI models</div>
+                </div>
+            </div>
+            
+            <div class="platform-cta">
+                <a href="collaboration.html" class="cta-btn">🚀 Launch Platform</a>
+                <a href="analytics-dashboard.html" class="cta-btn">📊 View Analytics</a>
             </div>
         </div>
         

@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Task Management - CollabAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .task-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+        
+        .task-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        
+        .task-header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .task-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .stat-trend {
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        
+        .stat-trend.up {
+            color: #28a745;
+        }
+        
+        .stat-trend.down {
+            color: #dc3545;
+        }
+        
+        .task-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid #667eea;
+            color: #667eea;
+        }
+        
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .search-filter {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 8px 15px;
+            border-radius: 25px;
+            border: 1px solid #e1e5e9;
+        }
+        
+        .search-filter input {
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 0.9rem;
+            width: 200px;
+        }
+        
+        .filter-select {
+            padding: 6px 12px;
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+            background: white;
+            font-size: 0.9rem;
+            outline: none;
+        }
+        
+        .kanban-board {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .kanban-column {
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 20px;
+            min-height: 500px;
+        }
+        
+        .column-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e1e5e9;
+        }
+        
+        .column-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .column-count {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            min-height: 400px;
+        }
+        
+        .task-card {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            cursor: grab;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .task-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .task-card.dragging {
+            opacity: 0.5;
+            transform: rotate(5deg);
+        }
+        
+        .task-priority {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        
+        .priority-high {
+            background: #dc3545;
+        }
+        
+        .priority-medium {
+            background: #ffc107;
+        }
+        
+        .priority-low {
+            background: #28a745;
+        }
+        
+        .task-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            margin-right: 25px;
+        }
+        
+        .task-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 12px;
+        }
+        
+        .task-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .task-project {
+            background: #e9ecef;
+            color: #495057;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            font-weight: 500;
+        }
+        
+        .task-due {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .task-due.overdue {
+            color: #dc3545;
+            font-weight: 600;
+        }
+        
+        .task-due.today {
+            color: #ffc107;
+            font-weight: 600;
+        }
+        
+        .task-assignees {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .assignee-avatar {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            margin-right: -5px;
+            border: 2px solid white;
+            position: relative;
+        }
+        
+        .assignee-avatar.ai {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+        }
+        
+        .task-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .task-tag {
+            background: #667eea;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        
+        .task-progress {
+            margin-bottom: 10px;
+        }
+        
+        .progress-bar {
+            background: #e9ecef;
+            border-radius: 10px;
+            height: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .task-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btn {
+            padding: 4px 8px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s ease;
+        }
+        
+        .action-btn.edit {
+            background: #17a2b8;
+            color: white;
+        }
+        
+        .action-btn.delete {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .action-btn.ai {
+            background: #ffc107;
+            color: #333;
+        }
+        
+        .ai-panel {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 350px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .ai-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+        }
+        
+        .ai-header h3 {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+        
+        .ai-content {
+            padding: 20px;
+        }
+        
+        .ai-suggestion {
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .suggestion-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .suggestion-content {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        
+        .suggestion-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .suggestion-btn {
+            padding: 6px 12px;
+            border: 1px solid #667eea;
+            background: transparent;
+            color: #667eea;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+        }
+        
+        .suggestion-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .suggestion-btn.apply {
+            background: #667eea;
+            color: white;
+        }
+        
+        .analytics-section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-top: 30px;
+        }
+        
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .analytics-header h3 {
+            color: #333;
+            font-size: 1.3rem;
+        }
+        
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .chart-container {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .chart-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.1rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            backdrop-filter: blur(5px);
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+        
+        .modal-header h3 {
+            margin: 0;
+            color: #333;
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        
+        .form-input, .form-textarea, .form-select {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        
+        .form-input:focus, .form-textarea:focus, .form-select:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        
+        @media (max-width: 768px) {
+            .task-container {
+                padding: 15px;
+            }
+            
+            .task-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .kanban-board {
+                grid-template-columns: 1fr;
+            }
+            
+            .task-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .ai-panel {
+                position: relative;
+                width: 100%;
+                margin-top: 20px;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="task-container">
+        <!-- Header -->
+        <div class="task-header">
+            <h1>🎯 AI Task Management</h1>
+        </div>
+        
+        <!-- Statistics -->
+        <div class="task-stats">
+            <div class="stat-card">
+                <span class="stat-number">47</span>
+                <div class="stat-label">Active Tasks</div>
+                <div class="stat-trend up">↗ +12% this week</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">23</span>
+                <div class="stat-label">Completed Today</div>
+                <div class="stat-trend up">↗ +8% vs yesterday</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">89%</span>
+                <div class="stat-label">Completion Rate</div>
+                <div class="stat-trend up">↗ +5% this month</div>
+            </div>
+            <div class="stat-card">
+                <span class="stat-number">4.2</span>
+                <div class="stat-label">Avg. Hours/Task</div>
+                <div class="stat-trend down">↘ -15% improvement</div>
+            </div>
+        </div>
+        
+        <!-- Controls -->
+        <div class="task-controls">
+            <div class="control-group">
+                <button class="btn btn-primary" onclick="openTaskModal()">
+                    ➕ New Task
+                </button>
+                <button class="btn btn-outline" onclick="toggleAIPanel()">
+                    🤖 AI Suggestions
+                </button>
+                <button class="btn btn-outline" onclick="autoSchedule()">
+                    📅 Auto Schedule
+                </button>
+            </div>
+            
+            <div class="control-group">
+                <div class="search-filter">
+                    <span>🔍</span>
+                    <input type="text" placeholder="Search tasks..." id="taskSearch" oninput="filterTasks()">
+                </div>
+                <select class="filter-select" id="priorityFilter" onchange="filterTasks()">
+                    <option value="">All Priorities</option>
+                    <option value="high">High Priority</option>
+                    <option value="medium">Medium Priority</option>
+                    <option value="low">Low Priority</option>
+                </select>
+                <select class="filter-select" id="assigneeFilter" onchange="filterTasks()">
+                    <option value="">All Assignees</option>
+                    <option value="JD">John Developer</option>
+                    <option value="SM">Sarah Manager</option>
+                    <option value="RB">Ray Ben</option>
+                    <option value="AI">AI Assistant</option>
+                </select>
+            </div>
+        </div>
+        
+        <!-- Kanban Board -->
+        <div class="kanban-board">
+            <!-- To Do Column -->
+            <div class="kanban-column" id="todo-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        📋 To Do
+                        <span class="column-count">8</span>
+                    </div>
+                </div>
+                <div class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="task-card" draggable="true" ondragstart="drag(event)" data-priority="high" data-assignee="JD">
+                        <div class="task-priority priority-high"></div>
+                        <div class="task-title">Implement real-time notifications</div>
+                        <div class="task-description">Add WebSocket support for instant task updates and team notifications</div>
+                        <div class="task-meta">
+                            <div class="task-project">Web App</div>
+                            <div class="task-due today">Due Today</div>
+                        </div>
+                        <div class="task-assignees">
+                            <div class="assignee-avatar">JD</div>
+                            <div class="assignee-avatar ai">AI</div>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Backend</span>
+                            <span class="task-tag">WebSocket</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Not Started</span>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn edit" onclick="editTask(this)">✏️</button>
+                            <button class="action-btn ai" onclick="aiAssistTask(this)">🤖</button>
+                            <button class="action-btn delete" onclick="deleteTask(this)">🗑️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card" draggable="true" ondragstart="drag(event)" data-priority="medium" data-assignee="SM">
+                        <div class="task-priority priority-medium"></div>
+                        <div class="task-title">Update project documentation</div>
+                        <div class="task-description">Review and update API documentation for the collaboration platform</div>
+                        <div class="task-meta">
+                            <div class="task-project">Documentation</div>
+                            <div class="task-due">Due Tomorrow</div>
+                        </div>
+                        <div class="task-assignees">
+                            <div class="assignee-avatar">SM</div>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Docs</span>
+                            <span class="task-tag">API</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Not Started</span>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn edit" onclick="editTask(this)">✏️</button>
+                            <button class="action-btn ai" onclick="aiAssistTask(this)">🤖</button>
+                            <button class="action-btn delete" onclick="deleteTask(this)">🗑️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card" draggable="true" ondragstart="drag(event)" data-priority="low" data-assignee="RB">
+                        <div class="task-priority priority-low"></div>
+                        <div class="task-title">Optimize database queries</div>
+                        <div class="task-description">Analyze and improve database performance for task retrieval</div>
+                        <div class="task-meta">
+                            <div class="task-project">Performance</div>
+                            <div class="task-due">Due Next Week</div>
+                        </div>
+                        <div class="task-assignees">
+                            <div class="assignee-avatar">RB</div>
+                            <div class="assignee-avatar ai">AI</div>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Database</span>
+                            <span class="task-tag">Optimization</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Not Started</span>
+                                <span>0%</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn edit" onclick="editTask(this)">✏️</button>
+                            <button class="action-btn ai" onclick="aiAssistTask(this)">🤖</button>
+                            <button class="action-btn delete" onclick="deleteTask(this)">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- In Progress Column -->
+            <div class="kanban-column" id="progress-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        🔄 In Progress
+                        <span class="column-count">12</span>
+                    </div>
+                </div>
+                <div class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="task-card" draggable="true" ondragstart="drag(event)" data-priority="high" data-assignee="JD">
+                        <div class="task-priority priority-high"></div>
+                        <div class="task-title">Build AI chat integration</div>
+                        <div class="task-description">Integrate OpenAI API for intelligent task assistance and automation</div>
+                        <div class="task-meta">
+                            <div class="task-project">AI Features</div>
+                            <div class="task-due">Due Today</div>
+                        </div>
+                        <div class="task-assignees">
+                            <div class="assignee-avatar">JD</div>
+                            <div class="assignee-avatar ai">AI</div>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">AI</span>
+                            <span class="task-tag">API</span>
+                            <span class="task-tag">Integration</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 65%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>In Development</span>
+                                <span>65%</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn edit" onclick="editTask(this)">✏️</button>
+                            <button class="action-btn ai" onclick="aiAssistTask(this)">🤖</button>
+                            <button class="action-btn delete" onclick="deleteTask(this)">🗑️</button>
+                        </div>
+                    </div>
+                    
+                    <div class="task-card" draggable="true" ondragstart="drag(event)" data-priority="medium" data-assignee="SM">
+                        <div class="task-priority priority-medium"></div>
+                        <div class="task-title">Design team dashboard</div>
+                        <div class="task-description">Create wireframes and mockups for the team collaboration dashboard</div>
+                        <div class="task-meta">
+                            <div class="task-project">Design</div>
+                            <div class="task-due">Due Tomorrow</div>
+                        </div>
+                        <div class="task-assignees">
+                            <div class="assignee-avatar">SM</div>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Design</span>
+                            <span class="task-tag">UI/UX</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 40%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Wireframing</span>
+                                <span>40%</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn edit" onclick="editTask(this)">✏️</button>
+                            <button class="action-btn ai" onclick="aiAssistTask(this)">🤖</button>
+                            <button class="action-btn delete" onclick="deleteTask(this)">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Review Column -->
+            <div class="kanban-column" id="review-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        👀 Review
+                        <span class="column-count">6</span>
+                    </div>
+                </div>
+                <div class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="task-card" draggable="true" ondragstart="drag(event)" data-priority="medium" data-assignee="RB">
+                        <div class="task-priority priority-medium"></div>
+                        <div class="task-title">Code review: Authentication system</div>
+                        <div class="task-description">Review and test the new user authentication and permission system</div>
+                        <div class="task-meta">
+                            <div class="task-project">Security</div>
+                            <div class="task-due">Due Today</div>
+                        </div>
+                        <div class="task-assignees">
+                            <div class="assignee-avatar">RB</div>
+                            <div class="assignee-avatar">SM</div>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Security</span>
+                            <span class="task-tag">Review</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 90%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Testing</span>
+                                <span>90%</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn edit" onclick="editTask(this)">✏️</button>
+                            <button class="action-btn ai" onclick="aiAssistTask(this)">🤖</button>
+                            <button class="action-btn delete" onclick="deleteTask(this)">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Done Column -->
+            <div class="kanban-column" id="done-column">
+                <div class="column-header">
+                    <div class="column-title">
+                        ✅ Done
+                        <span class="column-count">21</span>
+                    </div>
+                </div>
+                <div class="task-list" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <div class="task-card" draggable="true" ondragstart="drag(event)" data-priority="high" data-assignee="JD">
+                        <div class="task-priority priority-high"></div>
+                        <div class="task-title">Setup project repository</div>
+                        <div class="task-description">Initialize Git repository with proper structure and CI/CD pipeline</div>
+                        <div class="task-meta">
+                            <div class="task-project">DevOps</div>
+                            <div class="task-due">Completed</div>
+                        </div>
+                        <div class="task-assignees">
+                            <div class="assignee-avatar">JD</div>
+                        </div>
+                        <div class="task-tags">
+                            <span class="task-tag">Setup</span>
+                            <span class="task-tag">DevOps</span>
+                        </div>
+                        <div class="task-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 100%;"></div>
+                            </div>
+                            <div class="progress-text">
+                                <span>Completed</span>
+                                <span>100%</span>
+                            </div>
+                        </div>
+                        <div class="task-actions">
+                            <button class="action-btn edit" onclick="editTask(this)">✏️</button>
+                            <button class="action-btn ai" onclick="aiAssistTask(this)">🤖</button>
+                            <button class="action-btn delete" onclick="deleteTask(this)">🗑️</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Analytics Section -->
+        <div class="analytics-section">
+            <div class="analytics-header">
+                <h3>📊 Task Analytics</h3>
+                <button class="btn btn-outline" onclick="generateReport()">📈 Generate Report</button>
+            </div>
+            <div class="analytics-grid">
+                <div class="chart-container">
+                    <div class="chart-title">Task Completion Trend</div>
+                    <div class="chart-placeholder">📈 Line Chart</div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Priority Distribution</div>
+                    <div class="chart-placeholder">🍰 Pie Chart</div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">Team Performance</div>
+                    <div class="chart-placeholder">📊 Bar Chart</div>
+                </div>
+                <div class="chart-container">
+                    <div class="chart-title">AI Assistance Impact</div>
+                    <div class="chart-placeholder">📈 Area Chart</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Suggestions Panel -->
+    <div class="ai-panel" id="aiPanel" style="display: none;">
+        <div class="ai-header">
+            <h3>🤖 AI Task Assistant</h3>
+        </div>
+        <div class="ai-content">
+            <div class="ai-suggestion">
+                <div class="suggestion-title">
+                    🎯 Priority Optimization
+                </div>
+                <div class="suggestion-content">
+                    Based on deadlines and dependencies, I recommend prioritizing "Implement real-time notifications" as it blocks 3 other tasks.
+                </div>
+                <div class="suggestion-actions">
+                    <button class="suggestion-btn apply" onclick="applyAISuggestion(this, 'priority')">Apply</button>
+                    <button class="suggestion-btn" onclick="dismissSuggestion(this)">Dismiss</button>
+                </div>
+            </div>
+            
+            <div class="ai-suggestion">
+                <div class="suggestion-title">
+                    📅 Smart Scheduling
+                </div>
+                <div class="suggestion-content">
+                    Your team's productivity peaks at 10 AM. I suggest scheduling high-priority tasks during this time window.
+                </div>
+                <div class="suggestion-actions">
+                    <button class="suggestion-btn apply" onclick="applyAISuggestion(this, 'schedule')">Apply</button>
+                    <button class="suggestion-btn" onclick="dismissSuggestion(this)">Dismiss</button>
+                </div>
+            </div>
+            
+            <div class="ai-suggestion">
+                <div class="suggestion-title">
+                    🤝 Collaboration Opportunity
+                </div>
+                <div class="suggestion-content">
+                    Tasks "AI chat integration" and "Authentication system" have overlapping requirements. Consider pairing John and Ray for efficiency.
+                </div>
+                <div class="suggestion-actions">
+                    <button class="suggestion-btn apply" onclick="applyAISuggestion(this, 'collaboration')">Apply</button>
+                    <button class="suggestion-btn" onclick="dismissSuggestion(this)">Dismiss</button>
+                </div>
+            </div>
+            
+            <div class="ai-suggestion">
+                <div class="suggestion-title">
+                    ⚡ Automation Opportunity
+                </div>
+                <div class="suggestion-content">
+                    I can automate the "Database optimization" task analysis. This would save approximately 2 hours of manual work.
+                </div>
+                <div class="suggestion-actions">
+                    <button class="suggestion-btn apply" onclick="applyAISuggestion(this, 'automation')">Apply</button>
+                    <button class="suggestion-btn" onclick="dismissSuggestion(this)">Dismiss</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Task Creation/Edit Modal -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Create New Task</h3>
+                <button class="close-btn" onclick="closeTaskModal()">&times;</button>
+            </div>
+            
+            <form id="taskForm">
+                <div class="form-group">
+                    <label class="form-label">Task Title</label>
+                    <input type="text" class="form-input" id="taskTitle" placeholder="Enter task title..." required>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="taskDescription" placeholder="Describe the task..."></textarea>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Priority</label>
+                        <select class="form-select" id="taskPriority">
+                            <option value="low">Low Priority</option>
+                            <option value="medium" selected>Medium Priority</option>
+                            <option value="high">High Priority</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Project</label>
+                        <select class="form-select" id="taskProject">
+                            <option value="web-app">Web Application</option>
+                            <option value="ai-features">AI Features</option>
+                            <option value="design">Design</option>
+                            <option value="security">Security</option>
+                            <option value="performance">Performance</option>
+                            <option value="documentation">Documentation</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Assignee</label>
+                        <select class="form-select" id="taskAssignee">
+                            <option value="">Unassigned</option>
+                            <option value="JD">John Developer</option>
+                            <option value="SM">Sarah Manager</option>
+                            <option value="RB">Ray Ben</option>
+                            <option value="AI">AI Assistant</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label class="form-label">Due Date</label>
+                        <input type="date" class="form-input" id="taskDueDate">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Tags (comma-separated)</label>
+                    <input type="text" class="form-input" id="taskTags" placeholder="frontend, urgent, bug...">
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">AI Assistance</label>
+                    <select class="form-select" id="aiAssistance">
+                        <option value="none">No AI assistance</option>
+                        <option value="suggestions">Content suggestions</option>
+                        <option value="automation">Automated execution</option>
+                        <option value="analysis">Performance analysis</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn btn-outline" onclick="closeTaskModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Task</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        // Global state management
+        const taskManager = {
+            tasks: [],
+            currentUser: 'JD',
+            filters: {
+                search: '',
+                priority: '',
+                assignee: ''
+            },
+            aiSuggestions: [],
+            analytics: {
+                completionRate: 89,
+                avgTaskTime: 4.2,
+                productivity: 'high'
+            }
+        };
+        
+        // Drag and drop functionality
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+        
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.outerHTML);
+            ev.dataTransfer.setData("text/id", ev.target.id);
+            ev.target.classList.add('dragging');
+        }
+        
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const targetColumn = ev.currentTarget;
+            
+            if (targetColumn.classList.contains('task-list')) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = data;
+                const draggedElement = tempDiv.firstChild;
+                
+                // Remove dragging class
+                draggedElement.classList.remove('dragging');
+                
+                // Update task status based on column
+                const columnId = targetColumn.parentElement.id;
+                updateTaskStatus(draggedElement, columnId);
+                
+                // Add to new column
+                targetColumn.appendChild(draggedElement);
+                
+                // Update column counts
+                updateColumnCounts();
+                
+                // Simulate AI analysis
+                simulateAIAnalysis('task_moved', draggedElement);
+                
+                showNotification('✅ Task moved successfully!');
+            }
+        }
+        
+        function updateTaskStatus(taskElement, columnId) {
+            const progressBar = taskElement.querySelector('.progress-fill');
+            const progressText = taskElement.querySelector('.progress-text span:first-child');
+            const progressPercent = taskElement.querySelector('.progress-text span:last-child');
+            
+            switch(columnId) {
+                case 'todo-column':
+                    progressBar.style.width = '0%';
+                    progressText.textContent = 'Not Started';
+                    progressPercent.textContent = '0%';
+                    break;
+                case 'progress-column':
+                    progressBar.style.width = '50%';
+                    progressText.textContent = 'In Progress';
+                    progressPercent.textContent = '50%';
+                    break;
+                case 'review-column':
+                    progressBar.style.width = '90%';
+                    progressText.textContent = 'Under Review';
+                    progressPercent.textContent = '90%';
+                    break;
+                case 'done-column':
+                    progressBar.style.width = '100%';
+                    progressText.textContent = 'Completed';
+                    progressPercent.textContent = '100%';
+                    break;
+            }
+        }
+        
+        function updateColumnCounts() {
+            const columns = document.querySelectorAll('.kanban-column');
+            columns.forEach(column => {
+                const taskCount = column.querySelectorAll('.task-card').length;
+                const countElement = column.querySelector('.column-count');
+                countElement.textContent = taskCount;
+            });
+        }
+        
+        // Task management functions
+        function openTaskModal() {
+            document.getElementById('taskModal').style.display = 'block';
+            document.getElementById('modalTitle').textContent = 'Create New Task';
+            document.getElementById('taskForm').reset();
+        }
+        
+        function closeTaskModal() {
+            document.getElementById('taskModal').style.display = 'none';
+        }
+        
+        function editTask(button) {
+            const taskCard = button.closest('.task-card');
+            const title = taskCard.querySelector('.task-title').textContent;
+            const description = taskCard.querySelector('.task-description').textContent;
+            
+            document.getElementById('taskModal').style.display = 'block';
+            document.getElementById('modalTitle').textContent = 'Edit Task';
+            document.getElementById('taskTitle').value = title;
+            document.getElementById('taskDescription').value = description;
+        }
+        
+        function deleteTask(button) {
+            if (confirm('Are you sure you want to delete this task?')) {
+                const taskCard = button.closest('.task-card');
+                taskCard.remove();
+                updateColumnCounts();
+                simulateAIAnalysis('task_deleted');
+                showNotification('🗑️ Task deleted successfully!');
+            }
+        }
+        
+        function aiAssistTask(button) {
+            const taskCard = button.closest('.task-card');
+            const title = taskCard.querySelector('.task-title').textContent;
+            
+            showNotification('🤖 AI analyzing task: ' + title);
+            
+            setTimeout(() => {
+                const suggestions = [
+                    'Break this task into 3 smaller subtasks for better tracking',
+                    'This task has dependencies that should be completed first',
+                    'Consider pairing with another team member for efficiency',
+                    'I can automate part of this task to save 2 hours'
+                ];
+                
+                const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+                showNotification('🤖 AI Suggestion: ' + randomSuggestion);
+                
+                // Add to AI panel
+                addAISuggestion('Task Analysis', randomSuggestion, 'task_analysis');
+            }, 2000);
+        }
+        
+        // AI functionality
+        function toggleAIPanel() {
+            const panel = document.getElementById('aiPanel');
+            panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function applyAISuggestion(button, type) {
+            const suggestion = button.closest('.ai-suggestion');
+            suggestion.style.background = '#d4edda';
+            suggestion.style.borderColor = '#28a745';
+            
+            let message = '';
+            switch(type) {
+                case 'priority':
+                    message = '🎯 Task priorities optimized based on AI analysis';
+                    break;
+                case 'schedule':
+                    message = '📅 Smart scheduling applied to high-priority tasks';
+                    break;
+                case 'collaboration':
+                    message = '🤝 Team members assigned for collaborative efficiency';
+                    break;
+                case 'automation':
+                    message = '⚡ Automation workflow initiated for selected tasks';
+                    break;
+                default:
+                    message = '✅ AI suggestion applied successfully';
+            }
+            
+            setTimeout(() => {
+                suggestion.remove();
+                showNotification(message);
+            }, 1000);
+        }
+        
+        function dismissSuggestion(button) {
+            const suggestion = button.closest('.ai-suggestion');
+            suggestion.style.opacity = '0.5';
+            setTimeout(() => {
+                suggestion.remove();
+            }, 300);
+        }
+        
+        function addAISuggestion(title, content, type) {
+            const aiContent = document.querySelector('.ai-content');
+            const newSuggestion = document.createElement('div');
+            newSuggestion.className = 'ai-suggestion';
+            newSuggestion.innerHTML = `
+                <div class="suggestion-title">🤖 ${title}</div>
+                <div class="suggestion-content">${content}</div>
+                <div class="suggestion-actions">
+                    <button class="suggestion-btn apply" onclick="applyAISuggestion(this, '${type}')">Apply</button>
+                    <button class="suggestion-btn" onclick="dismissSuggestion(this)">Dismiss</button>
+                </div>
+            `;
+            
+            aiContent.insertBefore(newSuggestion, aiContent.firstChild);
+        }
+        
+        function autoSchedule() {
+            showNotification('🤖 AI analyzing optimal task schedule...');
+            
+            setTimeout(() => {
+                const optimizations = [
+                    'Moved 3 high-priority tasks to morning slots',
+                    'Balanced workload across team members',
+                    'Identified 2 tasks that can be automated',
+                    'Suggested 4 collaborative pairings'
+                ];
+                
+                showNotification('📅 Smart scheduling complete! ' + optimizations.length + ' optimizations applied.');
+                addAISuggestion('Schedule Optimization', optimizations.join(', '), 'schedule');
+            }, 3000);
+        }
+        
+        function simulateAIAnalysis(action, element = null) {
+            const analyses = {
+                'task_moved': 'Task movement detected. Analyzing impact on project timeline...',
+                'task_deleted': 'Task deleted. Updating dependencies and resource allocation...',
+                'task_created': 'New task added. Analyzing optimal assignment and scheduling...'
+            };
+            
+            if (analyses[action]) {
+                setTimeout(() => {
+                    addAISuggestion('Workflow Analysis', analyses[action], action);
+                }, 1000);
+            }
+        }
+        
+        // Filtering and search
+        function filterTasks() {
+            const searchTerm = document.getElementById('taskSearch').value.toLowerCase();
+            const priorityFilter = document.getElementById('priorityFilter').value;
+            const assigneeFilter = document.getElementById('assigneeFilter').value;
+            
+            const tasks = document.querySelectorAll('.task-card');
+            
+            tasks.forEach(task => {
+                const title = task.querySelector('.task-title').textContent.toLowerCase();
+                const description = task.querySelector('.task-description').textContent.toLowerCase();
+                const priority = task.dataset.priority;
+                const assignee = task.dataset.assignee;
+                
+                const matchesSearch = title.includes(searchTerm) || description.includes(searchTerm);
+                const matchesPriority = !priorityFilter || priority === priorityFilter;
+                const matchesAssignee = !assigneeFilter || assignee === assigneeFilter;
+                
+                if (matchesSearch && matchesPriority && matchesAssignee) {
+                    task.style.display = 'block';
+                } else {
+                    task.style.display = 'none';
+                }
+            });
+        }
+        
+        // Form handling
+        document.getElementById('taskForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = {
+                title: document.getElementById('taskTitle').value,
+                description: document.getElementById('taskDescription').value,
+                priority: document.getElementById('taskPriority').value,
+                project: document.getElementById('taskProject').value,
+                assignee: document.getElementById('taskAssignee').value,
+                dueDate: document.getElementById('taskDueDate').value,
+                tags: document.getElementById('taskTags').value,
+                aiAssistance: document.getElementById('aiAssistance').value
+            };
+            
+            createTaskCard(formData);
+            closeTaskModal();
+            showNotification('✅ Task created successfully!');
+            simulateAIAnalysis('task_created');
+        });
+        
+        function createTaskCard(data) {
+            const todoColumn = document.querySelector('#todo-column .task-list');
+            const taskCard = document.createElement('div');
+            taskCard.className = 'task-card';
+            taskCard.draggable = true;
+            taskCard.setAttribute('ondragstart', 'drag(event)');
+            taskCard.dataset.priority = data.priority;
+            taskCard.dataset.assignee = data.assignee;
+            
+            const priorityClass = `priority-${data.priority}`;
+            const assigneeInitials = data.assignee || 'UN';
+            const tags = data.tags ? data.tags.split(',').map(tag => `<span class="task-tag">${tag.trim()}</span>`).join('') : '';
+            
+            taskCard.innerHTML = `
+                <div class="task-priority ${priorityClass}"></div>
+                <div class="task-title">${data.title}</div>
+                <div class="task-description">${data.description}</div>
+                <div class="task-meta">
+                    <div class="task-project">${data.project}</div>
+                    <div class="task-due">${data.dueDate ? formatDate(data.dueDate) : 'No due date'}</div>
+                </div>
+                <div class="task-assignees">
+                    ${data.assignee ? `<div class="assignee-avatar ${data.assignee === 'AI' ? 'ai' : ''}">${assigneeInitials}</div>` : ''}
+                </div>
+                <div class="task-tags">${tags}</div>
+                <div class="task-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: 0%;"></div>
+                    </div>
+                    <div class="progress-text">
+                        <span>Not Started</span>
+                        <span>0%</span>
+                    </div>
+                </div>
+                <div class="task-actions">
+                    <button class="action-btn edit" onclick="editTask(this)">✏️</button>
+                    <button class="action-btn ai" onclick="aiAssistTask(this)">🤖</button>
+                    <button class="action-btn delete" onclick="deleteTask(this)">🗑️</button>
+                </div>
+            `;
+            
+            todoColumn.appendChild(taskCard);
+            updateColumnCounts();
+        }
+        
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const today = new Date();
+            const tomorrow = new Date(today);
+            tomorrow.setDate(tomorrow.getDate() + 1);
+            
+            if (date.toDateString() === today.toDateString()) {
+                return 'Due Today';
+            } else if (date.toDateString() === tomorrow.toDateString()) {
+                return 'Due Tomorrow';
+            } else {
+                return `Due ${date.toLocaleDateString()}`;
+            }
+        }
+        
+        // Analytics and reporting
+        function generateReport() {
+            showNotification('📊 Generating comprehensive task analytics report...');
+            
+            setTimeout(() => {
+                const report = {
+                    totalTasks: 47,
+                    completedToday: 23,
+                    completionRate: 89,
+                    averageTaskTime: 4.2,
+                    topPerformer: 'John Developer',
+                    aiAssistanceImpact: '+25% efficiency'
+                };
+                
+                alert(`📈 Task Analytics Report\n\n` +
+                      `Total Tasks: ${report.totalTasks}\n` +
+                      `Completed Today: ${report.completedToday}\n` +
+                      `Completion Rate: ${report.completionRate}%\n` +
+                      `Avg. Task Time: ${report.averageTaskTime} hours\n` +
+                      `Top Performer: ${report.topPerformer}\n` +
+                      `AI Impact: ${report.aiAssistanceImpact}\n\n` +
+                      `Full report generated with recommendations!`);
+                
+                showNotification('✅ Analytics report generated successfully!');
+            }, 2000);
+        }
+        
+        // Utility functions
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #333;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 8px;
+                z-index: 3000;
+                font-size: 0.9rem;
+                box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+                backdrop-filter: blur(10px);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.opacity = '0';
+                notification.style.transform = 'translateX(-50%) translateY(-20px)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            updateColumnCounts();
+            
+            // Simulate periodic AI suggestions
+            setInterval(() => {
+                if (Math.random() > 0.7) {
+                    const suggestions = [
+                        'Consider taking a break - you\'ve been working for 2 hours straight',
+                        'Task dependencies updated - 3 tasks are now unblocked',
+                        'New optimization opportunity detected in current sprint',
+                        'Team productivity is 15% above average today'
+                    ];
+                    
+                    const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+                    addAISuggestion('Productivity Insight', randomSuggestion, 'insight');
+                }
+            }, 30000);
+            
+            console.log('🎯 AI Task Management System initialized');
+            console.log('Features: Drag & drop, AI suggestions, Analytics, Real-time collaboration');
+        });
+        
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('taskModal');
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        };
+    </script>
+</body>
+</html>

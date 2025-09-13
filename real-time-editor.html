@@ -1,0 +1,1119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Document Editor - CollabAI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .editor-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        .editor-sidebar {
+            width: 300px;
+            background: white;
+            border-right: 1px solid #e1e5e9;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .editor-header {
+            padding: 20px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+        
+        .editor-header h1 {
+            font-size: 1.3rem;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .editor-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .collaborators {
+            padding: 20px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+        
+        .collaborators h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .collaborator-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .collaborator {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.2s;
+        }
+        
+        .collaborator:hover {
+            background: #f8f9fa;
+        }
+        
+        .collaborator-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.9rem;
+            margin-right: 10px;
+            position: relative;
+        }
+        
+        .collaborator-avatar.ai {
+            background: linear-gradient(135deg, #ff6b6b, #feca57);
+        }
+        
+        .status-indicator {
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 2px solid white;
+        }
+        
+        .status-indicator.online {
+            background: #28a745;
+        }
+        
+        .status-indicator.typing {
+            background: #ffc107;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .collaborator-info {
+            flex: 1;
+        }
+        
+        .collaborator-name {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #333;
+        }
+        
+        .collaborator-status {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .document-info {
+            padding: 20px;
+            border-bottom: 1px solid #e1e5e9;
+        }
+        
+        .document-info h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.85rem;
+        }
+        
+        .info-label {
+            color: #666;
+        }
+        
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .version-history {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .version-history h3 {
+            font-size: 1rem;
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .version-item {
+            padding: 12px;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .version-item:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .version-item.current {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .version-time {
+            font-size: 0.8rem;
+            color: #666;
+            margin-bottom: 5px;
+        }
+        
+        .version-author {
+            font-weight: 500;
+            font-size: 0.9rem;
+            color: #333;
+            margin-bottom: 3px;
+        }
+        
+        .version-changes {
+            font-size: 0.8rem;
+            color: #666;
+        }
+        
+        .main-editor {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+        }
+        
+        .editor-toolbar {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e1e5e9;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            background: #fafbfc;
+        }
+        
+        .doc-title-input {
+            font-size: 1.2rem;
+            font-weight: 600;
+            border: none;
+            background: transparent;
+            color: #333;
+            flex: 1;
+            outline: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        
+        .doc-title-input:focus {
+            background: white;
+            box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+        }
+        
+        .toolbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .toolbar-btn {
+            padding: 6px 12px;
+            border: 1px solid #e1e5e9;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.9rem;
+            color: #666;
+            transition: all 0.2s;
+        }
+        
+        .toolbar-btn:hover {
+            background: #f8f9fa;
+            border-color: #667eea;
+            color: #667eea;
+        }
+        
+        .toolbar-btn.active {
+            background: #667eea;
+            border-color: #667eea;
+            color: white;
+        }
+        
+        .save-status {
+            font-size: 0.8rem;
+            color: #28a745;
+            padding: 4px 8px;
+            background: #d4edda;
+            border-radius: 4px;
+        }
+        
+        .editor-content {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .editor-textarea {
+            width: 100%;
+            height: 100%;
+            border: none;
+            outline: none;
+            font-size: 1rem;
+            line-height: 1.6;
+            font-family: 'Georgia', serif;
+            color: #333;
+            resize: none;
+            background: transparent;
+        }
+        
+        .cursor-indicator {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: #667eea;
+            animation: blink 1s infinite;
+            pointer-events: none;
+        }
+        
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+        
+        .selection-highlight {
+            background: rgba(102, 126, 234, 0.2);
+            position: absolute;
+            pointer-events: none;
+        }
+        
+        .comment-thread {
+            position: absolute;
+            right: 30px;
+            width: 250px;
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            padding: 15px;
+            z-index: 10;
+        }
+        
+        .comment-thread h4 {
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .comment {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .comment:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .comment-author {
+            font-weight: 500;
+            font-size: 0.8rem;
+            color: #667eea;
+            margin-bottom: 3px;
+        }
+        
+        .comment-text {
+            font-size: 0.85rem;
+            color: #333;
+            line-height: 1.4;
+            margin-bottom: 3px;
+        }
+        
+        .comment-time {
+            font-size: 0.7rem;
+            color: #999;
+        }
+        
+        .comment-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #e1e5e9;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            outline: none;
+            margin-top: 10px;
+        }
+        
+        .ai-suggestions {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 300px;
+            background: white;
+            border: 1px solid #e1e5e9;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+            z-index: 100;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .ai-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 12px 12px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: between;
+        }
+        
+        .ai-header h3 {
+            margin: 0;
+            font-size: 1rem;
+        }
+        
+        .ai-suggestions-list {
+            padding: 20px;
+        }
+        
+        .suggestion-item {
+            padding: 12px;
+            border: 1px solid #f0f0f0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .suggestion-item:hover {
+            border-color: #667eea;
+            background: #f8f9ff;
+        }
+        
+        .suggestion-type {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .suggestion-text {
+            font-size: 0.9rem;
+            color: #333;
+            line-height: 1.4;
+        }
+        
+        .floating-toolbar {
+            position: absolute;
+            background: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: none;
+            z-index: 20;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .floating-toolbar button {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            padding: 4px 8px;
+            margin: 0 2px;
+            border-radius: 3px;
+            font-size: 0.8rem;
+        }
+        
+        .floating-toolbar button:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        @media (max-width: 768px) {
+            .editor-container {
+                flex-direction: column;
+            }
+            
+            .editor-sidebar {
+                width: 100%;
+                height: 200px;
+                border-right: none;
+                border-bottom: 1px solid #e1e5e9;
+            }
+            
+            .ai-suggestions {
+                position: relative;
+                width: 100%;
+                margin-top: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="editor-container">
+        <!-- Sidebar -->
+        <div class="editor-sidebar">
+            <div class="editor-header">
+                <h1>📝 Real-Time Editor</h1>
+                <p>Collaborative document editing</p>
+            </div>
+            
+            <div class="collaborators">
+                <h3>👥 Collaborators (4)</h3>
+                <div class="collaborator-list">
+                    <div class="collaborator">
+                        <div class="collaborator-avatar">
+                            JD
+                            <div class="status-indicator online"></div>
+                        </div>
+                        <div class="collaborator-info">
+                            <div class="collaborator-name">John Developer</div>
+                            <div class="collaborator-status">Currently editing</div>
+                        </div>
+                    </div>
+                    
+                    <div class="collaborator">
+                        <div class="collaborator-avatar ai">
+                            AI
+                            <div class="status-indicator typing"></div>
+                        </div>
+                        <div class="collaborator-info">
+                            <div class="collaborator-name">AI Assistant</div>
+                            <div class="collaborator-status">Generating suggestions</div>
+                        </div>
+                    </div>
+                    
+                    <div class="collaborator">
+                        <div class="collaborator-avatar">
+                            SM
+                            <div class="status-indicator online"></div>
+                        </div>
+                        <div class="collaborator-info">
+                            <div class="collaborator-name">Sarah Manager</div>
+                            <div class="collaborator-status">Viewing</div>
+                        </div>
+                    </div>
+                    
+                    <div class="collaborator">
+                        <div class="collaborator-avatar">
+                            RB
+                            <div class="status-indicator online"></div>
+                        </div>
+                        <div class="collaborator-info">
+                            <div class="collaborator-name">Ray Ben</div>
+                            <div class="collaborator-status">Adding comments</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="document-info">
+                <h3>📄 Document Info</h3>
+                <div class="info-item">
+                    <span class="info-label">Created:</span>
+                    <span class="info-value">Today, 2:30 PM</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Last edited:</span>
+                    <span class="info-value">2 minutes ago</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Word count:</span>
+                    <span class="info-value">1,247 words</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">Version:</span>
+                    <span class="info-value">v1.7</span>
+                </div>
+            </div>
+            
+            <div class="version-history">
+                <h3>🕐 Version History</h3>
+                
+                <div class="version-item current">
+                    <div class="version-time">2 minutes ago</div>
+                    <div class="version-author">AI Assistant</div>
+                    <div class="version-changes">Added writing suggestions</div>
+                </div>
+                
+                <div class="version-item">
+                    <div class="version-time">15 minutes ago</div>
+                    <div class="version-author">John Developer</div>
+                    <div class="version-changes">Updated introduction section</div>
+                </div>
+                
+                <div class="version-item">
+                    <div class="version-time">1 hour ago</div>
+                    <div class="version-author">Sarah Manager</div>
+                    <div class="version-changes">Added project requirements</div>
+                </div>
+                
+                <div class="version-item">
+                    <div class="version-time">2 hours ago</div>
+                    <div class="version-author">Ray Ben</div>
+                    <div class="version-changes">Initial document creation</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main Editor -->
+        <div class="main-editor">
+            <div class="editor-toolbar">
+                <input type="text" class="doc-title-input" value="AI-Human Collaboration Project Plan" placeholder="Document title...">
+                
+                <div class="toolbar-actions">
+                    <button class="toolbar-btn" onclick="formatText('bold')"><strong>B</strong></button>
+                    <button class="toolbar-btn" onclick="formatText('italic')"><em>I</em></button>
+                    <button class="toolbar-btn" onclick="formatText('underline')"><u>U</u></button>
+                    <button class="toolbar-btn" onclick="insertHeading()">H1</button>
+                    <button class="toolbar-btn" onclick="insertList()">• List</button>
+                    <button class="toolbar-btn" onclick="insertLink()">🔗 Link</button>
+                    <button class="toolbar-btn" onclick="addComment()">💬 Comment</button>
+                    <button class="toolbar-btn" onclick="aiAssist()">🤖 AI Assist</button>
+                    <div class="save-status">✅ Auto-saved</div>
+                </div>
+            </div>
+            
+            <div class="editor-content">
+                <textarea class="editor-textarea" placeholder="Start typing your document..." id="mainEditor">
+# AI-Human Collaboration Project Plan
+
+## Executive Summary
+
+This document outlines our comprehensive approach to AI-human collaboration, integrating artificial intelligence with human creativity and expertise to deliver exceptional results.
+
+## Project Overview
+
+Our collaboration platform combines the best of human intuition and AI capabilities to create:
+
+- **Real-time collaborative editing** with multiple users
+- **AI-powered content suggestions** and improvements
+- **Intelligent task management** with automated prioritization
+- **Smart analytics** for project optimization
+- **Seamless communication** across team members
+
+## Key Features
+
+### 1. Real-Time Collaboration
+- Live document editing with conflict resolution
+- Version control with automatic backups
+- Comment threads and annotations
+- User presence indicators
+
+### 2. AI Integration
+- Content generation and enhancement
+- Grammar and style improvements
+- Smart autocomplete and suggestions
+- Sentiment analysis for team communication
+
+### 3. Project Management
+- Task automation and scheduling
+- Progress tracking with AI insights
+- Resource allocation optimization
+- Deadline prediction and alerts
+
+## Implementation Strategy
+
+Phase 1: Core platform development
+Phase 2: AI feature integration
+Phase 3: Advanced collaboration tools
+Phase 4: Analytics and optimization
+
+## Success Metrics
+
+- User engagement: 90%+ active daily users
+- Productivity increase: 40% faster project completion
+- Quality improvement: 25% reduction in errors
+- Satisfaction score: 4.8/5.0 user rating
+
+## Next Steps
+
+1. Finalize technical specifications
+2. Begin development sprint planning
+3. Set up AI model training pipeline
+4. Create user testing protocols
+
+---
+
+*This document is being collaboratively edited by the team with AI assistance.*
+                </textarea>
+                
+                <!-- Collaborative cursors and selections would be rendered here -->
+                <div class="cursor-indicator" style="top: 100px; left: 50px;"></div>
+                <div class="selection-highlight" style="top: 150px; left: 30px; width: 120px; height: 20px;"></div>
+            </div>
+        </div>
+        
+        <!-- Comment Thread -->
+        <div class="comment-thread" style="top: 200px; display: none;" id="commentThread">
+            <h4>💬 Comments</h4>
+            <div class="comment">
+                <div class="comment-author">Sarah Manager</div>
+                <div class="comment-text">Great start! Can we add more details about the timeline?</div>
+                <div class="comment-time">5 minutes ago</div>
+            </div>
+            <div class="comment">
+                <div class="comment-author">AI Assistant</div>
+                <div class="comment-text">I suggest adding specific milestones with dependencies. Would you like me to generate a project timeline?</div>
+                <div class="comment-time">3 minutes ago</div>
+            </div>
+            <input type="text" class="comment-input" placeholder="Add a comment..." onkeypress="handleCommentInput(event)">
+        </div>
+        
+        <!-- Floating Toolbar -->
+        <div class="floating-toolbar" id="floatingToolbar">
+            <button onclick="formatText('bold')">Bold</button>
+            <button onclick="formatText('italic')">Italic</button>
+            <button onclick="addComment()">Comment</button>
+            <button onclick="aiSuggest()">AI Suggest</button>
+        </div>
+    </div>
+    
+    <!-- AI Suggestions Panel -->
+    <div class="ai-suggestions">
+        <div class="ai-header">
+            <h3>🤖 AI Writing Assistant</h3>
+        </div>
+        <div class="ai-suggestions-list">
+            <div class="suggestion-item" onclick="applySuggestion(this)">
+                <div class="suggestion-type">Grammar</div>
+                <div class="suggestion-text">Consider changing "deliver exceptional results" to "achieve outstanding outcomes" for better impact.</div>
+            </div>
+            
+            <div class="suggestion-item" onclick="applySuggestion(this)">
+                <div class="suggestion-type">Structure</div>
+                <div class="suggestion-text">Add a "Risk Assessment" section after "Implementation Strategy" to improve completeness.</div>
+            </div>
+            
+            <div class="suggestion-item" onclick="applySuggestion(this)">
+                <div class="suggestion-type">Content</div>
+                <div class="suggestion-text">Include specific technologies (React, Node.js, TensorFlow) in the technical specifications.</div>
+            </div>
+            
+            <div class="suggestion-item" onclick="applySuggestion(this)">
+                <div class="suggestion-type">Enhancement</div>
+                <div class="suggestion-text">Add visual elements like charts or diagrams to illustrate the collaboration workflow.</div>
+            </div>
+            
+            <div class="suggestion-item" onclick="applySuggestion(this)">
+                <div class="suggestion-type">Clarity</div>
+                <div class="suggestion-text">Define "conflict resolution" in the real-time collaboration section for better understanding.</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Real-time collaboration state
+        const editorState = {
+            currentUser: 'JD',
+            collaborators: [
+                { id: 'JD', name: 'John Developer', status: 'editing', cursor: { line: 5, col: 12 } },
+                { id: 'AI', name: 'AI Assistant', status: 'suggesting', cursor: null },
+                { id: 'SM', name: 'Sarah Manager', status: 'viewing', cursor: null },
+                { id: 'RB', name: 'Ray Ben', status: 'commenting', cursor: { line: 15, col: 0 } }
+            ],
+            version: '1.7',
+            lastSaved: Date.now(),
+            comments: [],
+            suggestions: []
+        };
+        
+        // Initialize editor
+        document.addEventListener('DOMContentLoaded', function() {
+            const editor = document.getElementById('mainEditor');
+            const toolbar = document.getElementById('floatingToolbar');
+            
+            // Auto-save functionality
+            let saveTimeout;
+            editor.addEventListener('input', function() {
+                clearTimeout(saveTimeout);
+                saveTimeout = setTimeout(autoSave, 2000);
+                updateWordCount();
+                simulateCollaboration();
+            });
+            
+            // Text selection handling
+            editor.addEventListener('mouseup', showFloatingToolbar);
+            editor.addEventListener('keyup', showFloatingToolbar);
+            
+            // Initialize features
+            updateWordCount();
+            startPresenceSimulation();
+        });
+        
+        // Auto-save function
+        function autoSave() {
+            const saveStatus = document.querySelector('.save-status');
+            saveStatus.textContent = '💾 Saving...';
+            saveStatus.style.background = '#fff3cd';
+            saveStatus.style.color = '#856404';
+            
+            setTimeout(() => {
+                saveStatus.textContent = '✅ Auto-saved';
+                saveStatus.style.background = '#d4edda';
+                saveStatus.style.color = '#28a745';
+                editorState.lastSaved = Date.now();
+                editorState.version = 'v1.' + (parseInt(editorState.version.split('.')[1]) + 1);
+                updateDocumentInfo();
+            }, 1000);
+        }
+        
+        // Update word count
+        function updateWordCount() {
+            const editor = document.getElementById('mainEditor');
+            const wordCount = editor.value.split(/\s+/).filter(word => word.length > 0).length;
+            document.querySelector('.info-value').textContent = wordCount + ' words';
+        }
+        
+        // Update document info
+        function updateDocumentInfo() {
+            const infoItems = document.querySelectorAll('.info-item .info-value');
+            infoItems[1].textContent = 'Just now';
+            infoItems[3].textContent = editorState.version;
+        }
+        
+        // Text formatting functions
+        function formatText(command) {
+            const editor = document.getElementById('mainEditor');
+            const start = editor.selectionStart;
+            const end = editor.selectionEnd;
+            const selectedText = editor.value.substring(start, end);
+            
+            if (selectedText) {
+                let formattedText = selectedText;
+                switch(command) {
+                    case 'bold':
+                        formattedText = `**${selectedText}**`;
+                        break;
+                    case 'italic':
+                        formattedText = `*${selectedText}*`;
+                        break;
+                    case 'underline':
+                        formattedText = `<u>${selectedText}</u>`;
+                        break;
+                }
+                
+                editor.setRangeText(formattedText);
+                hideFloatingToolbar();
+                simulateAIResponse('formatting');
+            }
+        }
+        
+        function insertHeading() {
+            const editor = document.getElementById('mainEditor');
+            const start = editor.selectionStart;
+            const line = editor.value.substring(0, start).split('\n').pop();
+            
+            if (!line.startsWith('## ')) {
+                editor.setRangeText('## ', start - line.length, start - line.length);
+            }
+            hideFloatingToolbar();
+        }
+        
+        function insertList() {
+            const editor = document.getElementById('mainEditor');
+            const start = editor.selectionStart;
+            editor.setRangeText('\n- ', start, start);
+            hideFloatingToolbar();
+        }
+        
+        function insertLink() {
+            const url = prompt('Enter URL:');
+            const text = prompt('Enter link text:');
+            if (url && text) {
+                const editor = document.getElementById('mainEditor');
+                const start = editor.selectionStart;
+                editor.setRangeText(`[${text}](${url})`, start, start);
+            }
+            hideFloatingToolbar();
+        }
+        
+        // Comment functionality
+        function addComment() {
+            const editor = document.getElementById('mainEditor');
+            const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+            
+            if (selectedText) {
+                const commentThread = document.getElementById('commentThread');
+                commentThread.style.display = 'block';
+                commentThread.style.top = '200px';
+                
+                // Add highlight to selected text
+                const highlight = document.createElement('div');
+                highlight.className = 'selection-highlight';
+                highlight.style.background = 'rgba(255, 193, 7, 0.3)';
+                document.querySelector('.editor-content').appendChild(highlight);
+                
+                simulateAIResponse('comment');
+            } else {
+                alert('Please select text to comment on');
+            }
+            hideFloatingToolbar();
+        }
+        
+        function handleCommentInput(event) {
+            if (event.key === 'Enter') {
+                const input = event.target;
+                const comment = input.value.trim();
+                if (comment) {
+                    addCommentToThread(comment, editorState.currentUser);
+                    input.value = '';
+                    simulateAIResponse('comment_response');
+                }
+            }
+        }
+        
+        function addCommentToThread(text, author) {
+            const commentThread = document.getElementById('commentThread');
+            const commentsContainer = commentThread.querySelector('.comment');
+            
+            const newComment = document.createElement('div');
+            newComment.className = 'comment';
+            newComment.innerHTML = `
+                <div class="comment-author">${author}</div>
+                <div class="comment-text">${text}</div>
+                <div class="comment-time">Just now</div>
+            `;
+            
+            commentsContainer.parentNode.insertBefore(newComment, commentThread.querySelector('.comment-input'));
+        }
+        
+        // AI assistance functions
+        function aiAssist() {
+            const editor = document.getElementById('mainEditor');
+            const selectedText = editor.value.substring(editor.selectionStart, editor.selectionEnd);
+            
+            if (selectedText) {
+                simulateAIAnalysis(selectedText);
+            } else {
+                alert('🤖 AI Assistant: Select text for analysis or ask me anything in the chat!');
+            }
+        }
+        
+        function aiSuggest() {
+            const suggestions = document.querySelector('.ai-suggestions');
+            suggestions.style.display = suggestions.style.display === 'none' ? 'block' : 'none';
+        }
+        
+        function applySuggestion(element) {
+            const suggestionText = element.querySelector('.suggestion-text').textContent;
+            const suggestionType = element.querySelector('.suggestion-type').textContent;
+            
+            // Simulate applying the suggestion
+            element.style.background = '#d4edda';
+            element.style.borderColor = '#28a745';
+            
+            setTimeout(() => {
+                element.remove();
+                showNotification(`✅ ${suggestionType} suggestion applied!`);
+            }, 1000);
+            
+            simulateAIResponse('suggestion_applied');
+        }
+        
+        // Floating toolbar
+        function showFloatingToolbar() {
+            const editor = document.getElementById('mainEditor');
+            const toolbar = document.getElementById('floatingToolbar');
+            
+            if (editor.selectionStart !== editor.selectionEnd) {
+                const rect = editor.getBoundingClientRect();
+                toolbar.style.display = 'block';
+                toolbar.style.left = (rect.left + 50) + 'px';
+                toolbar.style.top = (rect.top - 40) + 'px';
+            } else {
+                hideFloatingToolbar();
+            }
+        }
+        
+        function hideFloatingToolbar() {
+            document.getElementById('floatingToolbar').style.display = 'none';
+        }
+        
+        // Collaboration simulation
+        function simulateCollaboration() {
+            // Simulate other users' presence
+            const collaborators = document.querySelectorAll('.collaborator');
+            collaborators.forEach((collab, index) => {
+                if (Math.random() > 0.7) {
+                    const status = collab.querySelector('.collaborator-status');
+                    const statuses = ['Typing...', 'Reading', 'Editing line 15', 'Adding comments'];
+                    status.textContent = statuses[Math.floor(Math.random() * statuses.length)];
+                }
+            });
+        }
+        
+        function startPresenceSimulation() {
+            setInterval(() => {
+                simulateCollaboration();
+                updatePresenceIndicators();
+            }, 5000);
+        }
+        
+        function updatePresenceIndicators() {
+            const indicators = document.querySelectorAll('.status-indicator');
+            indicators.forEach(indicator => {
+                if (Math.random() > 0.8) {
+                    indicator.className = 'status-indicator ' + (Math.random() > 0.5 ? 'online' : 'typing');
+                }
+            });
+        }
+        
+        function simulateAIResponse(context) {
+            setTimeout(() => {
+                const aiCollaborator = document.querySelector('.collaborator-avatar.ai');
+                const aiStatus = aiCollaborator.parentElement.querySelector('.collaborator-status');
+                
+                switch(context) {
+                    case 'formatting':
+                        aiStatus.textContent = 'Suggesting improvements';
+                        addAISuggestion('Style', 'Consider using consistent heading levels throughout the document.');
+                        break;
+                    case 'comment':
+                        aiStatus.textContent = 'Analyzing context';
+                        setTimeout(() => {
+                            addCommentToThread('I can help expand on this section. Would you like me to suggest additional content?', 'AI Assistant');
+                        }, 1500);
+                        break;
+                    case 'suggestion_applied':
+                        aiStatus.textContent = 'Generating new suggestions';
+                        break;
+                    default:
+                        aiStatus.textContent = 'Monitoring document';
+                }
+            }, 500);
+        }
+        
+        function addAISuggestion(type, text) {
+            const suggestionsList = document.querySelector('.ai-suggestions-list');
+            const newSuggestion = document.createElement('div');
+            newSuggestion.className = 'suggestion-item';
+            newSuggestion.onclick = function() { applySuggestion(this); };
+            newSuggestion.innerHTML = `
+                <div class="suggestion-type">${type}</div>
+                <div class="suggestion-text">${text}</div>
+            `;
+            suggestionsList.insertBefore(newSuggestion, suggestionsList.firstChild);
+        }
+        
+        function simulateAIAnalysis(text) {
+            showNotification('🤖 AI analyzing selected text...');
+            
+            setTimeout(() => {
+                const analysis = analyzeText(text);
+                addAISuggestion('Analysis', analysis);
+                showNotification('✅ AI analysis complete! Check suggestions panel.');
+            }, 2000);
+        }
+        
+        function analyzeText(text) {
+            const wordCount = text.split(/\s+/).length;
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0).length;
+            
+            if (wordCount > 50) {
+                return `This section has ${wordCount} words and ${sentences} sentences. Consider breaking it into smaller paragraphs for better readability.`;
+            } else if (wordCount < 10) {
+                return `This section is quite brief (${wordCount} words). Consider expanding with more details or examples.`;
+            } else {
+                return `Good length section (${wordCount} words, ${sentences} sentences). The content flows well and is appropriately detailed.`;
+            }
+        }
+        
+        // Utility functions
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #333;
+                color: white;
+                padding: 12px 20px;
+                border-radius: 6px;
+                z-index: 1000;
+                font-size: 0.9rem;
+                box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+        
+        // Version control
+        function loadVersion(version) {
+            // Simulate loading a previous version
+            showNotification(`📄 Loading version ${version}...`);
+            // In a real app, this would load the actual version content
+        }
+        
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'b':
+                        e.preventDefault();
+                        formatText('bold');
+                        break;
+                    case 'i':
+                        e.preventDefault();
+                        formatText('italic');
+                        break;
+                    case 's':
+                        e.preventDefault();
+                        autoSave();
+                        break;
+                    case '/':
+                        e.preventDefault();
+                        addComment();
+                        break;
+                }
+            }
+        });
+        
+        console.log('📝 Real-time collaborative editor initialized');
+        console.log('Features: Live editing, AI suggestions, Comments, Version control');
+    </script>
+</body>
+</html>
