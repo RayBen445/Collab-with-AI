@@ -113,9 +113,9 @@ node -e "console.log(require('crypto').randomBytes(32).toString('base64'))"
 **Example result**: `sk-admin-Xy7Kp2MnQ9Rt5Wz8Av3Bx6Nc1Df4Gh7J`
 
 ### Admin Email (`ADMIN_EMAIL`)
-- Use **your email address** that will have admin privileges
+- Use **your email address** that will have admin privileges: `oladoyeheritage445@gmail.com`
 - This should be the same email you use to sign into the application
-- Example: `youremail@gmail.com`
+- Example: `oladoyeheritage445@gmail.com`
 
 ---
 
@@ -141,7 +141,7 @@ Click **"Add New"** for each variable:
 **Note**: Set all Firebase environment variables as regular environment variables in Vercel, not secret references. The application accesses them directly from the environment.
 
 #### Admin Configuration:
-- **Name**: `ADMIN_EMAIL` **Value**: Your admin email address
+- **Name**: `ADMIN_EMAIL` **Value**: `oladoyeheritage445@gmail.com`
 
 #### API Keys:
 - **Name**: `GEMINI_API_KEY` **Value**: Your Google Gemini API key
@@ -179,7 +179,7 @@ GEMINI_API_KEY=your_gemini_api_key_here
 
 # Admin Configuration
 ADMIN_TOKEN=your_secure_admin_token_here
-ADMIN_EMAIL=youremail@gmail.com
+ADMIN_EMAIL=oladoyeheritage445@gmail.com
 ```
 
 **⚠️ Important**: The `.env.local` file is automatically ignored by git for security.

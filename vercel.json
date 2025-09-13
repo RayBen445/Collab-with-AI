@@ -17,6 +17,9 @@
   "functions": {
     "api/get-gemini-key.js": {
       "maxDuration": 10
+    },
+    "api/get-env-config.js": {
+      "maxDuration": 10
     }
   },
   "build": {
