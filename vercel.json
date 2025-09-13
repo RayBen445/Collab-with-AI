@@ -12,7 +12,6 @@
     }
   ],
   "env": {
-    "GEMINI_API_KEY": "@gemini-api-key",
     "ADMIN_TOKEN": "@admin-token",
     "ADMIN_EMAIL": "@admin-email",
     "FIREBASE_API_KEY": "@firebase-api-key",

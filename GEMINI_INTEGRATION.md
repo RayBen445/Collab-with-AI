@@ -20,6 +20,8 @@ echo "GEMINI_API_KEY=your_gemini_api_key_here" > .env.local
    - **Value**: Your Google Gemini API key
    - **Environment**: Production, Preview, Development
 
+**Important**: Set this as a regular environment variable, not a secret reference. The application will access it securely through the backend API endpoint.
+
 ### 2. API Key Security
 
 🔒 **Important Security Notes:**

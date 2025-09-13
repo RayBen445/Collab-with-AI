@@ -141,6 +141,8 @@ Click **"Add New"** for each variable:
 #### API Keys:
 - **Name**: `GEMINI_API_KEY` **Value**: Your Google Gemini API key
 
+**Note**: Set this as a regular environment variable in Vercel, not a secret reference. The application accesses it securely through the backend API endpoint.
+
 #### Admin Configuration:
 - **Name**: `ADMIN_TOKEN` **Value**: Your generated secure token
 - **Name**: `ADMIN_EMAIL` **Value**: Your admin email address
@@ -204,6 +206,7 @@ Before deploying, ensure you have:
 **"Gemini API key invalid"**
 - Verify API key is active in Google AI Studio
 - Check if billing is enabled for extended usage
+- Ensure GEMINI_API_KEY is set as a regular environment variable (not a secret reference) in Vercel
 
 **"Admin authentication failed"**
 - Ensure ADMIN_TOKEN matches exactly (no extra characters)
