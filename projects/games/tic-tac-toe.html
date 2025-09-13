@@ -80,23 +80,157 @@
             border: 2px solid #e9ecef;
         }
         
-        .demo-area {
+        .game-container {
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
             background: #f8f9fa;
             border-radius: 15px;
-            padding: 30px;
-            margin-bottom: 30px;
-            text-align: center;
-            min-height: 300px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        
+        .score {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .current-player {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 5px;
+            max-width: 300px;
+            margin: 0 auto 30px;
+            background: #333;
+            border-radius: 10px;
+            padding: 5px;
+        }
+        
+        .cell {
+            aspect-ratio: 1;
+            background: white;
+            border: none;
+            font-size: 2.5rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 5px;
             display: flex;
             align-items: center;
             justify-content: center;
-            flex-direction: column;
         }
         
-        .demo-placeholder {
-            font-size: 4rem;
-            color: #667eea;
+        .cell:hover:not(:disabled) {
+            background: #f0f0f0;
+            transform: scale(0.95);
+        }
+        
+        .cell:disabled {
+            cursor: not-allowed;
+        }
+        
+        .cell.x {
+            color: #e74c3c;
+        }
+        
+        .cell.o {
+            color: #3498db;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
             margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .difficulty-selector {
+            margin-bottom: 20px;
+        }
+        
+        .difficulty-selector select {
+            padding: 10px 15px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            font-size: 1rem;
+            margin-left: 10px;
+        }
+        
+        .message {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            min-height: 30px;
+            color: #333;
+        }
+        
+        .message.winner {
+            color: #27ae60;
+        }
+        
+        .message.draw {
+            color: #f39c12;
+        }
+        
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        .stat {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .winning-line {
+            background: rgba(39, 174, 96, 0.3) !important;
         }
         
         .demo-text {
@@ -597,28 +731,7 @@
         </div>
         
         <div class="main-content">
-            
-                <div class="working-demo">
-                    <h3>🚀 AI Tic-Tac-Toe - Interactive Demo</h3>
-                    <div class="app-interface">
-                        <div class="control-panel">
-                            <input type="text" id="mainInput" placeholder="Enter your data..." class="main-input">
-                            <button onclick="processInput()" class="demo-btn primary">Process</button>
-                            <button onclick="clearData()" class="demo-btn">Clear</button>
-                        </div>
-                        <div id="output-area" class="output-area">
-                            <p>Ready to process your input. Try entering some data above!</p>
-                        </div>
-                        <div class="feature-showcase">
-                            <button onclick="showFeature('analytics')" class="demo-btn">📊 Analytics</button>
-                            <button onclick="showFeature('export')" class="demo-btn">💾 Export Data</button>
-                            <button onclick="showFeature('settings')" class="demo-btn">⚙️ Settings</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            </div>
-                                <div class="tic-tac-toe-game">
+            <div class="tic-tac-toe-game">
                     <div class="game-header">
                         <h3>🎮 AI Tic-Tac-Toe</h3>
                         <div class="game-stats">
