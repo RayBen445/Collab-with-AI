@@ -1350,6 +1350,127 @@
             color: #666;
             margin-bottom: 15px;
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .checkbox-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-weight: normal;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
@@ -2955,11 +3076,124 @@
         }
 
         function showCreateRoleModal() {
-            alert('Create Role Modal - This would open a comprehensive role creation form with permission management.');
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Create New Role</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createRoleForm">
+                            <div class="form-group">
+                                <label>Role Name:</label>
+                                <input type="text" id="roleName" placeholder="Enter role name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea id="roleDescription" placeholder="Enter role description" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Permissions:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" value="read"> Read Access</label>
+                                    <label><input type="checkbox" value="write"> Write Access</label>
+                                    <label><input type="checkbox" value="admin"> Admin Access</label>
+                                    <label><input type="checkbox" value="delete"> Delete Access</label>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Role</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('createRoleForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('roleName').value;
+                const description = document.getElementById('roleDescription').value;
+                const permissions = Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(cb => cb.value);
+                
+                const roles = JSON.parse(localStorage.getItem('adminRoles') || '[]');
+                const newRole = {
+                    id: Date.now(),
+                    name: name,
+                    description: description,
+                    permissions: permissions,
+                    created: new Date().toISOString()
+                };
+                roles.push(newRole);
+                localStorage.setItem('adminRoles', JSON.stringify(roles));
+                loadRoles();
+                closeModal();
+            });
         }
 
         function editRole(id) {
-            alert(`Edit Role ${id} - This would open a detailed role editing interface.`);
+            const roles = JSON.parse(localStorage.getItem('adminRoles') || '[]');
+            const role = roles.find(r => r.id === id);
+            if (!role) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Edit Role</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editRoleForm">
+                            <div class="form-group">
+                                <label>Role Name:</label>
+                                <input type="text" id="editRoleName" value="${role.name}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea id="editRoleDescription" rows="3">${role.description || ''}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Permissions:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" value="read" ${role.permissions?.includes('read') ? 'checked' : ''}> Read Access</label>
+                                    <label><input type="checkbox" value="write" ${role.permissions?.includes('write') ? 'checked' : ''}> Write Access</label>
+                                    <label><input type="checkbox" value="admin" ${role.permissions?.includes('admin') ? 'checked' : ''}> Admin Access</label>
+                                    <label><input type="checkbox" value="delete" ${role.permissions?.includes('delete') ? 'checked' : ''}> Delete Access</label>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('editRoleForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('editRoleName').value;
+                const description = document.getElementById('editRoleDescription').value;
+                const permissions = Array.from(document.querySelectorAll('.checkbox-group input:checked')).map(cb => cb.value);
+                
+                const roles = JSON.parse(localStorage.getItem('adminRoles') || '[]');
+                const updatedRoles = roles.map(r => r.id === id ? {
+                    ...r,
+                    name: name,
+                    description: description,
+                    permissions: permissions,
+                    updated: new Date().toISOString()
+                } : r);
+                localStorage.setItem('adminRoles', JSON.stringify(updatedRoles));
+                loadRoles();
+                closeModal();
+            });
         }
 
         function deleteRole(id) {
@@ -3013,11 +3247,140 @@
         }
 
         function showCreateTeamModal() {
-            alert('Create Team Modal - This would open a comprehensive team creation form with member management.');
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Create New Team</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createTeamForm">
+                            <div class="form-group">
+                                <label>Team Name:</label>
+                                <input type="text" id="teamName" placeholder="Enter team name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea id="teamDescription" placeholder="Enter team description" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Department:</label>
+                                <select id="teamDepartment">
+                                    <option value="Engineering">Engineering</option>
+                                    <option value="Design">Design</option>
+                                    <option value="Marketing">Marketing</option>
+                                    <option value="Sales">Sales</option>
+                                    <option value="Support">Support</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Team Lead Email:</label>
+                                <input type="email" id="teamLead" placeholder="team.lead@company.com">
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Team</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('createTeamForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('teamName').value;
+                const description = document.getElementById('teamDescription').value;
+                const department = document.getElementById('teamDepartment').value;
+                const lead = document.getElementById('teamLead').value;
+                
+                const teams = JSON.parse(localStorage.getItem('adminTeams') || '[]');
+                const newTeam = {
+                    id: Date.now(),
+                    name: name,
+                    description: description,
+                    department: department,
+                    lead: lead,
+                    members: lead ? [lead] : [],
+                    projects: Math.floor(Math.random() * 5) + 1,
+                    created: new Date().toISOString()
+                };
+                teams.push(newTeam);
+                localStorage.setItem('adminTeams', JSON.stringify(teams));
+                loadTeams();
+                closeModal();
+            });
         }
 
         function editTeam(id) {
-            alert(`Edit Team ${id} - This would open a detailed team editing interface.`);
+            const teams = JSON.parse(localStorage.getItem('adminTeams') || '[]');
+            const team = teams.find(t => t.id === id);
+            if (!team) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Edit Team</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editTeamForm">
+                            <div class="form-group">
+                                <label>Team Name:</label>
+                                <input type="text" id="editTeamName" value="${team.name}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea id="editTeamDescription" rows="3">${team.description || ''}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Department:</label>
+                                <select id="editTeamDepartment">
+                                    <option value="Engineering" ${team.department === 'Engineering' ? 'selected' : ''}>Engineering</option>
+                                    <option value="Design" ${team.department === 'Design' ? 'selected' : ''}>Design</option>
+                                    <option value="Marketing" ${team.department === 'Marketing' ? 'selected' : ''}>Marketing</option>
+                                    <option value="Sales" ${team.department === 'Sales' ? 'selected' : ''}>Sales</option>
+                                    <option value="Support" ${team.department === 'Support' ? 'selected' : ''}>Support</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Team Lead Email:</label>
+                                <input type="email" id="editTeamLead" value="${team.lead || ''}">
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('editTeamForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('editTeamName').value;
+                const description = document.getElementById('editTeamDescription').value;
+                const department = document.getElementById('editTeamDepartment').value;
+                const lead = document.getElementById('editTeamLead').value;
+                
+                const teams = JSON.parse(localStorage.getItem('adminTeams') || '[]');
+                const updatedTeams = teams.map(t => t.id === id ? {
+                    ...t,
+                    name: name,
+                    description: description,
+                    department: department,
+                    lead: lead,
+                    updated: new Date().toISOString()
+                } : t);
+                localStorage.setItem('adminTeams', JSON.stringify(updatedTeams));
+                loadTeams();
+                closeModal();
+            });
         }
 
         function deleteTeam(id) {
@@ -3095,15 +3458,219 @@
         }
 
         function showCreateProjectModal() {
-            alert('Create Project Modal - This would open a comprehensive project creation form.');
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Create New Project</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="createProjectForm">
+                            <div class="form-group">
+                                <label>Project Name:</label>
+                                <input type="text" id="projectName" placeholder="Enter project name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea id="projectDescription" placeholder="Enter project description" rows="3"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Project Type:</label>
+                                <select id="projectType">
+                                    <option value="Web Development">Web Development</option>
+                                    <option value="Mobile App">Mobile App</option>
+                                    <option value="AI/ML">AI/ML</option>
+                                    <option value="Data Science">Data Science</option>
+                                    <option value="Design">Design</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Priority:</label>
+                                <select id="projectPriority">
+                                    <option value="Low">Low</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="High">High</option>
+                                    <option value="Critical">Critical</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Team Assignment:</label>
+                                <select id="projectTeam">
+                                    <option value="">Select Team (Optional)</option>
+                                    <option value="Frontend Team">Frontend Team</option>
+                                    <option value="Backend Team">Backend Team</option>
+                                    <option value="Design Team">Design Team</option>
+                                    <option value="AI Team">AI Team</option>
+                                </select>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Project</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('createProjectForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('projectName').value;
+                const description = document.getElementById('projectDescription').value;
+                const type = document.getElementById('projectType').value;
+                const priority = document.getElementById('projectPriority').value;
+                const team = document.getElementById('projectTeam').value;
+                
+                const projects = JSON.parse(localStorage.getItem('adminProjects') || '[]');
+                const newProject = {
+                    id: Date.now(),
+                    name: name,
+                    description: description,
+                    type: type,
+                    priority: priority,
+                    team: team,
+                    status: 'Planning',
+                    progress: 0,
+                    created: new Date().toISOString(),
+                    deadline: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
+                };
+                projects.push(newProject);
+                localStorage.setItem('adminProjects', JSON.stringify(projects));
+                loadProjects();
+                closeModal();
+            });
         }
 
         function viewProject(id) {
-            alert(`View Project ${id} - This would open a detailed project dashboard.`);
+            const projects = JSON.parse(localStorage.getItem('adminProjects') || '[]');
+            const project = projects.find(p => p.id === id);
+            if (!project) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3>Project Dashboard: ${project.name}</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <h4>Project Details</h4>
+                                <p><strong>Type:</strong> ${project.type}</p>
+                                <p><strong>Priority:</strong> ${project.priority}</p>
+                                <p><strong>Status:</strong> ${project.status}</p>
+                                <p><strong>Team:</strong> ${project.team || 'Unassigned'}</p>
+                                <p><strong>Created:</strong> ${new Date(project.created).toLocaleDateString()}</p>
+                                <p><strong>Description:</strong> ${project.description || 'No description'}</p>
+                            </div>
+                            <div>
+                                <h4>Progress Overview</h4>
+                                <div style="margin: 10px 0;">
+                                    <div style="background: #f0f0f0; height: 20px; border-radius: 10px; overflow: hidden;">
+                                        <div style="background: #667eea; height: 100%; width: ${project.progress}%; transition: width 0.3s;"></div>
+                                    </div>
+                                    <p style="text-align: center; margin-top: 5px;">${project.progress}% Complete</p>
+                                </div>
+                                <div style="margin-top: 20px;">
+                                    <h5>Quick Actions</h5>
+                                    <button class="btn btn-primary" onclick="editProject(${id}); closeModal();" style="margin: 5px;">Edit Project</button>
+                                    <button class="btn btn-secondary" onclick="updateProjectProgress(${id})" style="margin: 5px;">Update Progress</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
         function editProject(id) {
-            alert(`Edit Project ${id} - This would open a project editing interface.`);
+            const projects = JSON.parse(localStorage.getItem('adminProjects') || '[]');
+            const project = projects.find(p => p.id === id);
+            if (!project) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Edit Project</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editProjectForm">
+                            <div class="form-group">
+                                <label>Project Name:</label>
+                                <input type="text" id="editProjectName" value="${project.name}" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea id="editProjectDescription" rows="3">${project.description || ''}</textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Status:</label>
+                                <select id="editProjectStatus">
+                                    <option value="Planning" ${project.status === 'Planning' ? 'selected' : ''}>Planning</option>
+                                    <option value="In Progress" ${project.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                                    <option value="Review" ${project.status === 'Review' ? 'selected' : ''}>Review</option>
+                                    <option value="Completed" ${project.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                                    <option value="On Hold" ${project.status === 'On Hold' ? 'selected' : ''}>On Hold</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Progress (%):</label>
+                                <input type="range" id="editProjectProgress" min="0" max="100" value="${project.progress}" oninput="updateProgressDisplay(this.value)">
+                                <span id="progressDisplay">${project.progress}%</span>
+                            </div>
+                            <div class="form-group">
+                                <label>Priority:</label>
+                                <select id="editProjectPriority">
+                                    <option value="Low" ${project.priority === 'Low' ? 'selected' : ''}>Low</option>
+                                    <option value="Medium" ${project.priority === 'Medium' ? 'selected' : ''}>Medium</option>
+                                    <option value="High" ${project.priority === 'High' ? 'selected' : ''}>High</option>
+                                    <option value="Critical" ${project.priority === 'Critical' ? 'selected' : ''}>Critical</option>
+                                </select>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            window.updateProgressDisplay = function(value) {
+                document.getElementById('progressDisplay').textContent = value + '%';
+            };
+            
+            document.getElementById('editProjectForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('editProjectName').value;
+                const description = document.getElementById('editProjectDescription').value;
+                const status = document.getElementById('editProjectStatus').value;
+                const progress = parseInt(document.getElementById('editProjectProgress').value);
+                const priority = document.getElementById('editProjectPriority').value;
+                
+                const projects = JSON.parse(localStorage.getItem('adminProjects') || '[]');
+                const updatedProjects = projects.map(p => p.id === id ? {
+                    ...p,
+                    name: name,
+                    description: description,
+                    status: status,
+                    progress: progress,
+                    priority: priority,
+                    updated: new Date().toISOString()
+                } : p);
+                localStorage.setItem('adminProjects', JSON.stringify(updatedProjects));
+                loadProjects();
+                closeModal();
+            });
         }
 
         // Content Management Functions
@@ -3150,11 +3717,116 @@
         }
 
         function showContentSettings() {
-            alert('Content Settings - This would open content moderation rules and auto-filtering configuration.');
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Content Moderation Settings</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="contentSettingsForm">
+                            <div class="form-group">
+                                <label>Auto-Moderation Level:</label>
+                                <select id="autoModerationLevel">
+                                    <option value="strict">Strict - Auto-remove flagged content</option>
+                                    <option value="moderate" selected>Moderate - Flag for review</option>
+                                    <option value="lenient">Lenient - Log only</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Keyword Filters (comma-separated):</label>
+                                <textarea id="keywordFilters" rows="3" placeholder="spam, inappropriate, offensive"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Settings:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" checked> Enable auto-flagging</label>
+                                    <label><input type="checkbox" checked> Email notifications</label>
+                                    <label><input type="checkbox"> Block repeat offenders</label>
+                                    <label><input type="checkbox"> AI content detection</label>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Save Settings</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('contentSettingsForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                // Save settings to localStorage
+                const settings = {
+                    autoModerationLevel: document.getElementById('autoModerationLevel').value,
+                    keywordFilters: document.getElementById('keywordFilters').value,
+                    autoFlagging: document.querySelector('input[type="checkbox"]:nth-of-type(1)').checked,
+                    emailNotifications: document.querySelector('input[type="checkbox"]:nth-of-type(2)').checked,
+                    blockRepeatOffenders: document.querySelector('input[type="checkbox"]:nth-of-type(3)').checked,
+                    aiContentDetection: document.querySelector('input[type="checkbox"]:nth-of-type(4)').checked
+                };
+                localStorage.setItem('contentModerationSettings', JSON.stringify(settings));
+                closeModal();
+            });
         }
 
         function reviewContent(id) {
-            alert(`Review Content ${id} - This would open a detailed content review interface.`);
+            const content = JSON.parse(localStorage.getItem('adminContent') || '[]');
+            const item = content.find(c => c.id === id);
+            if (!item) return;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3>Content Review: ${item.type}</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <h4>Content Details</h4>
+                                <p><strong>Type:</strong> ${item.type}</p>
+                                <p><strong>Author:</strong> ${item.author}</p>
+                                <p><strong>Date:</strong> ${new Date(item.date).toLocaleDateString()}</p>
+                                <p><strong>Status:</strong> <span class="status-${item.status.toLowerCase().replace(' ', '-')}">${item.status}</span></p>
+                                <div style="margin-top: 15px;">
+                                    <strong>Content Preview:</strong>
+                                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 5px; max-height: 200px; overflow-y: auto;">
+                                        ${item.content || 'No content preview available'}
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4>Review Actions</h4>
+                                <div style="margin-bottom: 15px;">
+                                    <label>Review Decision:</label>
+                                    <select id="reviewDecision" style="width: 100%; padding: 8px;">
+                                        <option value="approve">Approve Content</option>
+                                        <option value="reject">Reject Content</option>
+                                        <option value="flag">Flag for Further Review</option>
+                                        <option value="edit">Request Edits</option>
+                                    </select>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label>Review Notes:</label>
+                                    <textarea id="reviewNotes" rows="4" style="width: 100%; padding: 8px;" placeholder="Add review comments..."></textarea>
+                                </div>
+                                <div style="display: flex; gap: 10px;">
+                                    <button class="btn btn-success" onclick="approveContent(${id})">Approve</button>
+                                    <button class="btn btn-danger" onclick="rejectContent(${id})">Reject</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
         function removeContent(id) {
@@ -3199,11 +3871,99 @@
         }
 
         function showUploadModal() {
-            alert('Upload Files Modal - This would open a file upload interface with drag-and-drop support.');
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Upload Files</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="dropZone" style="border: 2px dashed #667eea; border-radius: 10px; padding: 40px; text-align: center; margin-bottom: 20px; cursor: pointer;">
+                            <div style="font-size: 3rem; margin-bottom: 10px;">📁</div>
+                            <h4>Drag & Drop Files Here</h4>
+                            <p>or click to select files</p>
+                            <input type="file" id="fileInput" multiple style="display: none;">
+                        </div>
+                        <div id="fileList"></div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                            <button type="button" class="btn btn-primary" onclick="uploadFiles()">Upload Selected</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            const dropZone = document.getElementById('dropZone');
+            const fileInput = document.getElementById('fileInput');
+            const fileList = document.getElementById('fileList');
+            
+            dropZone.addEventListener('click', () => fileInput.click());
+            
+            fileInput.addEventListener('change', handleFiles);
+            
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.style.background = 'rgba(102, 126, 234, 0.1)';
+            });
+            
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.style.background = 'transparent';
+            });
+            
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.style.background = 'transparent';
+                handleFiles({ target: { files: e.dataTransfer.files } });
+            });
+            
+            function handleFiles(e) {
+                const files = Array.from(e.target.files);
+                fileList.innerHTML = files.map(file => `
+                    <div style="display: flex; justify-content: space-between; padding: 10px; border: 1px solid #eee; border-radius: 5px; margin-bottom: 5px;">
+                        <span>📄 ${file.name} (${(file.size / 1024).toFixed(1)} KB)</span>
+                        <span>${file.type || 'Unknown type'}</span>
+                    </div>
+                `).join('');
+                
+                window.selectedFiles = files;
+            }
+            
+            window.uploadFiles = function() {
+                if (!window.selectedFiles || window.selectedFiles.length === 0) {
+                    alert('Please select files to upload');
+                    return;
+                }
+                
+                const files = JSON.parse(localStorage.getItem('adminFiles') || '[]');
+                window.selectedFiles.forEach(file => {
+                    files.push({
+                        id: Date.now() + Math.random(),
+                        name: file.name,
+                        size: file.size,
+                        type: file.type || 'Unknown',
+                        uploaded: new Date().toISOString(),
+                        uploader: 'Current Admin'
+                    });
+                });
+                localStorage.setItem('adminFiles', JSON.stringify(files));
+                loadFiles();
+                closeModal();
+            };
         }
 
         function downloadFile(id) {
-            alert(`Download File ${id} - This would initiate the file download.`);
+            const files = JSON.parse(localStorage.getItem('adminFiles') || '[]');
+            const file = files.find(f => f.id === id);
+            if (file) {
+                // Simulate download
+                const link = document.createElement('a');
+                link.download = file.name;
+                link.href = 'data:text/plain;charset=utf-8,' + encodeURIComponent(`File: ${file.name}\nSize: ${file.size} bytes\nType: ${file.type}\nUploaded: ${file.uploaded}`);
+                link.click();
+            }
         }
 
         function deleteFile(id) {
@@ -3224,7 +3984,119 @@
         }
 
         function generateReport() {
-            alert('Generate Report - This would open a report builder with customizable metrics and export options.');
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Generate Custom Report</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="reportForm">
+                            <div class="form-group">
+                                <label>Report Type:</label>
+                                <select id="reportType">
+                                    <option value="user-activity">User Activity Report</option>
+                                    <option value="system-performance">System Performance</option>
+                                    <option value="security-audit">Security Audit</option>
+                                    <option value="content-summary">Content Summary</option>
+                                    <option value="financial-overview">Financial Overview</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Date Range:</label>
+                                <select id="dateRange">
+                                    <option value="last-7-days">Last 7 Days</option>
+                                    <option value="last-30-days">Last 30 Days</option>
+                                    <option value="last-90-days">Last 90 Days</option>
+                                    <option value="custom">Custom Range</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Export Format:</label>
+                                <select id="exportFormat">
+                                    <option value="pdf">PDF Document</option>
+                                    <option value="csv">CSV Spreadsheet</option>
+                                    <option value="json">JSON Data</option>
+                                    <option value="html">HTML Report</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Include Charts:</label>
+                                <div class="checkbox-group">
+                                    <label><input type="checkbox" checked> User Growth</label>
+                                    <label><input type="checkbox" checked> Activity Metrics</label>
+                                    <label><input type="checkbox"> Performance Data</label>
+                                    <label><input type="checkbox"> Security Events</label>
+                                </div>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Generate Report</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('reportForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const reportType = document.getElementById('reportType').value;
+                const dateRange = document.getElementById('dateRange').value;
+                const exportFormat = document.getElementById('exportFormat').value;
+                
+                // Simulate report generation
+                const reportData = generateReportData(reportType, dateRange);
+                downloadReport(reportData, exportFormat);
+                closeModal();
+            });
+        }
+
+        function generateReportData(type, range) {
+            return {
+                title: `${type.replace('-', ' ').toUpperCase()} Report`,
+                dateRange: range,
+                generated: new Date().toISOString(),
+                data: {
+                    totalUsers: 1247,
+                    activeUsers: 892,
+                    newUsers: 156,
+                    totalSessions: 3421,
+                    avgSessionDuration: '12m 34s',
+                    pageViews: 18943,
+                    securityEvents: 23,
+                    systemUptime: '99.8%'
+                }
+            };
+        }
+
+        function downloadReport(data, format) {
+            let content, mimeType, filename;
+            
+            switch(format) {
+                case 'json':
+                    content = JSON.stringify(data, null, 2);
+                    mimeType = 'application/json';
+                    filename = 'report.json';
+                    break;
+                case 'csv':
+                    content = Object.entries(data.data).map(([key, value]) => `${key},${value}`).join('\n');
+                    mimeType = 'text/csv';
+                    filename = 'report.csv';
+                    break;
+                default:
+                    content = `${data.title}\n\nGenerated: ${data.generated}\nDate Range: ${data.dateRange}\n\n` + 
+                             Object.entries(data.data).map(([key, value]) => `${key}: ${value}`).join('\n');
+                    mimeType = 'text/plain';
+                    filename = 'report.txt';
+            }
+            
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = `data:${mimeType};charset=utf-8,` + encodeURIComponent(content);
+            link.click();
         }
 
         // Security Functions
@@ -3279,16 +4151,140 @@
         }
 
         function runSecurityScan() {
-            alert('Security Scan - This would initiate a comprehensive security scan of the system.');
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Security Scan in Progress</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="scanProgress">
+                            <div style="margin-bottom: 20px;">
+                                <div style="background: #f0f0f0; height: 20px; border-radius: 10px; overflow: hidden;">
+                                    <div id="progressBar" style="background: #667eea; height: 100%; width: 0%; transition: width 0.5s;"></div>
+                                </div>
+                                <p id="scanStatus" style="text-align: center; margin-top: 10px;">Initializing scan...</p>
+                            </div>
+                            <div id="scanResults" style="display: none;">
+                                <h4>Scan Results</h4>
+                                <div class="scan-result">✅ System integrity: PASS</div>
+                                <div class="scan-result">✅ Authentication security: PASS</div>
+                                <div class="scan-result">⚠️ SSL certificate: WARNING (expires in 30 days)</div>
+                                <div class="scan-result">✅ Database security: PASS</div>
+                                <div class="scan-result">✅ API endpoints: PASS</div>
+                                <div class="scan-result">✅ User permissions: PASS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Simulate scan progress
+            let progress = 0;
+            const progressBar = document.getElementById('progressBar');
+            const statusText = document.getElementById('scanStatus');
+            const resultsDiv = document.getElementById('scanResults');
+            
+            const scanSteps = [
+                'Checking system integrity...',
+                'Validating authentication...',
+                'Scanning for vulnerabilities...',
+                'Checking SSL certificates...',
+                'Validating database security...',
+                'Testing API endpoints...',
+                'Verifying user permissions...',
+                'Finalizing scan results...'
+            ];
+            
+            const interval = setInterval(() => {
+                progress += 12.5;
+                progressBar.style.width = progress + '%';
+                
+                if (progress <= 100) {
+                    statusText.textContent = scanSteps[Math.floor(progress / 12.5) - 1] || 'Scanning...';
+                }
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    statusText.textContent = 'Scan completed successfully!';
+                    resultsDiv.style.display = 'block';
+                }
+            }, 800);
         }
 
         function investigateEvent(id) {
-            alert(`Investigate Event ${id} - This would open a detailed security investigation interface.`);
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <h3>Security Event Investigation</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div>
+                                <h4>Event Details</h4>
+                                <p><strong>Event ID:</strong> SEC-${id}</p>
+                                <p><strong>Type:</strong> Failed Login Attempt</p>
+                                <p><strong>Severity:</strong> <span style="color: orange;">Medium</span></p>
+                                <p><strong>Time:</strong> ${new Date().toLocaleString()}</p>
+                                <p><strong>Source IP:</strong> 192.168.1.100</p>
+                                <p><strong>User Agent:</strong> Mozilla/5.0...</p>
+                                <div style="margin-top: 15px;">
+                                    <strong>Event Log:</strong>
+                                    <div style="background: #f8f9fa; padding: 15px; border-radius: 8px; margin-top: 5px; font-family: monospace; font-size: 12px;">
+                                        [2024-01-15 14:30:15] WARN: Failed login attempt<br>
+                                        [2024-01-15 14:30:15] INFO: IP: 192.168.1.100<br>
+                                        [2024-01-15 14:30:15] INFO: Username: admin<br>
+                                        [2024-01-15 14:30:15] WARN: Account locked after 3 attempts
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <h4>Investigation Actions</h4>
+                                <div style="margin-bottom: 15px;">
+                                    <label>Investigation Status:</label>
+                                    <select style="width: 100%; padding: 8px;">
+                                        <option>Under Investigation</option>
+                                        <option>Resolved - False Positive</option>
+                                        <option>Resolved - Threat Mitigated</option>
+                                        <option>Escalated</option>
+                                    </select>
+                                </div>
+                                <div style="margin-bottom: 15px;">
+                                    <label>Investigation Notes:</label>
+                                    <textarea rows="4" style="width: 100%; padding: 8px;" placeholder="Add investigation findings..."></textarea>
+                                </div>
+                                <div style="display: flex; flex-direction: column; gap: 10px;">
+                                    <button class="btn btn-danger" onclick="blockIP('192.168.1.100')">Block IP Address</button>
+                                    <button class="btn btn-warning" onclick="flagForReview(${id})">Flag for Review</button>
+                                    <button class="btn btn-success" onclick="markResolved(${id})">Mark as Resolved</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
         }
 
         function blockEvent(id) {
             if (confirm('Are you sure you want to block this security event source?')) {
-                alert(`Event ${id} source blocked - This would add the source to the security blocklist.`);
+                // Add to blocked sources
+                const blockedSources = JSON.parse(localStorage.getItem('blockedSources') || '[]');
+                blockedSources.push({
+                    id: Date.now(),
+                    eventId: id,
+                    ip: '192.168.1.100',
+                    blocked: new Date().toISOString(),
+                    reason: 'Security threat detected'
+                });
+                localStorage.setItem('blockedSources', JSON.stringify(blockedSources));
+                alert('Source has been blocked successfully');
             }
         }
 
@@ -3790,6 +4786,29 @@ Platform Administrator`);
 
         // Initialize admin dashboard
         new AdminDashboard();
+
+        // Modal utility functions
+        function closeModal() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Helper function for project progress updates
+        function updateProjectProgress(id) {
+            const newProgress = prompt('Enter new progress percentage (0-100):');
+            if (newProgress !== null && !isNaN(newProgress) && newProgress >= 0 && newProgress <= 100) {
+                const projects = JSON.parse(localStorage.getItem('adminProjects') || '[]');
+                const updatedProjects = projects.map(p => p.id === id ? {
+                    ...p,
+                    progress: parseInt(newProgress),
+                    updated: new Date().toISOString()
+                } : p);
+                localStorage.setItem('adminProjects', JSON.stringify(updatedProjects));
+                loadProjects();
+            }
+        }
     </script>
     
     <!-- Environment Configuration -->

@@ -747,6 +747,109 @@
                 height: 400px;
             }
         }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 15px;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .modal-header {
+            padding: 20px;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .modal-header h3 {
+            margin: 0;
+            font-size: 1.3rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: background 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .modal-body {
+            padding: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #eee;
+        }
     </style>
 </head>
 <body>
@@ -1377,7 +1480,162 @@
         
         // Utility functions
         function createNew() {
-            alert('🚀 Create New:\n\n1. Project\n2. Task\n3. Document\n4. AI Workflow\n5. Team Space\n\nWhich would you like to create?');
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>🚀 Create New</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="create-options" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                            <div class="create-option" onclick="createProject()" style="padding: 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; text-align: center; transition: all 0.3s;">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">📁</div>
+                                <h4>Project</h4>
+                                <p>Start a new collaborative project</p>
+                            </div>
+                            <div class="create-option" onclick="createTask()" style="padding: 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; text-align: center; transition: all 0.3s;">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">✅</div>
+                                <h4>Task</h4>
+                                <p>Create a new task or assignment</p>
+                            </div>
+                            <div class="create-option" onclick="createDocument()" style="padding: 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; text-align: center; transition: all 0.3s;">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">📝</div>
+                                <h4>Document</h4>
+                                <p>Create a shared document</p>
+                            </div>
+                            <div class="create-option" onclick="createWorkflow()" style="padding: 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; text-align: center; transition: all 0.3s;">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">🤖</div>
+                                <h4>AI Workflow</h4>
+                                <p>Set up automated workflow</p>
+                            </div>
+                            <div class="create-option" onclick="createTeamSpace()" style="padding: 20px; border: 2px solid #667eea; border-radius: 10px; cursor: pointer; text-align: center; transition: all 0.3s; grid-column: span 2;">
+                                <div style="font-size: 2rem; margin-bottom: 10px;">👥</div>
+                                <h4>Team Space</h4>
+                                <p>Create a dedicated team collaboration space</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // Add hover effects
+            document.querySelectorAll('.create-option').forEach(option => {
+                option.addEventListener('mouseenter', () => {
+                    option.style.background = 'rgba(102, 126, 234, 0.1)';
+                    option.style.transform = 'translateY(-2px)';
+                });
+                option.addEventListener('mouseleave', () => {
+                    option.style.background = 'transparent';
+                    option.style.transform = 'translateY(0)';
+                });
+            });
+        }
+
+        function createProject() {
+            closeModal();
+            showProjectCreationForm();
+        }
+
+        function createTask() {
+            closeModal();
+            showTaskCreationForm();
+        }
+
+        function createDocument() {
+            closeModal();
+            showDocumentCreationForm();
+        }
+
+        function createWorkflow() {
+            closeModal();
+            showWorkflowCreationForm();
+        }
+
+        function createTeamSpace() {
+            closeModal();
+            showTeamSpaceCreationForm();
+        }
+
+        function showProjectCreationForm() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>📁 Create New Project</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="projectForm">
+                            <div class="form-group">
+                                <label>Project Name:</label>
+                                <input type="text" id="projectName" placeholder="Enter project name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea id="projectDescription" rows="3" placeholder="Describe your project"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Project Type:</label>
+                                <select id="projectType">
+                                    <option value="development">Software Development</option>
+                                    <option value="design">Design & Creative</option>
+                                    <option value="research">Research & Analysis</option>
+                                    <option value="marketing">Marketing Campaign</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Privacy:</label>
+                                <select id="projectPrivacy">
+                                    <option value="team">Team Only</option>
+                                    <option value="organization">Organization</option>
+                                    <option value="public">Public</option>
+                                </select>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Project</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('projectForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const name = document.getElementById('projectName').value;
+                const description = document.getElementById('projectDescription').value;
+                const type = document.getElementById('projectType').value;
+                const privacy = document.getElementById('projectPrivacy').value;
+                
+                // Add to projects list
+                if (window.appState && window.appState.projects) {
+                    const newProject = {
+                        id: Date.now(),
+                        title: name,
+                        description: description,
+                        type: type,
+                        privacy: privacy,
+                        status: 'Planning',
+                        progress: 0,
+                        created: new Date().toISOString(),
+                        members: ['Current User']
+                    };
+                    window.appState.projects.push(newProject);
+                    localStorage.setItem('collaborationProjects', JSON.stringify(window.appState.projects));
+                    
+                    // Refresh the projects display
+                    if (typeof updateProjectsDisplay === 'function') {
+                        updateProjectsDisplay();
+                    }
+                }
+                closeModal();
+            });
         }
         
         function toggleNotifications() {
@@ -1387,7 +1645,191 @@
         function openProject(projectId) {
             const project = appState.projects.find(p => p.id === projectId);
             if (project) {
-                alert(`🚀 Opening ${project.title}...\n\nThis would open the project workspace with:\n• Real-time collaboration\n• Version control\n• AI assistance\n• Team chat\n• File sharing`);
+                const modal = document.createElement('div');
+                modal.className = 'modal-overlay';
+                modal.innerHTML = `
+                    <div class="modal-content" style="max-width: 900px;">
+                        <div class="modal-header">
+                            <h3>🚀 ${project.title}</h3>
+                            <button class="modal-close" onclick="closeModal()">&times;</button>
+                        </div>
+                        <div class="modal-body">
+                            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px;">
+                                <div>
+                                    <h4>Project Workspace</h4>
+                                    <div class="workspace-tabs" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                                        <button class="workspace-tab active" onclick="showWorkspaceTab('overview')" style="padding: 8px 15px; border: 1px solid #667eea; background: #667eea; color: white; border-radius: 5px; cursor: pointer;">Overview</button>
+                                        <button class="workspace-tab" onclick="showWorkspaceTab('files')" style="padding: 8px 15px; border: 1px solid #667eea; background: white; color: #667eea; border-radius: 5px; cursor: pointer;">Files</button>
+                                        <button class="workspace-tab" onclick="showWorkspaceTab('tasks')" style="padding: 8px 15px; border: 1px solid #667eea; background: white; color: #667eea; border-radius: 5px; cursor: pointer;">Tasks</button>
+                                        <button class="workspace-tab" onclick="showWorkspaceTab('chat')" style="padding: 8px 15px; border: 1px solid #667eea; background: white; color: #667eea; border-radius: 5px; cursor: pointer;">Team Chat</button>
+                                    </div>
+                                    <div id="workspace-content">
+                                        <div class="workspace-section">
+                                            <h5>Project Overview</h5>
+                                            <p><strong>Status:</strong> ${project.status}</p>
+                                            <p><strong>Progress:</strong> ${project.progress}%</p>
+                                            <p><strong>Description:</strong> ${project.description}</p>
+                                            <div style="margin-top: 15px;">
+                                                <div style="background: #f0f0f0; height: 15px; border-radius: 10px; overflow: hidden;">
+                                                    <div style="background: #667eea; height: 100%; width: ${project.progress}%; transition: width 0.3s;"></div>
+                                                </div>
+                                            </div>
+                                            <div style="margin-top: 20px;">
+                                                <h6>Recent Activity</h6>
+                                                <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                                    <p>• Project "${project.title}" was created</p>
+                                                    <p>• Current status: ${project.status}</p>
+                                                    <p>• Progress updated to ${project.progress}%</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div>
+                                    <h4>Features</h4>
+                                    <div style="display: flex; flex-direction: column; gap: 10px;">
+                                        <button class="btn btn-primary" onclick="openRealTimeEditor()">📝 Real-time Editor</button>
+                                        <button class="btn btn-primary" onclick="openVersionControl()">📚 Version Control</button>
+                                        <button class="btn btn-primary" onclick="openAIAssistant()">🤖 AI Assistance</button>
+                                        <button class="btn btn-primary" onclick="openTeamChat()">💬 Team Chat</button>
+                                        <button class="btn btn-primary" onclick="openFileSharing()">📁 File Sharing</button>
+                                    </div>
+                                    <div style="margin-top: 20px;">
+                                        <h5>Quick Actions</h5>
+                                        <button class="btn btn-secondary" onclick="shareProject(${projectId})" style="width: 100%; margin-bottom: 5px;">Share Project</button>
+                                        <button class="btn btn-secondary" onclick="exportProject(${projectId})" style="width: 100%; margin-bottom: 5px;">Export Project</button>
+                                        <button class="btn btn-secondary" onclick="duplicateProject(${projectId})" style="width: 100%;">Duplicate</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                document.body.appendChild(modal);
+                
+                // Add workspace tab functionality
+                window.showWorkspaceTab = function(tab) {
+                    const content = document.getElementById('workspace-content');
+                    const tabs = document.querySelectorAll('.workspace-tab');
+                    
+                    tabs.forEach(t => {
+                        t.style.background = 'white';
+                        t.style.color = '#667eea';
+                    });
+                    event.target.style.background = '#667eea';
+                    event.target.style.color = 'white';
+                    
+                    let tabContent = '';
+                    switch(tab) {
+                        case 'files':
+                            tabContent = `
+                                <div class="workspace-section">
+                                    <h5>Project Files</h5>
+                                    <div style="display: grid; gap: 10px;">
+                                        <div style="padding: 10px; border: 1px solid #eee; border-radius: 5px; display: flex; justify-content: space-between;">
+                                            <span>📄 project-plan.docx</span>
+                                            <button class="btn btn-sm">Download</button>
+                                        </div>
+                                        <div style="padding: 10px; border: 1px solid #eee; border-radius: 5px; display: flex; justify-content: space-between;">
+                                            <span>🎨 designs.zip</span>
+                                            <button class="btn btn-sm">Download</button>
+                                        </div>
+                                        <div style="padding: 10px; border: 1px solid #eee; border-radius: 5px; display: flex; justify-content: space-between;">
+                                            <span>📊 analytics.xlsx</span>
+                                            <button class="btn btn-sm">Download</button>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary" style="margin-top: 15px;" onclick="uploadProjectFile()">Upload New File</button>
+                                </div>
+                            `;
+                            break;
+                        case 'tasks':
+                            tabContent = `
+                                <div class="workspace-section">
+                                    <h5>Project Tasks</h5>
+                                    <div style="display: grid; gap: 10px;">
+                                        <div style="padding: 10px; border-left: 4px solid #28a745; background: #f8f9fa;">
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <span>✅ Setup project structure</span>
+                                                <span style="font-size: 12px; color: #666;">Completed</span>
+                                            </div>
+                                        </div>
+                                        <div style="padding: 10px; border-left: 4px solid #ffc107; background: #f8f9fa;">
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <span>🔄 Review initial designs</span>
+                                                <span style="font-size: 12px; color: #666;">In Progress</span>
+                                            </div>
+                                        </div>
+                                        <div style="padding: 10px; border-left: 4px solid #dc3545; background: #f8f9fa;">
+                                            <div style="display: flex; justify-content: space-between;">
+                                                <span>📅 Prepare presentation</span>
+                                                <span style="font-size: 12px; color: #666;">Pending</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button class="btn btn-primary" style="margin-top: 15px;" onclick="createProjectTask()">Add New Task</button>
+                                </div>
+                            `;
+                            break;
+                        case 'chat':
+                            tabContent = `
+                                <div class="workspace-section">
+                                    <h5>Team Chat</h5>
+                                    <div style="height: 200px; background: #f8f9fa; border-radius: 8px; padding: 15px; overflow-y: auto; border: 1px solid #eee;">
+                                        <div style="margin-bottom: 10px;"><strong>Sarah:</strong> The new designs look great!</div>
+                                        <div style="margin-bottom: 10px;"><strong>Mike:</strong> I've updated the documentation</div>
+                                        <div style="margin-bottom: 10px;"><strong>You:</strong> Thanks team, let's review in tomorrow's meeting</div>
+                                    </div>
+                                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                                        <input type="text" placeholder="Type a message..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 5px;">
+                                        <button class="btn btn-primary" onclick="sendMessage()">Send</button>
+                                    </div>
+                                </div>
+                            `;
+                            break;
+                        default:
+                            tabContent = `
+                                <div class="workspace-section">
+                                    <h5>Project Overview</h5>
+                                    <p><strong>Status:</strong> ${project.status}</p>
+                                    <p><strong>Progress:</strong> ${project.progress}%</p>
+                                    <p><strong>Description:</strong> ${project.description}</p>
+                                    <div style="margin-top: 15px;">
+                                        <div style="background: #f0f0f0; height: 15px; border-radius: 10px; overflow: hidden;">
+                                            <div style="background: #667eea; height: 100%; width: ${project.progress}%; transition: width 0.3s;"></div>
+                                        </div>
+                                    </div>
+                                    <div style="margin-top: 20px;">
+                                        <h6>Recent Activity</h6>
+                                        <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                            <p>• Project "${project.title}" was created</p>
+                                            <p>• Current status: ${project.status}</p>
+                                            <p>• Progress updated to ${project.progress}%</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                    }
+                    content.innerHTML = tabContent;
+                };
+                
+                // Feature functions
+                window.openRealTimeEditor = () => window.open('real-time-editor.html', '_blank');
+                window.openVersionControl = () => alert('Version control system: Track changes, manage branches, and collaborate on code');
+                window.openAIAssistant = () => alert('AI assistant activated: Get code suggestions, review assistance, and automated task help');
+                window.openTeamChat = () => showWorkspaceTab('chat');
+                window.openFileSharing = () => showWorkspaceTab('files');
+                window.exportProject = (id) => alert(`Exporting project ${id} as ZIP file with all documents, code, and assets`);
+                window.duplicateProject = (id) => alert(`Creating a copy of project ${id} with all settings and structure`);
+                window.uploadProjectFile = () => alert('File upload dialog: Select files to add to project');
+                window.createProjectTask = () => alert('Task creation: Add new tasks, assign team members, set deadlines');
+                window.sendMessage = () => {
+                    const input = document.querySelector('#workspace-content input[type="text"]');
+                    if (input && input.value.trim()) {
+                        alert(`Message sent: "${input.value}"`);
+                        input.value = '';
+                    }
+                };
             }
         }
         
@@ -1799,6 +2241,248 @@
         
         // Create global collaboration platform instance
         window.CollaborationPlatform = new CollaborationPlatform();
+
+        // Modal utility functions
+        function closeModal() {
+            const modal = document.querySelector('.modal-overlay');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // Additional creation form functions
+        function showTaskCreationForm() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>✅ Create New Task</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="taskForm">
+                            <div class="form-group">
+                                <label>Task Title:</label>
+                                <input type="text" id="taskTitle" placeholder="Enter task title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Description:</label>
+                                <textarea id="taskDescription" rows="3" placeholder="Describe the task"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Priority:</label>
+                                <select id="taskPriority">
+                                    <option value="low">Low</option>
+                                    <option value="medium" selected>Medium</option>
+                                    <option value="high">High</option>
+                                    <option value="urgent">Urgent</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Due Date:</label>
+                                <input type="date" id="taskDueDate">
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Task</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('taskForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const task = {
+                    id: Date.now(),
+                    title: document.getElementById('taskTitle').value,
+                    description: document.getElementById('taskDescription').value,
+                    priority: document.getElementById('taskPriority').value,
+                    dueDate: document.getElementById('taskDueDate').value,
+                    status: 'pending',
+                    created: new Date().toISOString()
+                };
+                
+                const tasks = JSON.parse(localStorage.getItem('collaborationTasks') || '[]');
+                tasks.push(task);
+                localStorage.setItem('collaborationTasks', JSON.stringify(tasks));
+                closeModal();
+            });
+        }
+
+        function showDocumentCreationForm() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>📝 Create New Document</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="documentForm">
+                            <div class="form-group">
+                                <label>Document Title:</label>
+                                <input type="text" id="documentTitle" placeholder="Enter document title" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Document Type:</label>
+                                <select id="documentType">
+                                    <option value="text">Text Document</option>
+                                    <option value="spreadsheet">Spreadsheet</option>
+                                    <option value="presentation">Presentation</option>
+                                    <option value="whiteboard">Whiteboard</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Initial Content:</label>
+                                <textarea id="documentContent" rows="5" placeholder="Enter initial document content..."></textarea>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Document</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('documentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const document = {
+                    id: Date.now(),
+                    title: document.getElementById('documentTitle').value,
+                    type: document.getElementById('documentType').value,
+                    content: document.getElementById('documentContent').value,
+                    created: new Date().toISOString(),
+                    lastModified: new Date().toISOString()
+                };
+                
+                const documents = JSON.parse(localStorage.getItem('collaborationDocuments') || '[]');
+                documents.push(document);
+                localStorage.setItem('collaborationDocuments', JSON.stringify(documents));
+                closeModal();
+            });
+        }
+
+        function showWorkflowCreationForm() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>🤖 Create AI Workflow</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="workflowForm">
+                            <div class="form-group">
+                                <label>Workflow Name:</label>
+                                <input type="text" id="workflowName" placeholder="Enter workflow name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Trigger Event:</label>
+                                <select id="workflowTrigger">
+                                    <option value="manual">Manual Trigger</option>
+                                    <option value="schedule">Scheduled</option>
+                                    <option value="file-upload">File Upload</option>
+                                    <option value="task-completion">Task Completion</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>AI Action:</label>
+                                <select id="workflowAction">
+                                    <option value="analyze">Analyze Content</option>
+                                    <option value="generate">Generate Report</option>
+                                    <option value="translate">Translate Text</option>
+                                    <option value="summarize">Summarize Document</option>
+                                </select>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Workflow</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('workflowForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const workflow = {
+                    id: Date.now(),
+                    name: document.getElementById('workflowName').value,
+                    trigger: document.getElementById('workflowTrigger').value,
+                    action: document.getElementById('workflowAction').value,
+                    status: 'active',
+                    created: new Date().toISOString()
+                };
+                
+                const workflows = JSON.parse(localStorage.getItem('collaborationWorkflows') || '[]');
+                workflows.push(workflow);
+                localStorage.setItem('collaborationWorkflows', JSON.stringify(workflows));
+                closeModal();
+            });
+        }
+
+        function showTeamSpaceCreationForm() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>👥 Create Team Space</h3>
+                        <button class="modal-close" onclick="closeModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="teamSpaceForm">
+                            <div class="form-group">
+                                <label>Team Space Name:</label>
+                                <input type="text" id="teamSpaceName" placeholder="Enter team space name" required>
+                            </div>
+                            <div class="form-group">
+                                <label>Purpose:</label>
+                                <textarea id="teamSpacePurpose" rows="3" placeholder="What is this team space for?"></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label>Privacy Level:</label>
+                                <select id="teamSpacePrivacy">
+                                    <option value="private">Private (Invite Only)</option>
+                                    <option value="restricted">Restricted (Request to Join)</option>
+                                    <option value="public">Public (Anyone can Join)</option>
+                                </select>
+                            </div>
+                            <div class="modal-actions">
+                                <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                                <button type="submit" class="btn btn-primary">Create Team Space</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            document.getElementById('teamSpaceForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const teamSpace = {
+                    id: Date.now(),
+                    name: document.getElementById('teamSpaceName').value,
+                    purpose: document.getElementById('teamSpacePurpose').value,
+                    privacy: document.getElementById('teamSpacePrivacy').value,
+                    members: ['Current User'],
+                    created: new Date().toISOString()
+                };
+                
+                const teamSpaces = JSON.parse(localStorage.getItem('collaborationTeamSpaces') || '[]');
+                teamSpaces.push(teamSpace);
+                localStorage.setItem('collaborationTeamSpaces', JSON.stringify(teamSpaces));
+                closeModal();
+            });
+        }
     </script>
 </body>
 </html>
