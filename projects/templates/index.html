@@ -642,7 +642,7 @@ my-web-app/
             };
             
             if (templatePaths[templateName]) {
-                window.open(templatePaths[templateName], '_blank');
+                window.location.href = templatePaths[templateName];
             } else {
                 alert(`Opening ${templateName.replace('-', ' ')} template...`);
             }
