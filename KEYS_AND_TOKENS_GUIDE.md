@@ -147,6 +147,8 @@ Click **"Add New"** for each variable:
 - **Name**: `ADMIN_TOKEN` **Value**: Your generated secure token
 - **Name**: `ADMIN_EMAIL` **Value**: Your admin email address
 
+**Note**: Set ADMIN_TOKEN as a regular environment variable in Vercel, not a secret reference. The application accesses it securely through the backend API endpoint.
+
 ### Step 3: Environment Selection
 For each variable, select:
 - ✅ **Production**
@@ -211,6 +213,7 @@ Before deploying, ensure you have:
 **"Admin authentication failed"**
 - Ensure ADMIN_TOKEN matches exactly (no extra characters)
 - Verify ADMIN_EMAIL matches your login email
+- Ensure ADMIN_TOKEN is set as a regular environment variable (not a secret reference) in Vercel
 
 **"Environment variables not loading"**
 - Restart Vercel deployment after adding variables
