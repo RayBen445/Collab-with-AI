@@ -1129,6 +1129,245 @@
     </div>
     
     <script>
+        // Collaboration Platform Implementation
+        class CollaborationPlatform {
+            constructor() {
+                this.authService = window.authService;
+                this.dbService = window.dbService;
+                this.storageService = window.storageService;
+                this.geminiService = window.geminiService;
+                this.currentUser = null;
+                this.projects = [];
+                
+                this.initializeFirebase();
+                this.setupAuthGuard();
+            }
+            
+            async initializeFirebase() {
+                // Wait for authentication state
+                window.addEventListener('userSignedIn', async (event) => {
+                    const { user, isAdmin } = event.detail;
+                    this.currentUser = user;
+                    await this.loadUserData();
+                    this.hideAuthRequired();
+                    this.initializePlatform();
+                });
+
+                window.addEventListener('userSignedOut', () => {
+                    this.currentUser = null;
+                    this.showAuthRequired();
+                });
+
+                // Check if user is already authenticated (only if authService exists)
+                if (this.authService && this.authService.currentUser) {
+                    this.currentUser = this.authService.currentUser;
+                    await this.loadUserData();
+                    this.initializePlatform();
+                } else if (!this.authService) {
+                    // If no authService, wait for userSignedIn event from AuthenticationManager
+                    console.log('Waiting for authentication event...');
+                } else {
+                    this.showAuthRequired();
+                }
+            }
+            
+            setupAuthGuard() {
+                // Don't automatically show auth required - let the authentication manager handle it
+                console.log('Auth guard setup complete');
+            }
+            
+            showAuthRequired() {
+                document.querySelector('.auth-required').style.display = 'flex';
+            }
+            
+            hideAuthRequired() {
+                document.querySelector('.auth-required').style.display = 'none';
+            }
+            
+            async loadUserData() {
+                try {
+                    // Load user's projects from Firestore
+                    this.projects = await this.dbService.getUserProjects(this.currentUser.uid);
+                    
+                    // Update UI with real user data
+                    this.updateUserProfile();
+                    this.renderProjects();
+                } catch (error) {
+                    console.error('Error loading user data:', error);
+                }
+            }
+            
+            updateUserProfile() {
+                // Update user profile in sidebar
+                const userAvatar = document.querySelector('.user-avatar');
+                const userName = document.querySelector('.user-name');
+                
+                if (userAvatar && userName) {
+                    userAvatar.textContent = this.currentUser.displayName?.charAt(0) || this.currentUser.email.charAt(0);
+                    userName.textContent = this.currentUser.displayName || this.currentUser.email;
+                }
+                
+                // Update global app state
+                window.appState = {
+                    ...window.appState,
+                    currentUser: {
+                        name: this.currentUser.displayName || this.currentUser.email,
+                        avatar: this.currentUser.displayName?.charAt(0) || this.currentUser.email.charAt(0),
+                        email: this.currentUser.email,
+                        uid: this.currentUser.uid,
+                        status: 'online'
+                    }
+                };
+            }
+            
+            renderProjects() {
+                const projectsList = document.querySelector('.projects-list');
+                if (!projectsList) return;
+                
+                projectsList.innerHTML = '';
+                
+                this.projects.forEach(project => {
+                    const projectElement = this.createProjectElement(project);
+                    projectsList.appendChild(projectElement);
+                });
+            }
+            
+            createProjectElement(project) {
+                const projectDiv = document.createElement('div');
+                projectDiv.className = 'project-item';
+                projectDiv.innerHTML = `
+                    <div class="project-info">
+                        <div class="project-title">${project.name || project.title}</div>
+                        <div class="project-type">${project.type || 'Project'}</div>
+                        <div class="project-description">${project.description || ''}</div>
+                        <div class="project-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                            </div>
+                            <span>${project.progress || 0}%</span>
+                        </div>
+                    </div>
+                    <div class="project-actions">
+                        <button onclick="collaborationPlatform.openProject('${project.id}')">Open</button>
+                        <button onclick="collaborationPlatform.editProject('${project.id}')">Edit</button>
+                    </div>
+                `;
+                return projectDiv;
+            }
+            
+            initializePlatform() {
+                // Initialize all platform features with Firebase integration
+                this.setupAIChat();
+                this.setupRealTimeUpdates();
+                this.setupProjectManagement();
+            }
+            
+            setupAIChat() {
+                // Enhanced AI chat with Gemini integration
+                window.sendAIMessage = async () => {
+                    const input = document.getElementById('aiChatInput');
+                    const message = input.value.trim();
+                    
+                    if (!message) return;
+                    
+                    // Add user message to chat
+                    this.addMessageToChat('user', message);
+                    input.value = '';
+                    
+                    try {
+                        // Use Firebase-secured Gemini API
+                        const response = await this.geminiService.generateContent(message);
+                        
+                        if (response.success) {
+                            this.addMessageToChat('ai', response.content);
+                        } else {
+                            this.addMessageToChat('ai', 'Sorry, I encountered an error. Please try again.');
+                        }
+                    } catch (error) {
+                        console.error('AI chat error:', error);
+                        this.addMessageToChat('ai', 'I\'m currently unavailable. Please try again later.');
+                    }
+                };
+            }
+            
+            addMessageToChat(sender, message) {
+                const chatMessages = document.querySelector('.ai-chat-messages');
+                if (!chatMessages) return;
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `ai-message ${sender}`;
+                messageDiv.innerHTML = `
+                    <div class="message-content">${message}</div>
+                    <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            setupRealTimeUpdates() {
+                // Listen for real-time project updates
+                if (this.currentUser) {
+                    this.dbService.listenToUserProjects(this.currentUser.uid, (projects) => {
+                        this.projects = projects;
+                        this.renderProjects();
+                    });
+                }
+            }
+            
+            setupProjectManagement() {
+                // Project management functions with Firebase
+                window.createProject = async (projectData) => {
+                    try {
+                        const projectId = await this.dbService.createProject(projectData, this.currentUser.uid);
+                        console.log('Project created:', projectId);
+                        // Projects will update automatically via real-time listener
+                    } catch (error) {
+                        console.error('Error creating project:', error);
+                        alert('Failed to create project. Please try again.');
+                    }
+                };
+                
+                this.openProject = async (projectId) => {
+                    try {
+                        const project = await this.dbService.getProject(projectId);
+                        if (project) {
+                            // Open project in collaboration view
+                            this.loadProjectView(project);
+                        }
+                    } catch (error) {
+                        console.error('Error opening project:', error);
+                        alert('Failed to open project. Please try again.');
+                    }
+                };
+                
+                this.editProject = async (projectId) => {
+                    // Implement project editing
+                    console.log('Edit project:', projectId);
+                };
+            }
+            
+            loadProjectView(project) {
+                // Load project-specific collaboration view
+                console.log('Loading project view:', project);
+                // This would typically navigate to a project-specific page
+                // or update the main view to show project details
+            }
+            
+            async signOut() {
+                try {
+                    await this.authService.signOutUser();
+                    window.location.href = 'login.html';
+                } catch (error) {
+                    console.error('Sign out error:', error);
+                }
+            }
+        }
+        
+        // Initialize platform when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.collaborationPlatform = new CollaborationPlatform();
+        });
     </script>
     
     <script>
