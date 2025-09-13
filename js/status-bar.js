@@ -4,6 +4,8 @@ class StatusBar {
         this.battery = null;
         this.batteryWarningShown = false;
         this.currentUser = null;
+        this.locationCache = null;
+        this.locationUpdateTime = null;
         this.init();
     }
 
@@ -12,6 +14,7 @@ class StatusBar {
         this.startTimeUpdates();
         await this.initBatteryAPI();
         this.loadUserInfo();
+        this.initLocationServices();
         this.attachToAllPages();
     }
 
@@ -29,6 +32,7 @@ class StatusBar {
                     <div class="time-display">
                         <span id="status-time">--:--:--</span>
                         <span id="status-date">-- -- ----</span>
+                        <span id="status-location">📍 Getting location...</span>
                     </div>
                 </div>
                 <div class="status-right">
@@ -100,6 +104,16 @@ class StatusBar {
                 #status-date {
                     font-size: 12px;
                     color: #666;
+                }
+
+                #status-location {
+                    font-size: 11px;
+                    color: #888;
+                    margin-top: 2px;
+                    max-width: 200px;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
                 }
 
                 .battery-info {
@@ -194,6 +208,10 @@ class StatusBar {
                         width: 24px;
                         height: 24px;
                     }
+                    
+                    #status-location {
+                        max-width: 150px;
+                    }
                 }
             </style>
         `;
@@ -282,6 +300,113 @@ class StatusBar {
             // Fallback when Battery API is not available
             batteryIcon.textContent = '🔋';
             batteryPercentage.textContent = 'N/A';
+        }
+    }
+
+    initLocationServices() {
+        // Check if geolocation is supported
+        if ('geolocation' in navigator) {
+            this.getCurrentLocation();
+        } else {
+            this.updateLocationDisplay('📍 Location unavailable');
+        }
+    }
+
+    getCurrentLocation() {
+        const locationElement = document.getElementById('status-location');
+        
+        // Check if we have cached location (less than 10 minutes old)
+        if (this.locationCache && this.locationUpdateTime) {
+            const now = new Date().getTime();
+            const cacheAge = now - this.locationUpdateTime;
+            if (cacheAge < 10 * 60 * 1000) { // 10 minutes
+                this.updateLocationDisplay(this.locationCache);
+                return;
+            }
+        }
+
+        const options = {
+            enableHighAccuracy: false,
+            timeout: 10000,
+            maximumAge: 600000 // 10 minutes
+        };
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                this.getLocationName(position.coords.latitude, position.coords.longitude);
+            },
+            (error) => {
+                this.handleLocationError(error);
+            },
+            options
+        );
+    }
+
+    async getLocationName(latitude, longitude) {
+        try {
+            // Use OpenStreetMap Nominatim API for reverse geocoding (free, no API key required)
+            const response = await fetch(
+                `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
+                {
+                    headers: {
+                        'User-Agent': 'Collab-with-AI-StatusBar/1.0'
+                    }
+                }
+            );
+            
+            if (response.ok) {
+                const data = await response.json();
+                const address = data.address;
+                
+                // Format location string with city and country/state
+                let locationStr = '';
+                if (address.city || address.town || address.village) {
+                    locationStr += address.city || address.town || address.village;
+                }
+                if (address.state || address.country) {
+                    if (locationStr) locationStr += ', ';
+                    locationStr += address.state || address.country;
+                }
+                
+                if (!locationStr) {
+                    locationStr = data.display_name?.split(',').slice(0, 2).join(', ') || 'Unknown location';
+                }
+
+                const formattedLocation = `📍 ${locationStr}`;
+                this.locationCache = formattedLocation;
+                this.locationUpdateTime = new Date().getTime();
+                this.updateLocationDisplay(formattedLocation);
+            } else {
+                throw new Error('Geocoding failed');
+            }
+        } catch (error) {
+            console.log('Error getting location name:', error);
+            this.updateLocationDisplay('📍 Location found');
+        }
+    }
+
+    handleLocationError(error) {
+        let errorMessage = '📍 Location unavailable';
+        
+        switch (error.code) {
+            case error.PERMISSION_DENIED:
+                errorMessage = '📍 Location access denied';
+                break;
+            case error.POSITION_UNAVAILABLE:
+                errorMessage = '📍 Location unavailable';
+                break;
+            case error.TIMEOUT:
+                errorMessage = '📍 Location timeout';
+                break;
+        }
+        
+        this.updateLocationDisplay(errorMessage);
+    }
+
+    updateLocationDisplay(locationText) {
+        const locationElement = document.getElementById('status-location');
+        if (locationElement) {
+            locationElement.textContent = locationText;
         }
     }
 
