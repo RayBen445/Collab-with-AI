@@ -9,7 +9,7 @@ A comprehensive platform for AI-powered collaboration with advanced Firebase bac
 🔥 **Firebase Authentication System**
 - Email/Password and Google OAuth sign-in
 - Secure session management with JWT tokens  
-- Admin role assignment for `oladoyeheritage445@gmail.com`
+- Admin role assignment via environment variables
 - User profile management and preferences
 
 🔥 **Real-time Firestore Database**
@@ -121,7 +121,7 @@ firebase init
    ```bash
    # Set in Firebase Functions
    firebase functions:config:set gemini.api_key="your-gemini-key"
-   firebase functions:config:set admin.email="oladoyeheritage445@gmail.com"
+   firebase functions:config:set admin.email="your-admin-email@example.com"
    ```
 
 ### 3. Deployment
@@ -183,7 +183,7 @@ match /users/{userId} {
 
 // Admin-only access for sensitive operations
 match /admin/{document=**} {
-  allow read, write: if request.auth.token.email == 'oladoyeheritage445@gmail.com';
+  allow read, write: if request.auth.token.email == resource.data.adminEmail;
 }
 ```
 
@@ -248,7 +248,7 @@ match /admin/{document=**} {
 
 3. **For Admins**:
    ```bash
-   # Sign in with: oladoyeheritage445@gmail.com
+   # Sign in with the email address configured in ADMIN_EMAIL environment variable
    # Automatic admin access to all features
    # Access admin dashboard for platform management
    ```

@@ -43,6 +43,52 @@ The possibilities are endless! Here are some exciting collaboration ideas:
 3. **Pick technologies** - we can work with various languages and frameworks
 4. **Collaborate** - you provide requirements and feedback, I'll help with implementation
 
+## 🔒 Security Guidelines
+
+**Important: Never commit secrets or credentials to this repository!**
+
+### Environment Variables (Required for Deployment)
+
+When deploying to Vercel, you must set the following environment variables in your Vercel dashboard:
+
+#### Required API Keys:
+- `GEMINI_API_KEY` - Your Google Gemini API key
+- `FIREBASE_API_KEY` - Firebase project API key
+- `FIREBASE_AUTH_DOMAIN` - Firebase auth domain
+- `FIREBASE_PROJECT_ID` - Firebase project ID
+- `FIREBASE_STORAGE_BUCKET` - Firebase storage bucket
+- `FIREBASE_MESSAGING_SENDER_ID` - Firebase messaging sender ID
+- `FIREBASE_APP_ID` - Firebase app ID
+- `FIREBASE_MEASUREMENT_ID` - Firebase measurement ID
+
+#### Required Admin Configuration:
+- `ADMIN_TOKEN` - Secure admin authentication token
+- `ADMIN_EMAIL` - Admin email address for elevated privileges
+
+### 📖 Complete Setup Guide
+
+For detailed step-by-step instructions on obtaining all API keys and tokens, see:
+**[🔐 KEYS_AND_TOKENS_GUIDE.md](./KEYS_AND_TOKENS_GUIDE.md)**
+
+### Quick Setup Summary:
+
+1. **Firebase Console**: Get 7 configuration values from your Firebase project settings
+2. **Google AI Studio**: Generate your Gemini API key
+3. **Generate Admin Token**: Create a secure 32+ character token
+4. **Vercel Dashboard**: Add all 10 environment variables in project settings
+
+### Local Development:
+
+Create a `.env.local` file in your project root (this file is automatically ignored by git):
+
+```bash
+GEMINI_API_KEY=your_gemini_api_key_here
+FIREBASE_API_KEY=your_firebase_api_key_here
+# ... add other variables as needed
+```
+
+**⚠️ Never commit `.env` files or hardcode secrets in your source code!**
+
 ## Project Structure
 
 ```
