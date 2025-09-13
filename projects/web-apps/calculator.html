@@ -529,20 +529,41 @@
         <div class="main-content">
             
                 <div class="working-demo">
-                    <h3>🚀 Advanced Calculator - Interactive Demo</h3>
-                    <div class="app-interface">
-                        <div class="control-panel">
-                            <input type="text" id="mainInput" placeholder="Enter your data..." class="main-input">
-                            <button onclick="processInput()" class="demo-btn primary">Process</button>
-                            <button onclick="clearData()" class="demo-btn">Clear</button>
+                    <h3>🧮 Advanced Calculator</h3>
+                    <div class="calculator-container">
+                        <div class="calculator-display">
+                            <input type="text" id="calc-display" readonly value="0">
                         </div>
-                        <div id="output-area" class="output-area">
-                            <p>Ready to process your input. Try entering some data above!</p>
+                        <div class="calculator-buttons">
+                            <button class="calc-btn clear" onclick="clearCalculator()">C</button>
+                            <button class="calc-btn clear" onclick="clearEntry()">CE</button>
+                            <button class="calc-btn operator" onclick="setOperation('/')">/</button>
+                            <button class="calc-btn operator" onclick="setOperation('*')">×</button>
+                            
+                            <button class="calc-btn number" onclick="appendToDisplay('7')">7</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('8')">8</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('9')">9</button>
+                            <button class="calc-btn operator" onclick="setOperation('-')">-</button>
+                            
+                            <button class="calc-btn number" onclick="appendToDisplay('4')">4</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('5')">5</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('6')">6</button>
+                            <button class="calc-btn operator" onclick="setOperation('+')">+</button>
+                            
+                            <button class="calc-btn number" onclick="appendToDisplay('1')">1</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('2')">2</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('3')">3</button>
+                            <button class="calc-btn equals" onclick="calculateResult()">=</button>
+                            
+                            <button class="calc-btn number zero" onclick="appendToDisplay('0')">0</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('.')">.</button>
+                            <button class="calc-btn function" onclick="calculateSquareRoot()">√</button>
+                            <button class="calc-btn clear" onclick="backspace()">⌫</button>
                         </div>
-                        <div class="feature-showcase">
-                            <button onclick="showFeature('analytics')" class="demo-btn">📊 Analytics</button>
-                            <button onclick="showFeature('export')" class="demo-btn">💾 Export Data</button>
-                            <button onclick="showFeature('settings')" class="demo-btn">⚙️ Settings</button>
+                        <div class="calculation-history">
+                            <h4>History</h4>
+                            <div id="calc-history"></div>
+                            <button class="demo-btn" onclick="clearHistory()">Clear History</button>
                         </div>
                     </div>
                 </div>
@@ -661,6 +682,24 @@
 
         function clearEntry() {
             currentDisplay = '0';
+            updateDisplay();
+        }
+        
+        function setOperation(op) {
+            if (operation !== null && !waitingForNewOperand) {
+                calculateResult();
+            }
+            previousDisplay = currentDisplay;
+            operation = op;
+            waitingForNewOperand = true;
+        }
+        
+        function backspace() {
+            if (currentDisplay.length > 1) {
+                currentDisplay = currentDisplay.slice(0, -1);
+            } else {
+                currentDisplay = '0';
+            }
             updateDisplay();
         }
 
@@ -792,23 +831,10 @@
             alert('🚀 Calculator launched in fullscreen mode! Press ESC to exit.');
         }
 
-        function downloadCalculatorSource() {
-            const sourceCode = `<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Calculator</title>
-    <style>
-        /* Calculator CSS styles here */
-        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f0f0; }
-        .calculator-container { max-width: 400px; margin: 0 auto; background: white; border-radius: 15px; padding: 20px; box-shadow: 0 8px 25px rgba(0,0,0,0.1); }
-        /* Add other styles from this page */
-    
-        .app-interface, .creative-interface {
-            background: #f8f9fa;
-            border-radius: 10px;
-            padding: 20px;
+        }
+    </script>
+</body>
+</html>
             margin: 20px 0;
         }
         
@@ -839,135 +865,3 @@
         .data-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 10px;
-            border-bottom: 1px solid #eee;
-        }
-        
-        .remove-btn {
-            background: #ff4757;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-        }
-        
-        .tool-btn {
-            padding: 10px 15px;
-            border: 2px solid #e0e0e0;
-            background: white;
-            border-radius: 6px;
-            cursor: pointer;
-        }
-        
-        .tool-btn.active {
-            background: #667eea;
-            color: white;
-            border-color: #667eea;
-        }
-        
-        .canvas-container {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            display: inline-block;
-        }
-        
-        #creative-canvas {
-            display: block;
-            cursor: crosshair;
-        }
-        
-        .creative-controls {
-            margin-top: 15px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-            flex-wrap: wrap;
-        }
-        
-        .primary {
-            background: #667eea !important;
-            color: white;
-        }
-        
-        .error {
-            color: #ff4757;
-            font-weight: bold;
-        }
-        </style>
-</head>
-<body>
-    <div class="calculator-container">
-        <!-- Calculator HTML here -->
-    </div>
-    <script>
-        // Calculator JavaScript functions here
-    
-        // Action button handler
-        function handleActionClick(button) {
-            const text = button.textContent;
-            if (text.includes('Launch')) {
-                alert('🚀 Application launched in new window!');
-                // Could open in modal or new tab
-            } else if (text.includes('Documentation')) {
-                window.open('https://github.com/RayBen445/Collab-with-AI', '_blank');
-            } else if (text.includes('Download')) {
-                alert('💾 Source code download initiated!');
-                // Could trigger actual download
-            } else {
-                alert('✅ Feature activated: ' + text);
-            }
-        }
-        </script>
-</body>
-</html>`;
-            
-            const blob = new Blob([sourceCode], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'advanced-calculator.html';
-            a.click();
-            URL.revokeObjectURL(url);
-            alert('💾 Calculator source code downloaded successfully!');
-        }
-        
-        
-        // Allow Enter key functionality where applicable
-        document.addEventListener('DOMContentLoaded', function() {
-            // Auto-setup enter key for inputs
-            const inputs = document.querySelectorAll('input[type="text"]');
-            inputs.forEach(input => {
-                if (input.id.includes('Query') || input.id.includes('Input') || input.id.includes('Search')) {
-                    input.addEventListener('keypress', function(e) {
-                        if (e.key === 'Enter') {
-                            // Find associated button and click it
-                            const button = input.parentElement.querySelector('button');
-                            if (button) button.click();
-                        }
-                    });
-                }
-            });
-        });
-        
-        // Action button handler
-        function handleActionClick(button) {
-            const text = button.textContent;
-            if (text.includes('Launch')) {
-                alert('🚀 Application launched in new window!');
-                // Could open in modal or new tab
-            } else if (text.includes('Documentation')) {
-                window.open('https://github.com/RayBen445/Collab-with-AI', '_blank');
-            } else if (text.includes('Download')) {
-                alert('💾 Source code download initiated!');
-                // Could trigger actual download
-            } else {
-                alert('✅ Feature activated: ' + text);
-            }
-        }
-        </script>
-</body>
-</html>
