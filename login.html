@@ -140,6 +140,92 @@
         .back-link a:hover {
             text-decoration: underline;
         }
+        
+        .signup-section {
+            margin-top: 20px;
+            text-align: center;
+        }
+        
+        .divider {
+            margin: 15px 0;
+            position: relative;
+            text-align: center;
+        }
+        
+        .divider::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: #ddd;
+            z-index: 1;
+        }
+        
+        .divider span {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 0 15px;
+            color: #666;
+            font-size: 0.9rem;
+            position: relative;
+            z-index: 2;
+        }
+        
+        .signup-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #00b894, #55a3ff);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .signup-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .signup-form {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            margin: 20px auto;
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .form-header h2 {
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #00b894, #55a3ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        .form-header p {
+            color: #666;
+            font-size: 1rem;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
     </style>
 </head>
 <body>
@@ -171,111 +257,256 @@
             <p>🎯 Enterprise features with admin controls</p>
         </div>
         
+        <!-- Sign Up Section -->
+        <div class="signup-section">
+            <div class="divider">
+                <span>New to the platform?</span>
+            </div>
+            <button type="button" class="signup-btn" id="showSignUpBtn">
+                <span>🚀</span> Create New Account
+            </button>
+        </div>
+        
+        <!-- Sign Up Form (Hidden by default) -->
+        <div id="signUpForm" class="signup-form" style="display: none;">
+            <div class="form-header">
+                <h2>🎉 Create Your Account</h2>
+                <p>Join the AI-Human collaboration revolution</p>
+            </div>
+            
+            <form id="signUpFormElement">
+                <div class="form-group">
+                    <label for="signUpName">Display Name</label>
+                    <input type="text" id="signUpName" placeholder="Enter your full name">
+                </div>
+                <div class="form-group">
+                    <label for="signUpEmail">Email Address</label>
+                    <input type="email" id="signUpEmail" required placeholder="Enter your email">
+                </div>
+                <div class="form-group">
+                    <label for="signUpPassword">Password</label>
+                    <input type="password" id="signUpPassword" required placeholder="Enter password (min 6 characters)">
+                </div>
+                <button type="button" class="login-btn" id="signUpBtn">Create Account</button>
+            </form>
+            
+            <div class="form-footer">
+                <button type="button" class="link-btn" id="showSignInBtn">← Back to Sign In</button>
+            </div>
+        </div>
+        
         <div class="back-link">
             <a href="index.html">← Back to Homepage</a>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
+    <!-- Environment Configuration - Load in correct order -->
+    <script src="js/env-loader.js"></script>
+    <script src="js/env-config.js"></script>
+    
+    <!-- Firebase SDK v9+ Modular -->
     <script type="module">
-        import { authService } from './js/firebase-auth.js';
+        // Import Firebase modules
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { 
+            getAuth, 
+            signInWithEmailAndPassword,
+            createUserWithEmailAndPassword,
+            signInWithPopup,
+            GoogleAuthProvider,
+            onAuthStateChanged,
+            updateProfile
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js';
+        import { 
+            getFirestore, 
+            doc, 
+            setDoc,
+            getDoc,
+            serverTimestamp 
+        } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js';
+
+        // Wait for environment configuration to load, then initialize Firebase
+        async function initializeFirebaseAuth() {
+            console.log('Starting Firebase initialization...');
+            
+            // Wait a moment for env-config.js to load the configuration
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            // Firebase configuration from environment variables loaded from Vercel
+            const firebaseConfig = {
+                apiKey: window.ENV?.FIREBASE_API_KEY || "AIzaSyDemoKey123456789",
+                authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "collab-with-ai.firebaseapp.com", 
+                projectId: window.ENV?.FIREBASE_PROJECT_ID || "collab-with-ai",
+                storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "collab-with-ai.appspot.com",
+                messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
+                appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdefghijklmnop",
+                measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID || "G-ABCDEFGHIJ"
+            };
+
+            console.log('Firebase config loaded:', {
+                hasApiKey: !!firebaseConfig.apiKey,
+                authDomain: firebaseConfig.authDomain,
+                projectId: firebaseConfig.projectId
+            });
+            console.log('Admin email configured as:', window.ENV?.ADMIN_EMAIL);
+
+            try {
+                // Initialize Firebase
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+                const googleProvider = new GoogleAuthProvider();
+                
+                console.log('Firebase services initialized successfully');
+                
+                // Initialize login system
+                const loginSystem = new LoginSystem(auth, db, googleProvider);
+                console.log('LoginSystem created successfully');
+                
+                return loginSystem;
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+                throw error;
+            }
+        }
         
         class LoginSystem {
-            constructor() {
+            constructor(auth, db, googleProvider) {
+                console.log('LoginSystem constructor called');
+                
+                this.auth = auth;
+                this.db = db;
+                this.googleProvider = googleProvider;
                 this.form = document.getElementById('loginForm');
                 this.errorMessage = document.getElementById('errorMessage');
                 this.successMessage = document.getElementById('successMessage');
-                this.authService = authService;
+                this.currentUser = null;
+                this.adminEmail = window.ENV?.ADMIN_EMAIL || null;
+                
+                console.log('LoginSystem properties set:', {
+                    hasAuth: !!this.auth,
+                    hasDb: !!this.db,
+                    hasForm: !!this.form,
+                    adminEmail: this.adminEmail
+                });
                 
                 this.initializeEventListeners();
-                this.setupAuthStateListener();
-                this.addGoogleSignInButton();
                 this.addSignUpOption();
+                this.addGoogleSignInButton();
+                this.setupAuthStateListener();
+                
+                console.log('LoginSystem initialization complete');
+            }
+            
+            setupAuthStateListener() {
+                onAuthStateChanged(this.auth, async (user) => {
+                    if (user) {
+                        this.currentUser = user;
+                        await this.updateUserData(user);
+                        this.redirectToApp(this.isAdmin(user.email));
+                    } else {
+                        this.currentUser = null;
+                    }
+                });
+            }
+
+            async updateUserData(user) {
+                try {
+                    const userRef = doc(this.db, 'users', user.uid);
+                    const userSnap = await getDoc(userRef);
+                    
+                    const userData = {
+                        email: user.email,
+                        displayName: user.displayName || user.email.split('@')[0],
+                        lastLoginAt: serverTimestamp(),
+                        isAdmin: this.isAdmin(user.email)
+                    };
+
+                    if (!userSnap.exists()) {
+                        // New user - create profile
+                        userData.createdAt = serverTimestamp();
+                        userData.projectsCreated = 0;
+                        userData.collaborations = 0;
+                    }
+
+                    await setDoc(userRef, userData, { merge: true });
+                } catch (error) {
+                    console.error('Error updating user data:', error);
+                }
+            }
+
+            isAdmin(email) {
+                return email && this.adminEmail && email.toLowerCase() === this.adminEmail.toLowerCase();
             }
             
             initializeEventListeners() {
                 this.form.addEventListener('submit', (e) => this.handleLogin(e));
             }
             
-            setupAuthStateListener() {
-                // Listen for authentication state changes
-                window.addEventListener('userSignedIn', (event) => {
-                    const { user, isAdmin } = event.detail;
-                    this.showSuccess(`Welcome ${user.displayName || user.email}${isAdmin ? ' (Admin)' : ''}! Redirecting...`);
-                    
-                    setTimeout(() => {
-                        this.redirectToApp({ isAdmin });
-                    }, 1500);
+            addSignUpOption() {
+                console.log('Setting up signup option...');
+                
+                const showSignUpBtn = document.getElementById('showSignUpBtn');
+                const showSignInBtn = document.getElementById('showSignInBtn');
+                const signUpForm = document.getElementById('signUpForm');
+                const signUpBtn = document.getElementById('signUpBtn');
+                
+                console.log('Signup elements found:', {
+                    showSignUpBtn: !!showSignUpBtn,
+                    showSignInBtn: !!showSignInBtn,
+                    signUpForm: !!signUpForm,
+                    signUpBtn: !!signUpBtn
                 });
-
-                window.addEventListener('userSignedOut', () => {
-                    // User signed out, stay on login page
+                
+                if (!showSignUpBtn || !showSignInBtn || !signUpForm || !signUpBtn) {
+                    console.error('Missing signup elements!');
+                    return;
+                }
+                
+                // Show signup form
+                showSignUpBtn.addEventListener('click', () => {
+                    console.log('Show signup button clicked');
+                    signUpForm.style.display = 'block';
+                    document.querySelector('.login-container').style.display = 'none';
                 });
+                
+                // Show signin form
+                showSignInBtn.addEventListener('click', () => {
+                    console.log('Show signin button clicked');
+                    signUpForm.style.display = 'none';
+                    document.querySelector('.login-container').style.display = 'block';
+                });
+                
+                // Handle signup
+                signUpBtn.addEventListener('click', () => {
+                    console.log('Signup button clicked, calling handleSignUp');
+                    this.handleSignUp();
+                });
+                
+                console.log('Signup event listeners attached successfully');
             }
             
             addGoogleSignInButton() {
-                const googleBtn = document.createElement('button');
-                googleBtn.type = 'button';
-                googleBtn.className = 'google-btn';
-                googleBtn.innerHTML = `
-                    <svg width="18" height="18" viewBox="0 0 18 18">
-                        <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
-                        <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-7.18-2.53H1.83v2.07A8 8 0 0 0 8.98 17z"/>
-                        <path fill="#FBBC05" d="M4.5 10.49a4.8 4.8 0 0 1 0-3.07V5.35H1.83a8 8 0 0 0 0 7.28l2.67-2.14z"/>
-                        <path fill="#EA4335" d="M8.98 3.54c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.35L4.5 7.42a4.77 4.77 0 0 1 4.48-3.88z"/>
-                    </svg>
-                    Continue with Google
-                `;
-                
-                googleBtn.addEventListener('click', () => this.handleGoogleSignIn());
-                
-                // Add Google button after the form
                 const googleContainer = document.createElement('div');
                 googleContainer.className = 'google-signin-container';
-                googleContainer.appendChild(googleBtn);
-                
-                this.form.parentNode.insertBefore(googleContainer, this.form.nextSibling);
-            }
-            
-            addSignUpOption() {
-                const signUpContainer = document.createElement('div');
-                signUpContainer.className = 'signup-container';
-                signUpContainer.innerHTML = `
-                    <p>Don't have an account? <button type="button" class="link-btn" id="showSignUp">Create Account</button></p>
-                    
-                    <div id="signUpForm" style="display: none;">
-                        <h3>Create New Account</h3>
-                        <div class="form-group">
-                            <label for="signUpName">Display Name</label>
-                            <input type="text" id="signUpName" placeholder="Enter your name">
-                        </div>
-                        <div class="form-group">
-                            <label for="signUpEmail">Email Address</label>
-                            <input type="email" id="signUpEmail" required placeholder="Enter your email">
-                        </div>
-                        <div class="form-group">
-                            <label for="signUpPassword">Password</label>
-                            <input type="password" id="signUpPassword" required placeholder="Enter password (min 6 characters)">
-                        </div>
-                        <button type="button" class="login-btn" id="signUpBtn">Create Account</button>
-                        <button type="button" class="link-btn" id="showSignIn">Back to Sign In</button>
-                    </div>
+                googleContainer.innerHTML = `
+                    <div class="divider"><span>or</span></div>
+                    <button type="button" class="google-btn" id="googleSignInBtn">
+                        <svg width="18" height="18" viewBox="0 0 18 18">
+                            <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+                            <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-7.18-2.53H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+                            <path fill="#FBBC05" d="M4.5 10.49a4.8 4.8 0 0 1 0-3.07V5.35H1.83a8 8 0 0 0 0 7.28l2.67-2.14z"/>
+                            <path fill="#EA4335" d="M8.98 3.54c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.35L4.5 7.42a4.77 4.77 0 0 1 4.48-3.88z"/>
+                        </svg>
+                        Continue with Google
+                    </button>
                 `;
                 
-                this.form.parentNode.appendChild(signUpContainer);
+                // Insert after the Sign In button
+                this.form.parentNode.insertBefore(googleContainer, this.form.nextSibling);
                 
-                // Add event listeners for sign up
-                document.getElementById('showSignUp').addEventListener('click', () => {
-                    document.getElementById('signUpForm').style.display = 'block';
-                    this.form.style.display = 'none';
-                });
-                
-                document.getElementById('showSignIn').addEventListener('click', () => {
-                    document.getElementById('signUpForm').style.display = 'none';
-                    this.form.style.display = 'block';
-                });
-                
-                document.getElementById('signUpBtn').addEventListener('click', () => this.handleSignUp());
+                // Add event listener
+                document.getElementById('googleSignInBtn').addEventListener('click', () => this.handleGoogleSignIn());
             }
             
             async handleLogin(e) {
@@ -295,24 +526,47 @@
                 this.showLoading('Signing in...');
                 
                 try {
-                    // Use Firebase Authentication
-                    const result = await this.authService.signInWithEmail(email, password);
+                    // Real Firebase authentication
+                    const userCredential = await signInWithEmailAndPassword(this.auth, email, password);
+                    const user = userCredential.user;
                     
-                    if (result.success) {
-                        // Success message will be shown by auth state listener
-                    } else {
-                        this.showError(result.error);
-                    }
+                    this.showSuccess(`Welcome ${user.displayName || user.email}! Redirecting...`);
+                    
+                    // Auth state listener will handle redirect
                 } catch (error) {
-                    this.showError('Login failed. Please try again.');
                     console.error('Login error:', error);
+                    let errorMessage = 'Login failed. Please try again.';
+                    
+                    switch (error.code) {
+                        case 'auth/user-not-found':
+                            errorMessage = 'No account found with this email address.';
+                            break;
+                        case 'auth/wrong-password':
+                            errorMessage = 'Incorrect password. Please try again.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage = 'Invalid email address format.';
+                            break;
+                        case 'auth/user-disabled':
+                            errorMessage = 'This account has been disabled.';
+                            break;
+                        case 'auth/too-many-requests':
+                            errorMessage = 'Too many failed attempts. Please try again later.';
+                            break;
+                    }
+                    
+                    this.showError(errorMessage);
                 }
             }
             
             async handleSignUp() {
+                console.log('Signup button clicked');
+                
                 const name = document.getElementById('signUpName').value.trim();
                 const email = document.getElementById('signUpEmail').value.trim();
                 const password = document.getElementById('signUpPassword').value;
+                
+                console.log('Signup data:', { name, email, passwordLength: password.length });
                 
                 this.hideMessages();
                 
@@ -327,18 +581,59 @@
                 }
                 
                 this.showLoading('Creating account...');
+                console.log('Starting Firebase account creation...');
                 
                 try {
-                    const result = await this.authService.signUpWithEmail(email, password, name);
-                    
-                    if (result.success) {
-                        // Success message will be shown by auth state listener
-                    } else {
-                        this.showError(result.error);
+                    // Check if Firebase auth is properly initialized
+                    if (!this.auth) {
+                        throw new Error('Firebase authentication not initialized');
                     }
+                    
+                    console.log('Creating user with Firebase...');
+                    
+                    // Real Firebase account creation
+                    const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
+                    const user = userCredential.user;
+                    
+                    console.log('Firebase user created:', user.uid);
+                    
+                    // Update profile with display name if provided
+                    if (name) {
+                        console.log('Updating user profile with display name...');
+                        await updateProfile(user, {
+                            displayName: name
+                        });
+                    }
+                    
+                    this.showSuccess(`Account created successfully! Welcome ${name || email}!`);
+                    console.log('Account creation successful, auth state listener will handle redirect');
+                    
+                    // Auth state listener will handle redirect
                 } catch (error) {
-                    this.showError('Account creation failed. Please try again.');
-                    console.error('Sign up error:', error);
+                    console.error('Signup error:', error);
+                    let errorMessage = 'Account creation failed. Please try again.';
+                    
+                    switch (error.code) {
+                        case 'auth/email-already-in-use':
+                            errorMessage = 'An account with this email already exists.';
+                            break;
+                        case 'auth/invalid-email':
+                            errorMessage = 'Invalid email address format.';
+                            break;
+                        case 'auth/weak-password':
+                            errorMessage = 'Password is too weak. Please choose a stronger password.';
+                            break;
+                        case 'auth/operation-not-allowed':
+                            errorMessage = 'Email/password accounts are not enabled. Please contact support.';
+                            break;
+                        case 'auth/network-request-failed':
+                            errorMessage = 'Network error. Please check your connection and try again.';
+                            break;
+                        default:
+                            errorMessage = `Account creation failed: ${error.message}`;
+                    }
+                    
+                    this.showError(errorMessage);
                 }
             }
             
@@ -347,21 +642,38 @@
                 this.showLoading('Signing in with Google...');
                 
                 try {
-                    const result = await this.authService.signInWithGoogle();
+                    // Real Google sign-in with Firebase
+                    const result = await signInWithPopup(this.auth, this.googleProvider);
+                    const user = result.user;
                     
-                    if (result.success) {
-                        // Success message will be shown by auth state listener
-                    } else {
-                        this.showError(result.error);
-                    }
+                    this.showSuccess(`Welcome ${user.displayName || user.email}! Redirecting...`);
+                    
+                    // Auth state listener will handle redirect
                 } catch (error) {
-                    this.showError('Google sign-in failed. Please try again.');
                     console.error('Google sign-in error:', error);
+                    let errorMessage = 'Google sign-in failed. Please try again.';
+                    
+                    switch (error.code) {
+                        case 'auth/popup-closed-by-user':
+                            errorMessage = 'Sign-in cancelled. Please try again.';
+                            break;
+                        case 'auth/popup-blocked':
+                            errorMessage = 'Popup blocked. Please allow popups and try again.';
+                            break;
+                        case 'auth/cancelled-popup-request':
+                            errorMessage = 'Sign-in cancelled. Please try again.';
+                            break;
+                        case 'auth/account-exists-with-different-credential':
+                            errorMessage = 'An account already exists with this email using a different sign-in method.';
+                            break;
+                    }
+                    
+                    this.showError(errorMessage);
                 }
             }
             
-            redirectToApp(userData) {
-                if (userData.isAdmin) {
+            redirectToApp(isAdmin) {
+                if (isAdmin) {
                     window.location.href = 'admin-dashboard.html';
                 } else {
                     window.location.href = 'collaboration.html';
@@ -392,9 +704,41 @@
             }
         }
         
-        // Initialize login system when page loads
-        document.addEventListener('DOMContentLoaded', () => {
-            new LoginSystem();
+        // Initialize Firebase authentication when page loads
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('DOM loaded, initializing Firebase authentication...');
+            
+            // Wait for environment configuration to load
+            let attempts = 0;
+            while (!window.ENV && attempts < 20) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            
+            if (!window.ENV) {
+                console.warn('Environment configuration not loaded, using defaults');
+                window.ENV = { ADMIN_EMAIL: 'oladoyeheritage445@gmail.com' };
+            }
+            
+            // Initialize Firebase with environment configuration
+            try {
+                await initializeFirebaseAuth();
+                console.log('Firebase authentication initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize Firebase:', error);
+            }
+            
+            // Check if we should show signup form based on URL parameter
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('signup') === 'true') {
+                setTimeout(() => {
+                    const showSignUpBtn = document.getElementById('showSignUpBtn');
+                    if (showSignUpBtn) {
+                        console.log('Auto-clicking signup button based on URL parameter');
+                        showSignUpBtn.click();
+                    }
+                }, 1000); // Wait for Firebase to initialize
+            }
         });
     </script>
     
@@ -430,11 +774,6 @@
             transform: translateY(1px);
         }
         
-        .signup-container {
-            margin-top: 20px;
-            text-align: center;
-        }
-        
         .link-btn {
             background: none;
             border: none;
@@ -446,19 +785,6 @@
         
         .link-btn:hover {
             color: #764ba2;
-        }
-        
-        #signUpForm {
-            margin-top: 20px;
-            padding: 20px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            background: rgba(255, 255, 255, 0.9);
-        }
-        
-        #signUpForm h3 {
-            margin-bottom: 20px;
-            color: #333;
         }
     </style>
 </body>

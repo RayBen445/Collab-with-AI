@@ -265,6 +265,67 @@
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
         }
+        
+        .auth-section {
+            margin: 30px 0;
+            text-align: center;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .auth-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 24px;
+            border-radius: 25px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            min-width: 140px;
+            justify-content: center;
+        }
+        
+        .login-btn-header {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .login-btn-header:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .signup-btn-header {
+            background: linear-gradient(135deg, #00b894, #55a3ff);
+            color: white;
+            border: 2px solid transparent;
+        }
+        
+        .signup-btn-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 184, 148, 0.3);
+        }
+        
+        .auth-subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+            margin: 0;
+        }
     </style>
 </head>
 <body>
@@ -289,6 +350,19 @@
             </div>
             
             <input type="text" class="search-bar" placeholder="Search projects..." id="searchBar">
+            
+            <!-- Prominent Login/Signup Section -->
+            <div class="auth-section">
+                <div class="auth-buttons">
+                    <a href="login.html" class="auth-btn login-btn-header">
+                        <span>🔐</span> Sign In
+                    </a>
+                    <a href="login.html?signup=true" class="auth-btn signup-btn-header">
+                        <span>🚀</span> Create Account
+                    </a>
+                </div>
+                <p class="auth-subtitle">Join 1000+ users building the future of AI collaboration</p>
+            </div>
         </div>
         
         <div class="category featured">

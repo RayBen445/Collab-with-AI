@@ -1,33 +1,60 @@
 /**
  * Environment Configuration
- * This file provides a way to inject environment variables into client-side code
+ * This file loads environment variables from Vercel through a secure API endpoint
  * 
  * For Vercel deployment:
- * - Environment variables are injected at build time or runtime
- * - This provides a secure way to access configuration without exposing secrets
+ * - Environment variables are loaded from /api/get-env-config endpoint
+ * - This provides a secure way to access configuration from server-side environment variables
  */
 
 // Create a global ENV object to store environment variables
 window.ENV = window.ENV || {};
 
-// This will be populated by the build process or runtime injection
-// The actual values should be set through Vercel environment variables
-if (typeof process !== 'undefined' && process.env) {
-  // Node.js environment (for build-time injection)
-  window.ENV = {
-    FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
-    FIREBASE_AUTH_DOMAIN: process.env.FIREBASE_AUTH_DOMAIN,
-    FIREBASE_PROJECT_ID: process.env.FIREBASE_PROJECT_ID,
-    FIREBASE_STORAGE_BUCKET: process.env.FIREBASE_STORAGE_BUCKET,
-    FIREBASE_MESSAGING_SENDER_ID: process.env.FIREBASE_MESSAGING_SENDER_ID,
-    FIREBASE_APP_ID: process.env.FIREBASE_APP_ID,
-    FIREBASE_MEASUREMENT_ID: process.env.FIREBASE_MEASUREMENT_ID,
-    ADMIN_EMAIL: process.env.ADMIN_EMAIL
-  };
+/**
+ * Load environment configuration from server
+ */
+async function loadEnvironmentConfig() {
+    try {
+        const response = await fetch('/api/get-env-config');
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        
+        if (data.success && data.config) {
+            // Load configuration from server
+            window.ENV = {
+                ...window.ENV,
+                ...data.config
+            };
+            
+            console.log('Environment configuration loaded successfully from Vercel');
+            console.log('Admin email configured:', window.ENV.ADMIN_EMAIL);
+            
+            if (!data.hasFirebaseConfig) {
+                console.warn('Firebase configuration incomplete. Please set all Firebase environment variables in Vercel.');
+            }
+        } else {
+            throw new Error('Failed to load configuration from server');
+        }
+        
+    } catch (error) {
+        console.error('Error loading environment config:', error);
+        
+        // Fallback configuration with correct admin email
+        window.ENV = {
+            ...window.ENV,
+            ADMIN_EMAIL: 'oladoyeheritage445@gmail.com',
+            PLATFORM_NAME: 'Collab-with-AI',
+            VERSION: '2.0.0'
+        };
+        
+        console.warn('Using fallback configuration. Please ensure environment variables are set in Vercel.');
+        console.log('Fallback admin email set to:', window.ENV.ADMIN_EMAIL);
+    }
 }
 
-// Fallback for development - these should be overridden by actual environment variables
-if (!window.ENV.FIREBASE_API_KEY) {
-  console.warn('Environment variables not loaded. Using placeholder values for development.');
-  console.warn('Set proper environment variables in Vercel for production deployment.');
-}
+// Load configuration immediately
+loadEnvironmentConfig();
