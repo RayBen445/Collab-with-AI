@@ -477,6 +477,31 @@
                 await loadUserProfile();
                 await loadUserActivity();
             } else {
+                // Check for universal password authentication
+                const universalAuth = localStorage.getItem('universalAuth');
+                if (universalAuth) {
+                    try {
+                        const authData = JSON.parse(universalAuth);
+                        if (authData.authenticated) {
+                            // Create mock user for universal auth
+                            currentUser = {
+                                email: authData.email,
+                                displayName: authData.displayName || authData.email.split('@')[0],
+                                metadata: {
+                                    creationTime: new Date().toISOString(),
+                                    lastSignInTime: new Date().toISOString()
+                                },
+                                photoURL: null,
+                                uid: 'universal-user'
+                            };
+                            await loadUserProfile();
+                            await loadUserActivity();
+                            return;
+                        }
+                    } catch (e) {
+                        console.log('Error parsing universal auth');
+                    }
+                }
                 // Redirect to login if not authenticated
                 window.location.href = 'login.html';
             }
@@ -500,6 +525,12 @@
                 // Load profile picture
                 if (user.photoURL) {
                     document.getElementById('current-avatar').src = user.photoURL;
+                } else if (user.uid === 'universal-user') {
+                    // Check for stored avatar in localStorage
+                    const storedAvatar = localStorage.getItem('userAvatar');
+                    if (storedAvatar) {
+                        document.getElementById('current-avatar').src = storedAvatar;
+                    }
                 }
                 
                 // Check if user is admin using environment config
@@ -507,21 +538,23 @@
                 const isAdmin = user.email?.toLowerCase().trim() === adminEmail?.toLowerCase().trim();
                 document.getElementById('role-value').textContent = isAdmin ? 'Administrator' : 'User';
                 
-                // Load additional profile data from Firestore
-                try {
-                    const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
-                    if (userDoc.exists) {
-                        const userData = userDoc.data();
-                        if (userData.customAvatar) {
-                            document.getElementById('current-avatar').src = userData.customAvatar;
+                // Load additional profile data from Firestore (only for Firebase users)
+                if (user.uid !== 'universal-user') {
+                    try {
+                        const userDoc = await firebase.firestore().collection('users').doc(user.uid).get();
+                        if (userDoc.exists) {
+                            const userData = userDoc.data();
+                            if (userData.customAvatar) {
+                                document.getElementById('current-avatar').src = userData.customAvatar;
+                            }
+                            if (userData.username) {
+                                document.getElementById('username-value').textContent = userData.username;
+                                document.getElementById('username-input').value = userData.username;
+                            }
                         }
-                        if (userData.username) {
-                            document.getElementById('username-value').textContent = userData.username;
-                            document.getElementById('username-input').value = userData.username;
-                        }
+                    } catch (error) {
+                        console.log('Error loading additional profile data:', error);
                     }
-                } catch (error) {
-                    console.log('Error loading additional profile data:', error);
                 }
                 
             } catch (error) {
@@ -662,7 +695,7 @@
             }
             
             try {
-                showLoading('Uploading profile picture...');
+                showLoading('Processing profile picture...');
                 
                 // Create a canvas to apply rotation and get final image
                 const canvas = document.createElement('canvas');
@@ -687,7 +720,28 @@
                     // Convert to blob
                     canvas.toBlob(async (blob) => {
                         try {
-                            // Upload to Firebase Storage
+                            // Check if user is using universal auth
+                            if (currentUser.uid === 'universal-user') {
+                                // For universal auth users, store image as base64 in localStorage
+                                const reader = new FileReader();
+                                reader.onload = function(e) {
+                                    const dataURL = e.target.result;
+                                    
+                                    // Update display
+                                    document.getElementById('current-avatar').src = dataURL;
+                                    document.getElementById('image-editor').classList.remove('active');
+                                    
+                                    // Store in localStorage
+                                    localStorage.setItem('userAvatar', dataURL);
+                                    
+                                    hideLoading();
+                                    showSuccess('Profile picture updated successfully!');
+                                };
+                                reader.readAsDataURL(blob);
+                                return;
+                            }
+                            
+                            // For Firebase users, upload to Firebase Storage
                             const storageRef = firebase.storage().ref();
                             const avatarRef = storageRef.child(`avatars/${currentUser.uid}.jpg`);
                             
@@ -752,6 +806,25 @@
             }
             
             try {
+                // Check if user is using universal auth
+                if (currentUser.uid === 'universal-user') {
+                    // For universal auth users, just update the display
+                    value.textContent = newValue;
+                    input.classList.remove('active');
+                    
+                    // Update localStorage data if needed
+                    if (fieldName === 'displayName') {
+                        currentUser.displayName = newValue;
+                        const universalAuth = JSON.parse(localStorage.getItem('universalAuth'));
+                        universalAuth.displayName = newValue;
+                        localStorage.setItem('universalAuth', JSON.stringify(universalAuth));
+                    }
+                    
+                    showSuccess(`${fieldName} updated successfully!`);
+                    return;
+                }
+                
+                // For Firebase users
                 if (fieldName === 'username') {
                     // Save to Firestore
                     await firebase.firestore().collection('users').doc(currentUser.uid).set({
@@ -805,6 +878,11 @@
             notification.className = 'loading';
             notification.textContent = message;
             document.querySelector('.profile-content').insertBefore(notification, document.querySelector('.profile-section'));
+        }
+
+        function hideLoading() {
+            const loadingElements = document.querySelectorAll('.loading');
+            loadingElements.forEach(el => el.remove());
         }
 
         function removeNotifications() {

@@ -344,6 +344,121 @@
             font-size: 1rem;
         }
 
+        .live-chart-container {
+            position: relative;
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 200px;
+        }
+
+        .chart-overlay {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 15px;
+            flex-direction: column;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.user-activity {
+            background: #667eea;
+        }
+
+        .legend-dot.system-performance {
+            background: #764ba2;
+        }
+
+        .legend-dot.project-completion {
+            background: #34c759;
+        }
+
+        .legend-dot.project-timeline {
+            background: #ff9500;
+        }
+
+        .chart-metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+        }
+
+        .metric-item {
+            text-align: center;
+        }
+
+        .metric-value {
+            display: block;
+            font-size: 18px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .metric-label {
+            display: block;
+            font-size: 11px;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        .financial-metrics {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+        }
+
+        .expense-breakdown {
+            margin-top: 15px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 6px;
+            padding: 15px;
+        }
+
+        .expense-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .expense-item:last-child {
+            border-bottom: none;
+        }
+
+        .expense-category {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .expense-amount {
+            font-weight: bold;
+            color: #667eea;
+        }
+
         /* Teams Grid */
         .teams-grid {
             display: grid;
@@ -1390,11 +1505,27 @@
                     <div class="charts-container">
                         <div class="chart-card">
                             <h3 class="chart-title">User Activity Trends</h3>
-                            <div class="chart-placeholder">📈 Real-time analytics chart would display here</div>
+                            <div class="live-chart-container">
+                                <canvas id="realtime-analytics-chart" width="400" height="200"></canvas>
+                                <div class="chart-overlay">
+                                    <div class="chart-legend">
+                                        <span class="legend-item"><span class="legend-dot user-activity"></span> User Activity</span>
+                                        <span class="legend-item"><span class="legend-dot system-performance"></span> System Performance</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="chart-card">
                             <h3 class="chart-title">Project Completion Rates</h3>
-                            <div class="chart-placeholder">📊 Project performance metrics would display here</div>
+                            <div class="live-chart-container">
+                                <canvas id="project-metrics-chart" width="400" height="200"></canvas>
+                                <div class="chart-overlay">
+                                    <div class="chart-legend">
+                                        <span class="legend-item"><span class="legend-dot project-completion"></span> Completion Rate</span>
+                                        <span class="legend-item"><span class="legend-dot project-timeline"></span> Timeline Status</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     
@@ -1654,11 +1785,35 @@
                     <div class="charts-container">
                         <div class="chart-card">
                             <div class="chart-title">User Engagement Trends</div>
-                            <div class="chart-placeholder">Interactive Chart - User engagement over time</div>
+                            <div class="live-chart-container">
+                                <canvas id="user-engagement-chart" width="300" height="150"></canvas>
+                                <div class="chart-metrics">
+                                    <div class="metric-item">
+                                        <span class="metric-value" id="daily-active">1,234</span>
+                                        <span class="metric-label">Daily Active</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-value" id="engagement-rate">87%</span>
+                                        <span class="metric-label">Engagement</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div class="chart-card">
                             <div class="chart-title">Project Progress Analytics</div>
-                            <div class="chart-placeholder">Interactive Chart - Project completion rates</div>
+                            <div class="live-chart-container">
+                                <canvas id="completion-rates-chart" width="300" height="150"></canvas>
+                                <div class="chart-metrics">
+                                    <div class="metric-item">
+                                        <span class="metric-value" id="completion-percentage">94%</span>
+                                        <span class="metric-label">Completion Rate</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-value" id="on-time-delivery">76%</span>
+                                        <span class="metric-label">On Time</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -2332,14 +2487,38 @@
                         <div class="chart-card">
                             <h3>Revenue Trend</h3>
                             <div class="chart-placeholder">
-                                📈 Revenue growth chart would be displayed here
+                                <canvas id="revenue-chart" width="300" height="180"></canvas>
+                                <div class="financial-metrics">
+                                    <div class="metric-item">
+                                        <span class="metric-value" id="monthly-revenue">$24,356</span>
+                                        <span class="metric-label">Monthly Revenue</span>
+                                    </div>
+                                    <div class="metric-item">
+                                        <span class="metric-value" id="growth-rate">+12.3%</span>
+                                        <span class="metric-label">Growth Rate</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         
                         <div class="chart-card">
                             <h3>Expense Breakdown</h3>
                             <div class="chart-placeholder">
-                                🥧 Expense categories pie chart would be displayed here
+                                <canvas id="expense-chart" width="300" height="180"></canvas>
+                                <div class="expense-breakdown">
+                                    <div class="expense-item">
+                                        <span class="expense-category">Infrastructure</span>
+                                        <span class="expense-amount">$8,450</span>
+                                    </div>
+                                    <div class="expense-item">
+                                        <span class="expense-category">Personnel</span>
+                                        <span class="expense-amount">$12,300</span>
+                                    </div>
+                                    <div class="expense-item">
+                                        <span class="expense-category">Marketing</span>
+                                        <span class="expense-amount">$3,200</span>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -3360,6 +3539,238 @@ Platform Administrator`);
             console.log('Financial management loaded');
         }
         
+        // Chart initialization and rendering
+        function initializeCharts() {
+            // Real-time analytics chart
+            const analyticsCanvas = document.getElementById('realtime-analytics-chart');
+            if (analyticsCanvas) {
+                const ctx = analyticsCanvas.getContext('2d');
+                drawLineChart(ctx, analyticsCanvas.width, analyticsCanvas.height, 
+                    ['User Activity', 'System Performance'], 
+                    [
+                        [65, 72, 68, 75, 80, 78, 85, 82, 90, 88],
+                        [45, 52, 48, 55, 60, 58, 65, 62, 70, 68]
+                    ],
+                    ['#667eea', '#764ba2']
+                );
+            }
+
+            // Project metrics chart
+            const projectCanvas = document.getElementById('project-metrics-chart');
+            if (projectCanvas) {
+                const ctx = projectCanvas.getContext('2d');
+                drawLineChart(ctx, projectCanvas.width, projectCanvas.height,
+                    ['Completion Rate', 'Timeline Status'],
+                    [
+                        [85, 88, 90, 92, 94, 91, 95, 93, 96, 94],
+                        [70, 75, 73, 78, 80, 76, 82, 79, 84, 81]
+                    ],
+                    ['#34c759', '#ff9500']
+                );
+            }
+
+            // User engagement chart
+            const engagementCanvas = document.getElementById('user-engagement-chart');
+            if (engagementCanvas) {
+                const ctx = engagementCanvas.getContext('2d');
+                drawAreaChart(ctx, engagementCanvas.width, engagementCanvas.height,
+                    [1100, 1150, 1200, 1180, 1220, 1250, 1234],
+                    '#667eea'
+                );
+            }
+
+            // Completion rates chart
+            const completionCanvas = document.getElementById('completion-rates-chart');
+            if (completionCanvas) {
+                const ctx = completionCanvas.getContext('2d');
+                drawBarChart(ctx, completionCanvas.width, completionCanvas.height,
+                    ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    [88, 92, 85, 94],
+                    '#34c759'
+                );
+            }
+
+            // Revenue chart
+            const revenueCanvas = document.getElementById('revenue-chart');
+            if (revenueCanvas) {
+                const ctx = revenueCanvas.getContext('2d');
+                drawLineChart(ctx, revenueCanvas.width, revenueCanvas.height,
+                    ['Revenue Growth'],
+                    [[18000, 20000, 22000, 21000, 23000, 24356]],
+                    ['#667eea']
+                );
+            }
+
+            // Expense chart
+            const expenseCanvas = document.getElementById('expense-chart');
+            if (expenseCanvas) {
+                const ctx = expenseCanvas.getContext('2d');
+                drawPieChart(ctx, expenseCanvas.width, expenseCanvas.height,
+                    ['Infrastructure', 'Personnel', 'Marketing'],
+                    [8450, 12300, 3200],
+                    ['#667eea', '#764ba2', '#34c759']
+                );
+            }
+        }
+
+        function drawLineChart(ctx, width, height, labels, datasets, colors) {
+            const padding = 40;
+            const chartWidth = width - 2 * padding;
+            const chartHeight = height - 2 * padding;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, width, height);
+            
+            // Find max value for scaling
+            const maxValue = Math.max(...datasets.flat());
+            const minValue = Math.min(...datasets.flat());
+            const range = maxValue - minValue;
+            
+            // Draw datasets
+            datasets.forEach((data, index) => {
+                ctx.strokeStyle = colors[index];
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+                
+                data.forEach((value, i) => {
+                    const x = padding + (i * chartWidth) / (data.length - 1);
+                    const y = padding + chartHeight - ((value - minValue) / range) * chartHeight;
+                    
+                    if (i === 0) {
+                        ctx.moveTo(x, y);
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                });
+                
+                ctx.stroke();
+                
+                // Draw dots
+                ctx.fillStyle = colors[index];
+                data.forEach((value, i) => {
+                    const x = padding + (i * chartWidth) / (data.length - 1);
+                    const y = padding + chartHeight - ((value - minValue) / range) * chartHeight;
+                    ctx.beginPath();
+                    ctx.arc(x, y, 4, 0, 2 * Math.PI);
+                    ctx.fill();
+                });
+            });
+            
+            // Draw grid lines
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            for (let i = 0; i <= 5; i++) {
+                const y = padding + (i * chartHeight) / 5;
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(width - padding, y);
+                ctx.stroke();
+            }
+        }
+
+        function drawAreaChart(ctx, width, height, data, color) {
+            const padding = 40;
+            const chartWidth = width - 2 * padding;
+            const chartHeight = height - 2 * padding;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const maxValue = Math.max(...data);
+            const minValue = Math.min(...data);
+            const range = maxValue - minValue;
+            
+            // Create gradient
+            const gradient = ctx.createLinearGradient(0, padding, 0, height - padding);
+            gradient.addColorStop(0, color + '40');
+            gradient.addColorStop(1, color + '10');
+            
+            // Draw area
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.moveTo(padding, height - padding);
+            
+            data.forEach((value, i) => {
+                const x = padding + (i * chartWidth) / (data.length - 1);
+                const y = padding + chartHeight - ((value - minValue) / range) * chartHeight;
+                ctx.lineTo(x, y);
+            });
+            
+            ctx.lineTo(width - padding, height - padding);
+            ctx.closePath();
+            ctx.fill();
+            
+            // Draw line
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            data.forEach((value, i) => {
+                const x = padding + (i * chartWidth) / (data.length - 1);
+                const y = padding + chartHeight - ((value - minValue) / range) * chartHeight;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            });
+            ctx.stroke();
+        }
+
+        function drawBarChart(ctx, width, height, labels, data, color) {
+            const padding = 40;
+            const chartWidth = width - 2 * padding;
+            const chartHeight = height - 2 * padding;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const maxValue = Math.max(...data);
+            const barWidth = chartWidth / data.length * 0.6;
+            const barSpacing = chartWidth / data.length;
+            
+            ctx.fillStyle = color;
+            data.forEach((value, i) => {
+                const x = padding + i * barSpacing + (barSpacing - barWidth) / 2;
+                const barHeight = (value / maxValue) * chartHeight;
+                const y = height - padding - barHeight;
+                
+                ctx.fillRect(x, y, barWidth, barHeight);
+            });
+        }
+
+        function drawPieChart(ctx, width, height, labels, data, colors) {
+            const centerX = width / 2;
+            const centerY = height / 2;
+            const radius = Math.min(width, height) / 2 - 20;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            const total = data.reduce((sum, value) => sum + value, 0);
+            let currentAngle = -Math.PI / 2;
+            
+            data.forEach((value, i) => {
+                const sliceAngle = (value / total) * 2 * Math.PI;
+                
+                ctx.fillStyle = colors[i];
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fill();
+                
+                currentAngle += sliceAngle;
+            });
+        }
+
+        // Auto-refresh charts
+        function refreshCharts() {
+            setTimeout(() => {
+                initializeCharts();
+                refreshCharts();
+            }, 30000); // Refresh every 30 seconds
+        }
+
+        // Initialize charts when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(initializeCharts, 500);
+            refreshCharts();
+        });
+
         // Initialize admin dashboard
         new AdminDashboard();
     </script>
