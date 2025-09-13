@@ -327,6 +327,8 @@
 
         // Wait for environment configuration to load, then initialize Firebase
         async function initializeFirebaseAuth() {
+            console.log('Starting Firebase initialization...');
+            
             // Wait a moment for env-config.js to load the configuration
             await new Promise(resolve => setTimeout(resolve, 1000));
             
@@ -341,38 +343,37 @@
                 measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID || "G-ABCDEFGHIJ"
             };
 
-            console.log('Initializing Firebase with configuration from Vercel environment variables');
+            console.log('Firebase config loaded:', {
+                hasApiKey: !!firebaseConfig.apiKey,
+                authDomain: firebaseConfig.authDomain,
+                projectId: firebaseConfig.projectId
+            });
             console.log('Admin email configured as:', window.ENV?.ADMIN_EMAIL);
 
-            // Initialize Firebase
-            const app = initializeApp(firebaseConfig);
-            const auth = getAuth(app);
-            const db = getFirestore(app);
-            const googleProvider = new GoogleAuthProvider();
-            
-            // Initialize login system
-            new LoginSystem(auth, db, googleProvider);
+            try {
+                // Initialize Firebase
+                const app = initializeApp(firebaseConfig);
+                const auth = getAuth(app);
+                const db = getFirestore(app);
+                const googleProvider = new GoogleAuthProvider();
+                
+                console.log('Firebase services initialized successfully');
+                
+                // Initialize login system
+                const loginSystem = new LoginSystem(auth, db, googleProvider);
+                console.log('LoginSystem created successfully');
+                
+                return loginSystem;
+            } catch (error) {
+                console.error('Firebase initialization error:', error);
+                throw error;
+            }
         }
-
-        // Firebase configuration from environment variables
-        const firebaseConfig = {
-            apiKey: window.ENV?.FIREBASE_API_KEY || "your-api-key-here",
-            authDomain: window.ENV?.FIREBASE_AUTH_DOMAIN || "collab-with-ai.firebaseapp.com",
-            projectId: window.ENV?.FIREBASE_PROJECT_ID || "collab-with-ai",
-            storageBucket: window.ENV?.FIREBASE_STORAGE_BUCKET || "collab-with-ai.appspot.com",
-            messagingSenderId: window.ENV?.FIREBASE_MESSAGING_SENDER_ID || "123456789",
-            appId: window.ENV?.FIREBASE_APP_ID || "1:123456789:web:abcdefghijklmnop",
-            measurementId: window.ENV?.FIREBASE_MEASUREMENT_ID || "G-ABCDEFGHIJ"
-        };
-
-        // Initialize Firebase
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
-        const googleProvider = new GoogleAuthProvider();
         
         class LoginSystem {
             constructor(auth, db, googleProvider) {
+                console.log('LoginSystem constructor called');
+                
                 this.auth = auth;
                 this.db = db;
                 this.googleProvider = googleProvider;
@@ -382,10 +383,19 @@
                 this.currentUser = null;
                 this.adminEmail = window.ENV?.ADMIN_EMAIL || null;
                 
+                console.log('LoginSystem properties set:', {
+                    hasAuth: !!this.auth,
+                    hasDb: !!this.db,
+                    hasForm: !!this.form,
+                    adminEmail: this.adminEmail
+                });
+                
                 this.initializeEventListeners();
                 this.addSignUpOption();
                 this.addGoogleSignInButton();
                 this.setupAuthStateListener();
+                
+                console.log('LoginSystem initialization complete');
             }
             
             setupAuthStateListener() {
@@ -432,25 +442,48 @@
             initializeEventListeners() {
                 this.form.addEventListener('submit', (e) => this.handleLogin(e));
             }
+            
+            addSignUpOption() {
+                console.log('Setting up signup option...');
+                
                 const showSignUpBtn = document.getElementById('showSignUpBtn');
                 const showSignInBtn = document.getElementById('showSignInBtn');
                 const signUpForm = document.getElementById('signUpForm');
                 const signUpBtn = document.getElementById('signUpBtn');
                 
+                console.log('Signup elements found:', {
+                    showSignUpBtn: !!showSignUpBtn,
+                    showSignInBtn: !!showSignInBtn,
+                    signUpForm: !!signUpForm,
+                    signUpBtn: !!signUpBtn
+                });
+                
+                if (!showSignUpBtn || !showSignInBtn || !signUpForm || !signUpBtn) {
+                    console.error('Missing signup elements!');
+                    return;
+                }
+                
                 // Show signup form
                 showSignUpBtn.addEventListener('click', () => {
+                    console.log('Show signup button clicked');
                     signUpForm.style.display = 'block';
                     document.querySelector('.login-container').style.display = 'none';
                 });
                 
                 // Show signin form
                 showSignInBtn.addEventListener('click', () => {
+                    console.log('Show signin button clicked');
                     signUpForm.style.display = 'none';
                     document.querySelector('.login-container').style.display = 'block';
                 });
                 
                 // Handle signup
-                signUpBtn.addEventListener('click', () => this.handleSignUp());
+                signUpBtn.addEventListener('click', () => {
+                    console.log('Signup button clicked, calling handleSignUp');
+                    this.handleSignUp();
+                });
+                
+                console.log('Signup event listeners attached successfully');
             }
             
             addGoogleSignInButton() {
@@ -527,9 +560,13 @@
             }
             
             async handleSignUp() {
+                console.log('Signup button clicked');
+                
                 const name = document.getElementById('signUpName').value.trim();
                 const email = document.getElementById('signUpEmail').value.trim();
                 const password = document.getElementById('signUpPassword').value;
+                
+                console.log('Signup data:', { name, email, passwordLength: password.length });
                 
                 this.hideMessages();
                 
@@ -544,20 +581,32 @@
                 }
                 
                 this.showLoading('Creating account...');
+                console.log('Starting Firebase account creation...');
                 
                 try {
+                    // Check if Firebase auth is properly initialized
+                    if (!this.auth) {
+                        throw new Error('Firebase authentication not initialized');
+                    }
+                    
+                    console.log('Creating user with Firebase...');
+                    
                     // Real Firebase account creation
                     const userCredential = await createUserWithEmailAndPassword(this.auth, email, password);
                     const user = userCredential.user;
                     
+                    console.log('Firebase user created:', user.uid);
+                    
                     // Update profile with display name if provided
                     if (name) {
+                        console.log('Updating user profile with display name...');
                         await updateProfile(user, {
                             displayName: name
                         });
                     }
                     
                     this.showSuccess(`Account created successfully! Welcome ${name || email}!`);
+                    console.log('Account creation successful, auth state listener will handle redirect');
                     
                     // Auth state listener will handle redirect
                 } catch (error) {
@@ -577,6 +626,11 @@
                         case 'auth/operation-not-allowed':
                             errorMessage = 'Email/password accounts are not enabled. Please contact support.';
                             break;
+                        case 'auth/network-request-failed':
+                            errorMessage = 'Network error. Please check your connection and try again.';
+                            break;
+                        default:
+                            errorMessage = `Account creation failed: ${error.message}`;
                     }
                     
                     this.showError(errorMessage);
@@ -651,9 +705,28 @@
         }
         
         // Initialize Firebase authentication when page loads
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
+            console.log('DOM loaded, initializing Firebase authentication...');
+            
+            // Wait for environment configuration to load
+            let attempts = 0;
+            while (!window.ENV && attempts < 20) {
+                await new Promise(resolve => setTimeout(resolve, 100));
+                attempts++;
+            }
+            
+            if (!window.ENV) {
+                console.warn('Environment configuration not loaded, using defaults');
+                window.ENV = { ADMIN_EMAIL: 'oladoyeheritage445@gmail.com' };
+            }
+            
             // Initialize Firebase with environment configuration
-            initializeFirebaseAuth();
+            try {
+                await initializeFirebaseAuth();
+                console.log('Firebase authentication initialized successfully');
+            } catch (error) {
+                console.error('Failed to initialize Firebase:', error);
+            }
             
             // Check if we should show signup form based on URL parameter
             const urlParams = new URLSearchParams(window.location.search);
@@ -661,9 +734,10 @@
                 setTimeout(() => {
                     const showSignUpBtn = document.getElementById('showSignUpBtn');
                     if (showSignUpBtn) {
+                        console.log('Auto-clicking signup button based on URL parameter');
                         showSignUpBtn.click();
                     }
-                }, 1500); // Wait a bit longer for Firebase to initialize
+                }, 1000); // Wait for Firebase to initialize
             }
         });
     </script>
