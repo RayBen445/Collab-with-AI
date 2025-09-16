@@ -366,6 +366,153 @@
             color: #ff4757;
             font-weight: bold;
         }
+        
+        .word-search-game {
+            text-align: center;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .difficulty-select {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .game-info {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-info > div {
+            text-align: center;
+        }
+        
+        .game-info span {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .game-grid {
+            display: flex;
+            gap: 40px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .word-search-grid {
+            display: grid;
+            gap: 2px;
+            background: #333;
+            padding: 3px;
+            border-radius: 5px;
+        }
+        
+        .grid-cell {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border: 1px solid #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 14px;
+            cursor: pointer;
+            user-select: none;
+            transition: background-color 0.3s ease;
+        }
+        
+        .grid-cell.selected {
+            background: #667eea;
+            color: white;
+        }
+        
+        .grid-cell.found {
+            background: #2ed573;
+            color: white;
+        }
+        
+        .grid-cell.highlight {
+            background: #ffa726;
+            color: white;
+        }
+        
+        .words-list {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+        }
+        
+        .words-list h4 {
+            margin-bottom: 15px;
+            color: #333;
+        }
+        
+        .words-to-find {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .word-item {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-radius: 5px;
+            font-weight: 600;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+        
+        .word-item.found {
+            background: #2ed573;
+            color: white;
+            text-decoration: line-through;
+        }
         </style>
 </head>
 <body>

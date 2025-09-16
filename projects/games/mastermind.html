@@ -403,35 +403,50 @@
         </div>
         
         <div class="main-content">
-            
-                <div class="working-demo">
-                    <h3>🚀 Mastermind - Interactive Demo</h3>
-                    <div class="app-interface">
-                        <div class="control-panel">
-                            <input type="text" id="mainInput" placeholder="Enter your data..." class="main-input">
-                            <button onclick="processInput()" class="demo-btn primary">Process</button>
-                            <button onclick="clearData()" class="demo-btn">Clear</button>
-                        </div>
-                        <div id="output-area" class="output-area">
-                            <p>Ready to process your input. Try entering some data above!</p>
-                        </div>
-                        <div class="feature-showcase">
-                            <button onclick="showFeature('analytics')" class="demo-btn">📊 Analytics</button>
-                            <button onclick="showFeature('export')" class="demo-btn">💾 Export Data</button>
-                            <button onclick="showFeature('settings')" class="demo-btn">⚙️ Settings</button>
-                        </div>
-                    </div>
+            <div class="mastermind-game">
+                <div class="game-controls">
+                    <button onclick="startNewGame()" class="control-btn">🎮 New Game</button>
+                    <button onclick="getHint()" class="control-btn">💡 Hint</button>
+                    <button onclick="clearCurrentGuess()" class="control-btn">🧹 Clear</button>
+                    <select id="difficultySelect" onchange="setDifficulty()" class="difficulty-select">
+                        <option value="easy">Easy (4 colors)</option>
+                        <option value="medium" selected>Medium (6 colors)</option>
+                        <option value="hard">Hard (8 colors)</option>
+                    </select>
                 </div>
-            </div>
-            </div>
-                                <div class="working-demo">
-                    <h3>🚀 Mastermind Demo</h3>
-                    <div class="demo-controls">
-                        <button class="demo-btn" onclick="runDemo()">Try Demo</button>
-                        <button class="demo-btn" onclick="resetDemo()">Reset</button>
+                
+                <div class="game-area">
+                    <div class="game-info">
+                        <div class="attempts">
+                            Attempts: <span id="attemptsDisplay">0</span>/10
+                        </div>
+                        <div class="difficulty-info">
+                            <span id="difficultyDisplay">Medium</span>
+                        </div>
+                        <div class="hints-remaining">
+                            Hints: <span id="hintsDisplay">3</span>
+                        </div>
                     </div>
-                    <div id="demoOutput" class="demo-output">
-                        This is a working demo of mastermind. Click the buttons above to interact!
+                    
+                    <div class="game-board">
+                        <div class="secret-code" id="secretCode">
+                            <div class="code-peg hidden"></div>
+                            <div class="code-peg hidden"></div>
+                            <div class="code-peg hidden"></div>
+                            <div class="code-peg hidden"></div>
+                        </div>
+                        
+                        <div class="guesses-board" id="guessesBoard"></div>
+                        
+                        <div class="current-guess" id="currentGuess">
+                            <div class="guess-peg" onclick="selectPeg(0)"></div>
+                            <div class="guess-peg" onclick="selectPeg(1)"></div>
+                            <div class="guess-peg" onclick="selectPeg(2)"></div>
+                            <div class="guess-peg" onclick="selectPeg(3)"></div>
+                            <button onclick="submitGuess()" class="submit-btn">Submit</button>
+                        </div>
+                        
+                        <div class="color-palette" id="colorPalette"></div>
                     </div>
                 </div>
             </div>
