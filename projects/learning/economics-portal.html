@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economics Class 29 Portal - Academic Excellence Hub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 20px 0;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #667eea;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 20px;
+            list-style: none;
+        }
+        
+        .nav-link {
+            color: #667eea;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+        
+        .hero-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .stats-row {
+            display: flex;
+            justify-content: center;
+            gap: 50px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-item {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .dashboard-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+        }
+        
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .card-icon {
+            font-size: 2.5rem;
+            color: #667eea;
+        }
+        
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .course-list {
+            list-style: none;
+        }
+        
+        .course-item {
+            background: #f8f9fa;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            transition: all 0.3s ease;
+        }
+        
+        .course-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+        
+        .course-name {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .course-details {
+            font-size: 0.9rem;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .assignment-item {
+            background: #f8f9fa;
+            margin: 15px 0;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .assignment-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .assignment-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .due-date {
+            color: #e74c3c;
+            font-weight: 500;
+        }
+        
+        .assignment-status {
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-submitted {
+            background: #d1edff;
+            color: #0c5460;
+        }
+        
+        .status-graded {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+        
+        .btn-secondary:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .news-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #28a745;
+        }
+        
+        .news-date {
+            color: #667eea;
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        
+        .news-title {
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        
+        .news-content {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        .quick-actions {
+            display: flex;
+            gap: 15px;
+            margin: 25px 0;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .resource-link {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s ease;
+            margin: 8px 0;
+        }
+        
+        .resource-link:hover {
+            background: #667eea;
+            color: white;
+            transform: translateX(5px);
+        }
+        
+        @media (max-width: 768px) {
+            .nav-container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .nav-links {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero-section {
+                padding: 40px 20px;
+            }
+            
+            .hero-title {
+                font-size: 2rem;
+            }
+            
+            .stats-row {
+                flex-direction: column;
+                gap: 20px;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="nav-container">
+            <div class="logo">
+                📚 Economics Class 29
+            </div>
+            <ul class="nav-links">
+                <li><a href="/index.html" class="nav-link">🏠 Home</a></li>
+                <li><a href="/projects/learning/" class="nav-link">📁 Learning</a></li>
+                <li><a href="#courses" class="nav-link">📖 Courses</a></li>
+                <li><a href="#assignments" class="nav-link">📝 Assignments</a></li>
+                <li><a href="#resources" class="nav-link">📚 Resources</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="hero-section">
+            <h1 class="hero-title">Economics Class 29</h1>
+            <p class="hero-subtitle">Excellence in Economic Education & Research</p>
+            <p>Welcome to your comprehensive academic portal for advanced economics studies, collaborative learning, and academic excellence.</p>
+            
+            <div class="stats-row">
+                <div class="stat-item">
+                    <div class="stat-number">29</div>
+                    <div class="stat-label">Students</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Courses</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">95%</div>
+                    <div class="stat-label">Success Rate</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">4.8</div>
+                    <div class="stat-label">GPA Average</div>
+                </div>
+            </div>
+            
+            <div class="quick-actions">
+                <a href="#assignments" class="btn">📝 View Assignments</a>
+                <a href="#courses" class="btn btn-secondary">📖 Course Materials</a>
+                <a href="#resources" class="btn btn-secondary">📚 Study Resources</a>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <!-- Current Courses -->
+            <div class="dashboard-card" id="courses">
+                <div class="card-header">
+                    <div class="card-icon">📖</div>
+                    <div class="card-title">Current Courses</div>
+                </div>
+                <ul class="course-list">
+                    <li class="course-item">
+                        <div class="course-name">Macroeconomic Theory</div>
+                        <div class="course-details">
+                            <span>Prof. Dr. Smith</span>
+                            <span>Mon, Wed, Fri - 10:00 AM</span>
+                        </div>
+                    </li>
+                    <li class="course-item">
+                        <div class="course-name">Microeconomic Analysis</div>
+                        <div class="course-details">
+                            <span>Prof. Dr. Johnson</span>
+                            <span>Tue, Thu - 2:00 PM</span>
+                        </div>
+                    </li>
+                    <li class="course-item">
+                        <div class="course-name">Econometrics & Statistics</div>
+                        <div class="course-details">
+                            <span>Dr. Williams</span>
+                            <span>Mon, Wed - 1:00 PM</span>
+                        </div>
+                    </li>
+                    <li class="course-item">
+                        <div class="course-name">International Economics</div>
+                        <div class="course-details">
+                            <span>Prof. Dr. Brown</span>
+                            <span>Tue, Thu - 11:00 AM</span>
+                        </div>
+                    </li>
+                    <li class="course-item">
+                        <div class="course-name">Economic Policy Analysis</div>
+                        <div class="course-details">
+                            <span>Dr. Davis</span>
+                            <span>Fri - 3:00 PM</span>
+                        </div>
+                    </li>
+                </ul>
+                <a href="#" class="btn btn-secondary">📅 View Full Schedule</a>
+            </div>
+            
+            <!-- Assignments & Deadlines -->
+            <div class="dashboard-card" id="assignments">
+                <div class="card-header">
+                    <div class="card-icon">📝</div>
+                    <div class="card-title">Assignments & Deadlines</div>
+                </div>
+                <div class="assignment-item">
+                    <div class="assignment-title">Macroeconomic Policy Essay</div>
+                    <div class="assignment-meta">
+                        <span class="due-date">Due: Dec 20, 2024</span>
+                        <span class="assignment-status status-pending">Pending</span>
+                    </div>
+                    <p style="color: #666; font-size: 0.9rem;">Analyze the impact of fiscal policy on economic growth in developing nations.</p>
+                </div>
+                <div class="assignment-item">
+                    <div class="assignment-title">Econometrics Problem Set #3</div>
+                    <div class="assignment-meta">
+                        <span class="due-date">Due: Dec 18, 2024</span>
+                        <span class="assignment-status status-submitted">Submitted</span>
+                    </div>
+                    <p style="color: #666; font-size: 0.9rem;">Time series analysis and regression modeling exercises.</p>
+                </div>
+                <div class="assignment-item">
+                    <div class="assignment-title">International Trade Case Study</div>
+                    <div class="assignment-meta">
+                        <span class="due-date">Due: Dec 15, 2024</span>
+                        <span class="assignment-status status-graded">Graded: A-</span>
+                    </div>
+                    <p style="color: #666; font-size: 0.9rem;">Analysis of NAFTA's economic impact on member countries.</p>
+                </div>
+                <a href="#" class="btn">📋 All Assignments</a>
+            </div>
+            
+            <!-- Academic Resources -->
+            <div class="dashboard-card" id="resources">
+                <div class="card-header">
+                    <div class="card-icon">📚</div>
+                    <div class="card-title">Study Resources</div>
+                </div>
+                <a href="#" class="resource-link">
+                    <span>📊</span>
+                    <div>
+                        <div style="font-weight: 600;">Economic Data Portal</div>
+                        <div style="font-size: 0.9rem; color: #666;">Real-time economic indicators and datasets</div>
+                    </div>
+                </a>
+                <a href="#" class="resource-link">
+                    <span>📖</span>
+                    <div>
+                        <div style="font-weight: 600;">Digital Library</div>
+                        <div style="font-size: 0.9rem; color: #666;">Academic papers, textbooks, and journals</div>
+                    </div>
+                </a>
+                <a href="#" class="resource-link">
+                    <span>🧮</span>
+                    <div>
+                        <div style="font-weight: 600;">Economic Calculators</div>
+                        <div style="font-size: 0.9rem; color: #666;">GDP, inflation, and statistical tools</div>
+                    </div>
+                </a>
+                <a href="#" class="resource-link">
+                    <span>🎥</span>
+                    <div>
+                        <div style="font-weight: 600;">Lecture Recordings</div>
+                        <div style="font-size: 0.9rem; color: #666;">Access past lectures and tutorials</div>
+                    </div>
+                </a>
+                <a href="#" class="resource-link">
+                    <span>👥</span>
+                    <div>
+                        <div style="font-weight: 600;">Study Groups</div>
+                        <div style="font-size: 0.9rem; color: #666;">Collaborative learning sessions</div>
+                    </div>
+                </a>
+            </div>
+            
+            <!-- Class News & Announcements -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">📢</div>
+                    <div class="card-title">News & Announcements</div>
+                </div>
+                <div class="news-item">
+                    <div class="news-date">December 12, 2024</div>
+                    <div class="news-title">Final Exam Schedule Released</div>
+                    <div class="news-content">
+                        Final examinations for all Economics courses have been scheduled. Please check your individual timetables for specific dates and venues.
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-date">December 10, 2024</div>
+                    <div class="news-title">Guest Lecture: Central Banking</div>
+                    <div class="news-content">
+                        Former Federal Reserve economist Dr. Patricia Martinez will deliver a special lecture on monetary policy next Friday at 2:00 PM.
+                    </div>
+                </div>
+                <div class="news-item">
+                    <div class="news-date">December 8, 2024</div>
+                    <div class="news-title">Research Paper Competition</div>
+                    <div class="news-content">
+                        The annual Economics Department research paper competition is now open for submissions. Prize money up to $2,000 available.
+                    </div>
+                </div>
+                <a href="#" class="btn btn-secondary">📰 All Announcements</a>
+            </div>
+            
+            <!-- Grade Tracker -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">📊</div>
+                    <div class="card-title">Academic Performance</div>
+                </div>
+                <div style="margin: 20px 0;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Macroeconomic Theory</span>
+                        <span style="font-weight: 600; color: #28a745;">A</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Microeconomic Analysis</span>
+                        <span style="font-weight: 600; color: #28a745;">A-</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>Econometrics & Statistics</span>
+                        <span style="font-weight: 600; color: #ffc107;">B+</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                        <span>International Economics</span>
+                        <span style="font-weight: 600; color: #28a745;">A</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 20px;">
+                        <span>Economic Policy Analysis</span>
+                        <span style="font-weight: 600; color: #28a745;">A-</span>
+                    </div>
+                    <hr style="margin: 20px 0; border: 1px solid #e9ecef;">
+                    <div style="display: flex; justify-content: space-between; font-weight: 600; font-size: 1.1rem;">
+                        <span>Current GPA</span>
+                        <span style="color: #667eea;">3.87</span>
+                    </div>
+                </div>
+                <a href="#" class="btn">📈 Detailed Report</a>
+            </div>
+            
+            <!-- Quick Tools -->
+            <div class="dashboard-card">
+                <div class="card-header">
+                    <div class="card-icon">🛠️</div>
+                    <div class="card-title">Academic Tools</div>
+                </div>
+                <a href="#" class="resource-link">
+                    <span>📊</span>
+                    <div>
+                        <div style="font-weight: 600;">GPA Calculator</div>
+                        <div style="font-size: 0.9rem; color: #666;">Calculate semester and cumulative GPA</div>
+                    </div>
+                </a>
+                <a href="#" class="resource-link">
+                    <span>📅</span>
+                    <div>
+                        <div style="font-weight: 600;">Academic Calendar</div>
+                        <div style="font-size: 0.9rem; color: #666;">Important dates and deadlines</div>
+                    </div>
+                </a>
+                <a href="#" class="resource-link">
+                    <span>💬</span>
+                    <div>
+                        <div style="font-weight: 600;">Class Discussion Forum</div>
+                        <div style="font-size: 0.9rem; color: #666;">Connect with classmates and professors</div>
+                    </div>
+                </a>
+                <a href="#" class="resource-link">
+                    <span>📋</span>
+                    <div>
+                        <div style="font-weight: 600;">Assignment Planner</div>
+                        <div style="font-size: 0.9rem; color: #666;">Organize deadlines and priorities</div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Add smooth scrolling for navigation links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Add animation to cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+        
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.opacity = '1';
+                    entry.target.style.transform = 'translateY(0)';
+                }
+            });
+        }, observerOptions);
+        
+        // Initially hide dashboard cards
+        const dashboardCards = document.querySelectorAll('.dashboard-card');
+        dashboardCards.forEach((card, index) => {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(30px)';
+            card.style.transition = `all 0.6s ease ${index * 0.1}s`;
+            observer.observe(card);
+        });
+        
+        // Add interactive hover effects
+        document.querySelectorAll('.course-item, .assignment-item, .news-item, .resource-link').forEach(item => {
+            item.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateX(5px)';
+            });
+            
+            item.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateX(0)';
+            });
+        });
+        
+        // Update time-sensitive content
+        function updateDeadlines() {
+            const now = new Date();
+            const assignments = document.querySelectorAll('.assignment-item');
+            
+            assignments.forEach(assignment => {
+                const dueDateElement = assignment.querySelector('.due-date');
+                if (dueDateElement) {
+                    const dueDateText = dueDateElement.textContent.replace('Due: ', '');
+                    const dueDate = new Date(dueDateText);
+                    const daysUntilDue = Math.ceil((dueDate - now) / (1000 * 60 * 60 * 24));
+                    
+                    if (daysUntilDue <= 3 && daysUntilDue > 0) {
+                        assignment.style.borderLeftColor = '#e74c3c';
+                        assignment.style.background = '#ffeaea';
+                    } else if (daysUntilDue <= 0) {
+                        assignment.style.borderLeftColor = '#dc3545';
+                        assignment.style.background = '#f8d7da';
+                    }
+                }
+            });
+        }
+        
+        // Initialize deadline checking
+        updateDeadlines();
+        
+        // Add welcome message
+        setTimeout(() => {
+            console.log('Welcome to Economics Class 29 Portal! 📚');
+            console.log('Access your courses, assignments, and academic resources all in one place.');
+        }, 1000);
+    </script>
+</body>
+</html>

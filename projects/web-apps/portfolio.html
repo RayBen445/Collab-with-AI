@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RayBen445 Portfolio - Professional Development Showcase</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .hero-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 60px 40px;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .profile-image {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+            color: white;
+            margin: 0 auto 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .hero-title {
+            font-size: 3rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 15px;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.4rem;
+            color: #666;
+            margin-bottom: 25px;
+        }
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #667eea;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-item:hover {
+            transform: scale(1.05);
+            color: #764ba2;
+        }
+        
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 30px 0;
+            flex-wrap: wrap;
+        }
+        
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.9);
+            color: #667eea;
+            border: 2px solid #667eea;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .tab-btn.active, .tab-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .content-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            display: none;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin: 30px 0;
+        }
+        
+        .project-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            border-left: 5px solid #667eea;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+        
+        .project-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .project-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .project-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        
+        .project-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+        
+        .tag {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+        
+        .project-links {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .project-link {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .project-link:hover {
+            transform: scale(1.05);
+        }
+        
+        .skills-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+            margin: 30px 0;
+        }
+        
+        .skill-category {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+        }
+        
+        .skill-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #667eea;
+        }
+        
+        .skill-name {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .skill-list {
+            list-style: none;
+            line-height: 1.8;
+        }
+        
+        .skill-list li {
+            color: #666;
+            position: relative;
+            padding-left: 20px;
+        }
+        
+        .skill-list li:before {
+            content: "✓";
+            color: #667eea;
+            position: absolute;
+            left: 0;
+        }
+        
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+        
+        .timeline:before {
+            content: "";
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #667eea;
+        }
+        
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 40px;
+        }
+        
+        .timeline-item:before {
+            content: "";
+            position: absolute;
+            left: -8px;
+            top: 8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #667eea;
+        }
+        
+        .timeline-date {
+            color: #667eea;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        
+        .timeline-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin: 5px 0;
+        }
+        
+        .timeline-description {
+            color: #666;
+            line-height: 1.6;
+        }
+        
+        @media (max-width: 768px) {
+            .hero-section { padding: 40px 20px; }
+            .hero-title { font-size: 2rem; }
+            .contact-info { flex-direction: column; align-items: center; }
+            .projects-grid { grid-template-columns: 1fr; }
+            .content-section { padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero-section">
+            <div class="profile-image">👨‍💻</div>
+            <h1 class="hero-title">RayBen445</h1>
+            <p class="hero-subtitle">Full-Stack Developer & AI Enthusiast</p>
+            <p>Passionate about building innovative solutions at the intersection of technology and creativity</p>
+            
+            <div class="contact-info">
+                <a href="https://github.com/RayBen445" class="contact-item" target="_blank">
+                    <span>📦</span> GitHub
+                </a>
+                <a href="/index.html" class="contact-item">
+                    <span>🏠</span> Portfolio Hub
+                </a>
+                <a href="mailto:contact@rayben445.dev" class="contact-item">
+                    <span>📧</span> Email
+                </a>
+                <a href="#" class="contact-item">
+                    <span>💼</span> LinkedIn
+                </a>
+            </div>
+        </div>
+        
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="showTab('projects')">🚀 Projects</button>
+            <button class="tab-btn" onclick="showTab('skills')">💡 Skills</button>
+            <button class="tab-btn" onclick="showTab('experience')">📈 Experience</button>
+            <button class="tab-btn" onclick="showTab('about')">👨‍💻 About</button>
+        </div>
+        
+        <!-- Projects Section -->
+        <div id="projects" class="content-section active">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #667eea;">Featured Projects</h2>
+            <div class="projects-grid">
+                <div class="project-card">
+                    <div class="project-icon">🤖</div>
+                    <div class="project-title">AI-Human Collaboration Hub</div>
+                    <div class="project-description">
+                        A comprehensive platform with 100+ AI-powered projects, featuring real-time collaboration tools, 
+                        advanced analytics, and enterprise-grade solutions for modern development teams.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">HTML5</span>
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Firebase</span>
+                        <span class="tag">AI/ML</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="/index.html" class="project-link">🌐 Live Demo</a>
+                        <a href="https://github.com/RayBen445/Collab-with-AI" class="project-link">📦 GitHub</a>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">🎓</div>
+                    <div class="project-title">CS Assistant</div>
+                    <div class="project-description">
+                        Intelligent Computer Science learning assistant with interactive chat, code analysis, 
+                        and comprehensive explanations for algorithms, data structures, and programming concepts.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">AI Chat</span>
+                        <span class="tag">Education</span>
+                        <span class="tag">NLP</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="/projects/ai-ml/cs-assistant.html" class="project-link">🌐 Try It</a>
+                        <a href="https://github.com/RayBen445/cs-assistant" class="project-link">📦 Source</a>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">📊</div>
+                    <div class="project-title">Economics Class Portal</div>
+                    <div class="project-description">
+                        Modern educational platform for Economics Class 29, featuring interactive coursework, 
+                        student management, assignment tracking, and collaborative study tools.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">TypeScript</span>
+                        <span class="tag">Education</span>
+                        <span class="tag">Portal</span>
+                        <span class="tag">Management</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="/projects/learning/economics-portal.html" class="project-link">🌐 Portal</a>
+                        <a href="https://github.com/RayBen445/Economics-Class-29" class="project-link">📦 Code</a>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">💕</div>
+                    <div class="project-title">Expressing Love Platform</div>
+                    <div class="project-description">
+                        Creative web application for expressing emotions through interactive animations, 
+                        personalized messages, and beautiful visual effects designed to connect hearts.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">HTML</span>
+                        <span class="tag">CSS3</span>
+                        <span class="tag">Animations</span>
+                        <span class="tag">Creative</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="/projects/creative/expressing-love.html" class="project-link">💝 Experience</a>
+                        <a href="https://github.com/RayBen445/expressing-love" class="project-link">📦 Repository</a>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">🌐</div>
+                    <div class="project-title">Cool Shot Systems</div>
+                    <div class="project-description">
+                        Official website for Cool Shot Systems featuring modern design, service showcases, 
+                        and integrated booking system with advanced TypeScript architecture.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">TypeScript</span>
+                        <span class="tag">Web Design</span>
+                        <span class="tag">Business</span>
+                        <span class="tag">Systems</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="/projects/web-apps/cool-shot-systems.html" class="project-link">🌐 Website</a>
+                        <a href="https://github.com/RayBen445/Cool-shot-site" class="project-link">📦 Code</a>
+                    </div>
+                </div>
+                
+                <div class="project-card">
+                    <div class="project-icon">🤖</div>
+                    <div class="project-title">WhatsApp Bot Suite</div>
+                    <div class="project-description">
+                        Advanced WhatsApp automation bots with AI capabilities, message processing, 
+                        and intelligent responses for business and personal use cases.
+                    </div>
+                    <div class="project-tags">
+                        <span class="tag">JavaScript</span>
+                        <span class="tag">Bot Development</span>
+                        <span class="tag">WhatsApp API</span>
+                        <span class="tag">Automation</span>
+                    </div>
+                    <div class="project-links">
+                        <a href="/projects/social/whatsapp-bots.html" class="project-link">🌐 Demo</a>
+                        <a href="https://github.com/RayBen445/WhatsApp-New" class="project-link">📦 Source</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Skills Section -->
+        <div id="skills" class="content-section">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #667eea;">Technical Skills</h2>
+            <div class="skills-container">
+                <div class="skill-category">
+                    <div class="skill-icon">💻</div>
+                    <div class="skill-name">Frontend Development</div>
+                    <ul class="skill-list">
+                        <li>HTML5 & CSS3</li>
+                        <li>JavaScript (ES6+)</li>
+                        <li>TypeScript</li>
+                        <li>React.js</li>
+                        <li>Vue.js</li>
+                        <li>Responsive Design</li>
+                    </ul>
+                </div>
+                
+                <div class="skill-category">
+                    <div class="skill-icon">🔧</div>
+                    <div class="skill-name">Backend Development</div>
+                    <ul class="skill-list">
+                        <li>Node.js</li>
+                        <li>Python</li>
+                        <li>Express.js</li>
+                        <li>RESTful APIs</li>
+                        <li>GraphQL</li>
+                        <li>Microservices</li>
+                    </ul>
+                </div>
+                
+                <div class="skill-category">
+                    <div class="skill-icon">🗄️</div>
+                    <div class="skill-name">Database & Cloud</div>
+                    <ul class="skill-list">
+                        <li>MongoDB</li>
+                        <li>Firebase</li>
+                        <li>PostgreSQL</li>
+                        <li>Redis</li>
+                        <li>AWS Services</li>
+                        <li>Docker</li>
+                    </ul>
+                </div>
+                
+                <div class="skill-category">
+                    <div class="skill-icon">🤖</div>
+                    <div class="skill-name">AI & Machine Learning</div>
+                    <ul class="skill-list">
+                        <li>TensorFlow</li>
+                        <li>Python ML Libraries</li>
+                        <li>Natural Language Processing</li>
+                        <li>Computer Vision</li>
+                        <li>Neural Networks</li>
+                        <li>AI Integration</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Experience Section -->
+        <div id="experience" class="content-section">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #667eea;">Professional Journey</h2>
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-date">2024 - Present</div>
+                    <div class="timeline-title">Full-Stack Developer & AI Researcher</div>
+                    <div class="timeline-description">
+                        Leading development of AI-human collaboration platforms with 100+ integrated projects. 
+                        Specializing in real-time applications, machine learning integration, and scalable web architectures.
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2023 - 2024</div>
+                    <div class="timeline-title">Frontend Developer & UI/UX Designer</div>
+                    <div class="timeline-description">
+                        Developed responsive web applications with modern JavaScript frameworks. 
+                        Created intuitive user interfaces and optimized user experiences across multiple platforms.
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2022 - 2023</div>
+                    <div class="timeline-title">Software Engineering Student</div>
+                    <div class="timeline-description">
+                        Focused on computer science fundamentals, data structures, algorithms, and software engineering principles. 
+                        Built foundation projects and contributed to open-source initiatives.
+                    </div>
+                </div>
+                
+                <div class="timeline-item">
+                    <div class="timeline-date">2021 - 2022</div>
+                    <div class="timeline-title">Web Development Enthusiast</div>
+                    <div class="timeline-description">
+                        Started journey in web development with HTML, CSS, and JavaScript. 
+                        Created first portfolio projects and learned programming fundamentals.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- About Section -->
+        <div id="about" class="content-section">
+            <h2 style="text-align: center; margin-bottom: 30px; color: #667eea;">About Me</h2>
+            <div style="max-width: 800px; margin: 0 auto; line-height: 1.8; color: #666;">
+                <p style="margin-bottom: 20px;">
+                    I'm RayBen445, a passionate full-stack developer and AI enthusiast with a deep love for creating 
+                    innovative solutions that bridge the gap between technology and human needs. My journey in 
+                    software development spans multiple technologies and domains, from web applications to 
+                    artificial intelligence.
+                </p>
+                
+                <p style="margin-bottom: 20px;">
+                    With expertise in both frontend and backend development, I specialize in building scalable, 
+                    user-centric applications that solve real-world problems. My experience ranges from creating 
+                    responsive web interfaces to developing complex AI-powered systems that enhance human productivity.
+                </p>
+                
+                <p style="margin-bottom: 20px;">
+                    Currently, I'm focused on the intersection of AI and human collaboration, developing platforms 
+                    that enable seamless interaction between artificial intelligence and human creativity. Through 
+                    my projects, I aim to democratize access to advanced technologies and make them more accessible 
+                    to everyone.
+                </p>
+                
+                <p>
+                    When I'm not coding, I enjoy exploring new technologies, contributing to open-source projects, 
+                    and sharing knowledge with the developer community. I believe in the power of collaboration 
+                    and continuous learning to drive innovation and positive change in the world.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabName) {
+            // Hide all content sections
+            const sections = document.querySelectorAll('.content-section');
+            sections.forEach(section => section.classList.remove('active'));
+            
+            // Remove active class from all tab buttons
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => tab.classList.remove('active'));
+            
+            // Show selected section and activate corresponding tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+        
+        // Add some interactive effects
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate project cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver(function(entries) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.style.opacity = '1';
+                        entry.target.style.transform = 'translateY(0)';
+                    }
+                });
+            }, observerOptions);
+            
+            // Initially hide project cards
+            const projectCards = document.querySelectorAll('.project-card');
+            projectCards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                card.style.transition = `all 0.6s ease ${index * 0.1}s`;
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>
