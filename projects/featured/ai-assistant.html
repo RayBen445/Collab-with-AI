@@ -511,6 +511,130 @@
         console.log('This project was built using AI-Human collaboration.');
         console.log('Visit https://github.com/RayBen445/Collab-with-AI for more!');
         
+        // Handle action buttons functionality
+        function handleActionClick(button) {
+            const buttonText = button.textContent;
+            
+            if (buttonText.includes('Launch Application')) {
+                // Launch the application
+                window.open('/collaboration.html', '_blank');
+            } else if (buttonText.includes('View Documentation')) {
+                // Show documentation modal
+                showDocumentationModal();
+            } else if (buttonText.includes('Download Source')) {
+                // Download source code
+                downloadSourceCode();
+            }
+        }
+        
+        function showDocumentationModal() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.8);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 40px; border-radius: 15px; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                    <h2 style="margin-bottom: 20px; color: #333;">📖 AI Assistant Documentation</h2>
+                    <div style="line-height: 1.6; color: #555;">
+                        <h3>Features:</h3>
+                        <ul style="margin: 15px 0;">
+                            <li>🤖 AI-powered assistance</li>
+                            <li>💬 Natural language processing</li>
+                            <li>🔄 Real-time responses</li>
+                            <li>📊 Analytics and insights</li>
+                            <li>🔒 Secure communication</li>
+                        </ul>
+                        
+                        <h3>Usage:</h3>
+                        <p>This AI Assistant provides intelligent responses to user queries using advanced natural language processing. It can help with coding questions, project management, and general assistance.</p>
+                        
+                        <h3>Technical Specifications:</h3>
+                        <ul style="margin: 15px 0;">
+                            <li>Built with modern JavaScript frameworks</li>
+                            <li>RESTful API integration</li>
+                            <li>Responsive design</li>
+                            <li>Cross-platform compatibility</li>
+                        </ul>
+                    </div>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; margin-top: 20px;">
+                        Close
+                    </button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+        }
+        
+        function downloadSourceCode() {
+            // Create a downloadable file with project information
+            const projectInfo = {
+                name: "AI Assistant",
+                description: "Intelligent AI-powered assistant application",
+                technologies: ["JavaScript", "HTML5", "CSS3", "AI/ML"],
+                features: [
+                    "Natural language processing",
+                    "Real-time responses",
+                    "Analytics dashboard",
+                    "Secure communication"
+                ],
+                setup: [
+                    "1. Clone the repository",
+                    "2. Install dependencies: npm install",
+                    "3. Configure API keys",
+                    "4. Run: npm start"
+                ],
+                api: {
+                    endpoint: "/api/assistant",
+                    methods: ["GET", "POST"],
+                    authentication: "Bearer token required"
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(projectInfo, null, 2)], {
+                type: 'application/json'
+            });
+            
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'ai-assistant-project-info.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            // Show download confirmation
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #28a745;
+                color: white;
+                padding: 15px 25px;
+                border-radius: 5px;
+                z-index: 1001;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            `;
+            notification.textContent = '✅ Project information downloaded!';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                document.body.removeChild(notification);
+            }, 3000);
+        }
+        
         // AI Assistant Demo Functionality
         function processAIQuery() {
             const userQuery = document.getElementById('userQuery').value.toLowerCase().trim();
