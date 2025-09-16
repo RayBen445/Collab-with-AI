@@ -635,12 +635,12 @@
             if (typeof geminiAPI !== 'undefined') {
                 try {
                     const fixes = await geminiAPI.fixChatIssues();
-                    alert('✅ Chat features fixed:\n\n' + fixes.fixes.join('\n'));
+                    showSuccessModal("✅ Chat features fixed:\n\n"););
                 } catch (error) {
-                    alert('⚠️ Chat fix completed with standard repairs');
+                    showSuccessModal("⚠️ Chat fix completed with standard repairs");
                 }
             } else {
-                alert('✅ Chat functionality restored');
+                showSuccessModal("✅ Chat functionality restored");
             }
         }
 
@@ -652,7 +652,7 @@
                 geminiAPI.initializeService();
             }
             
-            alert('✅ API connections repaired');
+            showSuccessModal("✅ API connections repaired");
         }
 
         function fixModuleLoading() {
@@ -670,7 +670,7 @@
                     script.onload = () => {
                         loaded++;
                         if (loaded === scripts.length) {
-                            alert('✅ Module loading issues resolved');
+                            showSuccessModal("✅ Module loading issues resolved");
                         }
                     };
                     document.head.appendChild(script);
@@ -680,7 +680,7 @@
             });
             
             if (loaded === scripts.length) {
-                alert('✅ All modules already loaded correctly');
+                showSuccessModal("✅ All modules already loaded correctly");
             }
         }
 
@@ -694,11 +694,11 @@
                     if (window.gc) {
                         window.gc();
                     }
-                    alert('✅ Performance optimization completed');
+                    showSuccessModal("✅ Performance optimization completed");
                 });
             } else {
                 setTimeout(() => {
-                    alert('✅ Performance optimization completed');
+                    showSuccessModal("✅ Performance optimization completed");
                 }, 1000);
             }
         }
@@ -723,7 +723,7 @@
                 console.log('Storage clear limited by browser security');
             }
             
-            alert('✅ Cache cleared. Page will reload in 2 seconds...');
+            showSuccessModal("✅ Cache cleared. Page will reload in 2 seconds...");
             setTimeout(() => {
                 window.location.reload(true);
             }, 2000);
@@ -740,5 +740,65 @@
             console.log('🩺 System Health Check initialized');
         });
     </script>
+<script>
+        // Modal system for user feedback
+        function showSuccessModal(message) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.5); display: flex; align-items: center; 
+                justify-content: center; z-index: 10000;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white; padding: 30px; border-radius: 15px; 
+                max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+            
+            modalContent.innerHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 20px; color: #333;">${message}</div>
+                <button onclick="this.closest('.modal').remove()" 
+                        style="padding: 10px 20px; background: #007bff; color: white; 
+                               border: none; border-radius: 5px; cursor: pointer;">
+                    OK
+                </button>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (modal.parentNode) modal.remove();
+            }, 3000);
+        }
+        
+        function showDocumentation() {
+            showSuccessModal('📚 Documentation modal would open here with detailed project information.');
+        }
+        
+        function downloadProject() {
+            const projectData = {
+                name: document.title || 'Project',
+                description: 'Comprehensive project with full functionality',
+                features: ['Real functionality', 'Professional UI', 'Mobile responsive'],
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'project-info.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showSuccessModal('📁 Project information downloaded successfully!');
+        }
+</script>
 </body>
 </html>

@@ -15,7 +15,20 @@ window.ENV = window.ENV || {};
  */
 async function loadEnvironmentConfig() {
     try {
-        const response = await fetch('/api/get-env-config');
+        // Add timeout to prevent hanging
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        
+        const response = await fetch('/api/get-env-config', {
+            signal: controller.signal,
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        });
+        
+        clearTimeout(timeoutId);
         
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
@@ -24,26 +37,43 @@ async function loadEnvironmentConfig() {
         const data = await response.json();
         
         if (data.success && data.config) {
+            // Validate required configuration
+            const requiredFields = ['ADMIN_EMAIL', 'PLATFORM_NAME'];
+            const missingFields = requiredFields.filter(field => !data.config[field]);
+            
+            if (missingFields.length > 0) {
+                console.warn('Missing required configuration fields:', missingFields);
+            }
+            
             // Load configuration from server
             window.ENV = {
                 ...window.ENV,
                 ...data.config
             };
             
-            console.log('Environment configuration loaded successfully from Vercel');
-            console.log('Admin email configured:', window.ENV.ADMIN_EMAIL);
+            console.log('Environment configuration loaded successfully');
             
             if (!data.hasFirebaseConfig) {
-                console.warn('Firebase configuration incomplete. Please set all Firebase environment variables in Vercel.');
+                console.warn('Firebase configuration incomplete. Some features may not work properly.');
+                // Dispatch event to notify other components
+                window.dispatchEvent(new CustomEvent('envConfigError', { 
+                    detail: { type: 'firebase_config_incomplete' }
+                }));
             }
+            
+            // Dispatch successful config load event
+            window.dispatchEvent(new CustomEvent('envConfigLoaded', { 
+                detail: { config: window.ENV }
+            }));
+            
         } else {
-            throw new Error('Failed to load configuration from server');
+            throw new Error('Invalid response format from configuration endpoint');
         }
         
     } catch (error) {
         console.error('Error loading environment config:', error);
         
-        // Fallback configuration with correct admin email
+        // Set fallback configuration
         window.ENV = {
             ...window.ENV,
             ADMIN_EMAIL: 'oladoyeheritage445@gmail.com',
@@ -51,8 +81,16 @@ async function loadEnvironmentConfig() {
             VERSION: '2.0.0'
         };
         
-        console.warn('Using fallback configuration. Please ensure environment variables are set in Vercel.');
-        console.log('Fallback admin email set to:', window.ENV.ADMIN_EMAIL);
+        // Dispatch error event
+        window.dispatchEvent(new CustomEvent('envConfigError', { 
+            detail: { 
+                type: 'load_failed', 
+                error: error.message,
+                usingFallback: true 
+            }
+        }));
+        
+        console.warn('Using fallback configuration due to error:', error.message);
     }
 }
 

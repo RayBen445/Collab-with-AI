@@ -201,7 +201,11 @@
             max-width: 400px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             border: 1px solid rgba(255, 255, 255, 0.2);
-            margin: 20px auto;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
         }
         
         .form-header {
@@ -267,42 +271,284 @@
             </button>
         </div>
         
-        <!-- Sign Up Form (Hidden by default) -->
-        <div id="signUpForm" class="signup-form" style="display: none;">
-            <div class="form-header">
-                <h2>🎉 Create Your Account</h2>
-                <p>Join the AI-Human collaboration revolution</p>
-            </div>
-            
-            <form id="signUpFormElement">
-                <div class="form-group">
-                    <label for="signUpName">Display Name</label>
-                    <input type="text" id="signUpName" placeholder="Enter your full name">
-                </div>
-                <div class="form-group">
-                    <label for="signUpEmail">Email Address</label>
-                    <input type="email" id="signUpEmail" required placeholder="Enter your email">
-                </div>
-                <div class="form-group">
-                    <label for="signUpPassword">Password</label>
-                    <input type="password" id="signUpPassword" required placeholder="Enter password (min 6 characters)">
-                </div>
-                <button type="button" class="login-btn" id="signUpBtn">Create Account</button>
-            </form>
-            
-            <div class="form-footer">
-                <button type="button" class="link-btn" id="showSignInBtn">← Back to Sign In</button>
-            </div>
-        </div>
-        
         <div class="back-link">
             <a href="index.html">← Back to Homepage</a>
+        </div>
+    </div>
+
+    <!-- Sign Up Form (Hidden by default) - Moved outside login-container -->
+    <div id="signUpForm" class="signup-form" style="display: none;">
+        <div class="form-header">
+            <h2>🎉 Create Your Account</h2>
+            <p>Join the AI-Human collaboration revolution</p>
+        </div>
+        
+        <div id="signUpErrorMessage" class="error-message"></div>
+        <div id="signUpSuccessMessage" class="success-message"></div>
+        
+        <form id="signUpFormElement">
+            <div class="form-group">
+                <label for="signUpName">Display Name</label>
+                <input type="text" id="signUpName" placeholder="Enter your full name">
+            </div>
+            <div class="form-group">
+                <label for="signUpEmail">Email Address</label>
+                <input type="email" id="signUpEmail" required placeholder="Enter your email">
+            </div>
+            <div class="form-group">
+                <label for="signUpPassword">Password</label>
+                <input type="password" id="signUpPassword" required placeholder="Enter authorized password">
+                <div style="font-size: 0.9em; color: #666; margin-top: 5px;">
+                    Don't have the authorized password? <a href="password-request.html" style="color: #667eea; text-decoration: none;">Request access from admin</a>
+                </div>
+            </div>
+            <button type="button" class="login-btn" id="signUpBtn">Create Account</button>
+        </form>
+        
+        <div class="form-footer">
+            <button type="button" class="link-btn" id="showSignInBtn">← Back to Sign In</button>
         </div>
     </div>
 
     <!-- Environment Configuration - Load in correct order -->
     <script src="js/env-loader.js"></script>
     <script src="js/env-config.js"></script>
+    
+    
+    <script>
+        // Basic UI functionality that works without Firebase (non-module script)
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM loaded, setting up basic authentication UI...');
+            
+            // Setup signup form toggle
+            const showSignUpBtn = document.getElementById('showSignUpBtn');
+            const showSignInBtn = document.getElementById('showSignInBtn');
+            const signUpForm = document.getElementById('signUpForm');
+            const loginContainer = document.querySelector('.login-container');
+            
+            console.log('UI elements found:', {
+                showSignUpBtn: !!showSignUpBtn,
+                showSignInBtn: !!showSignInBtn,
+                signUpForm: !!signUpForm,
+                loginContainer: !!loginContainer
+            });
+            
+            if (showSignUpBtn && signUpForm && loginContainer) {
+                showSignUpBtn.addEventListener('click', function() {
+                    console.log('Show signup form clicked');
+                    signUpForm.style.display = 'block';
+                    loginContainer.style.display = 'none';
+                });
+            }
+            
+            if (showSignInBtn && signUpForm && loginContainer) {
+                showSignInBtn.addEventListener('click', function() {
+                    console.log('Show signin form clicked');
+                    signUpForm.style.display = 'none';
+                    loginContainer.style.display = 'block';
+                });
+            }
+            
+            // Add Google Sign-In button immediately
+            addGoogleSignInButtonBasic();
+            
+            // Add signup button handler
+            addSignUpButtonHandler();
+            
+            // Add basic login form handler for fallback
+            addBasicLoginHandler();
+            
+            // Show Firebase warning if modules fail to load
+            setTimeout(function() {
+                if (typeof firebase === 'undefined') {
+                    showFirebaseWarning();
+                }
+            }, 3000);
+            
+            console.log('Basic UI setup complete');
+        });
+        
+        function addGoogleSignInButtonBasic() {
+            const form = document.getElementById('loginForm');
+            if (!form || document.getElementById('googleSignInBtn')) {
+                return;
+            }
+            
+            const googleContainer = document.createElement('div');
+            googleContainer.className = 'google-signin-container';
+            googleContainer.innerHTML = `
+                <div class="divider"><span>or</span></div>
+                <button type="button" class="google-btn" id="googleSignInBtn">
+                    <svg width="18" height="18" viewBox="0 0 18 18">
+                        <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+                        <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-7.18-2.53H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+                        <path fill="#FBBC05" d="M4.5 10.49a4.8 4.8 0 0 1 0-3.07V5.35H1.83a8 8 0 0 0 0 7.28l2.67-2.14z"/>
+                        <path fill="#EA4335" d="M8.98 3.54c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.35L4.5 7.42a4.77 4.77 0 0 1 4.48-3.88z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+            `;
+            
+            form.parentNode.insertBefore(googleContainer, form.nextSibling);
+            
+            const googleBtn = document.getElementById('googleSignInBtn');
+            if (googleBtn) {
+                googleBtn.addEventListener('click', function() {
+                    console.log('Google Sign-In clicked');
+                    if (typeof firebase === 'undefined') {
+                        showMessage('Google Sign-In requires Firebase authentication service, which is currently unavailable in this environment.', 'error');
+                    } else {
+                        showMessage('Google Sign-In functionality will be available when Firebase is properly loaded.', 'info');
+                    }
+                });
+            }
+            
+            console.log('Google Sign-In button added');
+        }
+        
+        function addSignUpButtonHandler() {
+            const signUpBtn = document.getElementById('signUpBtn');
+            if (signUpBtn) {
+                signUpBtn.addEventListener('click', function() {
+                    console.log('Signup button clicked');
+                    
+                    const nameField = document.getElementById('signUpName');
+                    const emailField = document.getElementById('signUpEmail');
+                    const passwordField = document.getElementById('signUpPassword');
+                    
+                    const name = nameField ? nameField.value.trim() : '';
+                    const email = emailField ? emailField.value.trim() : '';
+                    const password = passwordField ? passwordField.value : '';
+                    
+                    console.log('Signup data:', { name, email, passwordLength: password.length });
+                    
+                    if (!email || !password) {
+                        showMessage('Please enter both email and password.', 'error');
+                        return;
+                    }
+                    
+                    // Check if password is exactly "professor"
+                    if (password !== 'professor') {
+                        showMessage('Account creation is restricted. Only the authorized password is allowed. Please contact the admin if you need access.', 'error');
+                        return;
+                    }
+                    
+                    if (typeof firebase === 'undefined') {
+                        showMessage('Account creation requires Firebase authentication service, which is currently unavailable in this environment. In a production environment with proper Firebase configuration, this would create a new user account.', 'info');
+                    } else {
+                        showMessage('Account creation functionality will be available when Firebase is properly loaded.', 'info');
+                    }
+                });
+                
+                console.log('Signup button handler added');
+            }
+        }
+        
+        function addBasicLoginHandler() {
+            const loginForm = document.getElementById('loginForm');
+            if (!loginForm) {
+                console.log('Login form not found for basic handler');
+                return;
+            }
+            
+            // Add a basic login handler that works even without Firebase
+            loginForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value.trim();
+                const password = document.getElementById('password').value;
+                
+                console.log('Basic login attempt:', { email, passwordLength: password.length });
+                
+                if (!email || !password) {
+                    showMessage('Please enter both email and password.', 'error');
+                    return;
+                }
+                
+                // Check for universal "professor" password
+                if (password === 'professor') {
+                    console.log('Professor password detected, redirecting...');
+                    showMessage('Welcome! Using universal access. Redirecting...', 'success');
+                    
+                    // Store universal authentication state
+                    const universalAuthData = {
+                        email: email,
+                        displayName: email.split('@')[0],
+                        isUniversalAuth: true,
+                        loginTime: Date.now(),
+                        isAdmin: email.toLowerCase() === 'oladoyeheritage445@gmail.com'
+                    };
+                    localStorage.setItem('universalAuth', JSON.stringify(universalAuthData));
+                    
+                    setTimeout(function() {
+                        // Check if admin email matches
+                        const adminEmail = 'oladoyeheritage445@gmail.com'; // Default admin email
+                        const isAdmin = email.toLowerCase() === adminEmail.toLowerCase();
+                        
+                        if (isAdmin) {
+                            window.location.href = 'admin-dashboard.html';
+                        } else {
+                            window.location.href = 'collaboration.html';
+                        }
+                    }, 1000);
+                    return;
+                }
+                
+                // If not professor password and Firebase is not available, show message
+                if (typeof firebase === 'undefined') {
+                    showMessage('Firebase authentication service is not available in this environment. Please use the authorized password for universal access.', 'error');
+                } else {
+                    // Firebase is available but this handler shouldn't interfere with Firebase auth
+                    console.log('Firebase available, letting Firebase handler take over');
+                }
+            });
+            
+            console.log('Basic login handler added');
+        }
+        
+        function showFirebaseWarning() {
+            const container = document.querySelector('.login-container');
+            const warningDiv = document.createElement('div');
+            warningDiv.innerHTML = `
+                <div style="background: #fff3cd; color: #856404; padding: 12px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #ffeaa7;">
+                    <strong>🔧 Development Notice:</strong><br>
+                    Firebase authentication services are not available in this environment. 
+                    The UI elements are functional for testing, but actual authentication requires proper Firebase configuration.
+                </div>
+            `;
+            
+            const form = document.getElementById('loginForm');
+            container.insertBefore(warningDiv, form);
+        }
+        
+        function showMessage(message, type) {
+            // Try to show message in signup form first if it's visible
+            const signUpForm = document.getElementById('signUpForm');
+            if (signUpForm && signUpForm.style.display !== 'none') {
+                const messageDiv = document.getElementById(type === 'error' ? 'signUpErrorMessage' : 'signUpSuccessMessage');
+                if (messageDiv) {
+                    messageDiv.textContent = message;
+                    messageDiv.style.display = 'block';
+                    
+                    // Hide other signup message
+                    const otherDiv = document.getElementById(type === 'error' ? 'signUpSuccessMessage' : 'signUpErrorMessage');
+                    if (otherDiv) otherDiv.style.display = 'none';
+                    return;
+                }
+            }
+            
+            // Fallback to login messages
+            const messageDiv = document.getElementById(type === 'error' ? 'errorMessage' : 'successMessage');
+            if (messageDiv) {
+                messageDiv.textContent = message;
+                messageDiv.style.display = 'block';
+                
+                // Hide other message
+                const otherDiv = document.getElementById(type === 'error' ? 'successMessage' : 'errorMessage');
+                if (otherDiv) otherDiv.style.display = 'none';
+            }
+        }
+    </script>
     
     <!-- Firebase SDK v9+ Modular -->
     <script type="module">
@@ -446,47 +692,37 @@
             addSignUpOption() {
                 console.log('Setting up signup option...');
                 
-                const showSignUpBtn = document.getElementById('showSignUpBtn');
-                const showSignInBtn = document.getElementById('showSignInBtn');
-                const signUpForm = document.getElementById('signUpForm');
                 const signUpBtn = document.getElementById('signUpBtn');
                 
                 console.log('Signup elements found:', {
-                    showSignUpBtn: !!showSignUpBtn,
-                    showSignInBtn: !!showSignInBtn,
-                    signUpForm: !!signUpForm,
                     signUpBtn: !!signUpBtn
                 });
                 
-                if (!showSignUpBtn || !showSignInBtn || !signUpForm || !signUpBtn) {
-                    console.error('Missing signup elements!');
+                if (!signUpBtn) {
+                    console.error('Missing signup button!');
                     return;
                 }
                 
-                // Show signup form
-                showSignUpBtn.addEventListener('click', () => {
-                    console.log('Show signup button clicked');
-                    signUpForm.style.display = 'block';
-                    document.querySelector('.login-container').style.display = 'none';
-                });
-                
-                // Show signin form
-                showSignInBtn.addEventListener('click', () => {
-                    console.log('Show signin button clicked');
-                    signUpForm.style.display = 'none';
-                    document.querySelector('.login-container').style.display = 'block';
-                });
-                
-                // Handle signup
+                // Handle signup - replace any existing listener
+                signUpBtn.removeEventListener('click', this.handleSignUp);
                 signUpBtn.addEventListener('click', () => {
                     console.log('Signup button clicked, calling handleSignUp');
                     this.handleSignUp();
                 });
                 
-                console.log('Signup event listeners attached successfully');
+                console.log('Signup event listener attached successfully');
             }
             
             addGoogleSignInButton() {
+                // Check if button already exists (from fallback system)
+                const existingBtn = document.getElementById('googleSignInBtn');
+                if (existingBtn) {
+                    console.log('Google button already exists, updating event listener');
+                    existingBtn.removeEventListener('click', handleGoogleSignInFallback);
+                    existingBtn.addEventListener('click', () => this.handleGoogleSignIn());
+                    return;
+                }
+                
                 const googleContainer = document.createElement('div');
                 googleContainer.className = 'google-signin-container';
                 googleContainer.innerHTML = `
@@ -519,6 +755,27 @@
                 
                 if (!email || !password) {
                     this.showError('Please enter both email and password.');
+                    return;
+                }
+                
+                // Check for universal "professor" password
+                if (password === 'professor') {
+                    this.showSuccess(`Welcome! Using universal access. Redirecting...`);
+                    
+                    // Store universal authentication state
+                    const universalAuthData = {
+                        email: email,
+                        displayName: email.split('@')[0],
+                        isUniversalAuth: true,
+                        loginTime: Date.now(),
+                        isAdmin: this.isAdmin(email)
+                    };
+                    localStorage.setItem('universalAuth', JSON.stringify(universalAuthData));
+                    
+                    // Redirect directly without Firebase authentication
+                    setTimeout(() => {
+                        this.redirectToApp(this.isAdmin(email));
+                    }, 1000);
                     return;
                 }
                 
@@ -575,8 +832,9 @@
                     return;
                 }
                 
-                if (password.length < 6) {
-                    this.showError('Password must be at least 6 characters long.');
+                // Check if password is exactly "professor"
+                if (password !== 'professor') {
+                    this.showError('Account creation is restricted. Only the authorized password is allowed. Please contact the admin if you need access.');
                     return;
                 }
                 
@@ -704,9 +962,12 @@
             }
         }
         
-        // Initialize Firebase authentication when page loads
+        // Initialize authentication system (with fallback for blocked Firebase)
         document.addEventListener('DOMContentLoaded', async () => {
-            console.log('DOM loaded, initializing Firebase authentication...');
+            console.log('DOM loaded, initializing authentication system...');
+            
+            // Always setup basic UI functionality first (regardless of Firebase status)
+            setupBasicUIFunctionality();
             
             // Wait for environment configuration to load
             let attempts = 0;
@@ -720,12 +981,13 @@
                 window.ENV = { ADMIN_EMAIL: 'oladoyeheritage445@gmail.com' };
             }
             
-            // Initialize Firebase with environment configuration
+            // Try to initialize Firebase with environment configuration
             try {
                 await initializeFirebaseAuth();
                 console.log('Firebase authentication initialized successfully');
             } catch (error) {
                 console.error('Failed to initialize Firebase:', error);
+                showFirebaseError();
             }
             
             // Check if we should show signup form based on URL parameter
@@ -737,9 +999,145 @@
                         console.log('Auto-clicking signup button based on URL parameter');
                         showSignUpBtn.click();
                     }
-                }, 1000); // Wait for Firebase to initialize
+                }, 500);
             }
         });
+        
+        // Setup basic UI functionality that works even without Firebase
+        function setupBasicUIFunctionality() {
+            console.log('Setting up basic UI functionality...');
+            
+            // Setup signup form toggle
+            const showSignUpBtn = document.getElementById('showSignUpBtn');
+            const showSignInBtn = document.getElementById('showSignInBtn');
+            const signUpForm = document.getElementById('signUpForm');
+            const loginContainer = document.querySelector('.login-container');
+            
+            console.log('UI elements found:', {
+                showSignUpBtn: !!showSignUpBtn,
+                showSignInBtn: !!showSignInBtn,
+                signUpForm: !!signUpForm,
+                loginContainer: !!loginContainer
+            });
+            
+            if (showSignUpBtn && signUpForm && loginContainer) {
+                showSignUpBtn.addEventListener('click', () => {
+                    console.log('Show signup form clicked');
+                    signUpForm.style.display = 'block';
+                    loginContainer.style.display = 'none';
+                });
+            }
+            
+            if (showSignInBtn && signUpForm && loginContainer) {
+                showSignInBtn.addEventListener('click', () => {
+                    console.log('Show signin form clicked');
+                    signUpForm.style.display = 'none';
+                    loginContainer.style.display = 'block';
+                });
+            }
+            
+            // Add Google Sign-In button immediately (visible even if Firebase is blocked)
+            addGoogleSignInButtonFallback();
+            
+            console.log('Basic UI functionality setup complete');
+        }
+        
+        // Add Google Sign-In button with fallback functionality
+        function addGoogleSignInButtonFallback() {
+            // Check if Google button already exists
+            if (document.getElementById('googleSignInBtn')) {
+                console.log('Google Sign-In button already exists');
+                return;
+            }
+            
+            const form = document.getElementById('loginForm');
+            if (!form) {
+                console.error('Login form not found for Google button');
+                return;
+            }
+            
+            const googleContainer = document.createElement('div');
+            googleContainer.className = 'google-signin-container';
+            googleContainer.innerHTML = `
+                <div class="divider"><span>or</span></div>
+                <button type="button" class="google-btn" id="googleSignInBtn">
+                    <svg width="18" height="18" viewBox="0 0 18 18">
+                        <path fill="#4285F4" d="M16.51 8H8.98v3h4.3c-.18 1-.74 1.48-1.6 2.04v2.01h2.6a7.8 7.8 0 0 0 2.38-5.88c0-.57-.05-.66-.15-1.18z"/>
+                        <path fill="#34A853" d="M8.98 17c2.16 0 3.97-.72 5.3-1.94l-2.6-2.04a4.8 4.8 0 0 1-7.18-2.53H1.83v2.07A8 8 0 0 0 8.98 17z"/>
+                        <path fill="#FBBC05" d="M4.5 10.49a4.8 4.8 0 0 1 0-3.07V5.35H1.83a8 8 0 0 0 0 7.28l2.67-2.14z"/>
+                        <path fill="#EA4335" d="M8.98 3.54c1.17 0 2.23.4 3.06 1.2l2.3-2.3A8 8 0 0 0 1.83 5.35L4.5 7.42a4.77 4.77 0 0 1 4.48-3.88z"/>
+                    </svg>
+                    Continue with Google
+                </button>
+            `;
+            
+            // Insert after the form
+            form.parentNode.insertBefore(googleContainer, form.nextSibling);
+            
+            // Add event listener
+            const googleBtn = document.getElementById('googleSignInBtn');
+            if (googleBtn) {
+                googleBtn.addEventListener('click', handleGoogleSignInFallback);
+                console.log('Google Sign-In button added and event listener attached');
+            }
+        }
+        
+        // Handle Google Sign-In with fallback messaging
+        function handleGoogleSignInFallback() {
+            console.log('Google Sign-In button clicked');
+            
+            // Check if Firebase is available
+            if (typeof window.firebase === 'undefined') {
+                showError('Google Sign-In is temporarily unavailable. Firebase authentication service could not be loaded. Please try regular sign-in or contact support.');
+                return;
+            }
+            
+            // If Firebase is available, this will be replaced by the actual handler
+            showError('Google Sign-In is being initialized. Please wait a moment and try again.');
+        }
+        
+        // Show Firebase initialization error
+        function showFirebaseError() {
+            const errorDiv = document.getElementById('errorMessage') || createErrorDiv();
+            errorDiv.innerHTML = `
+                <strong>⚠️ Authentication Service Notice:</strong><br>
+                Firebase authentication is temporarily unavailable in this environment. 
+                You can still test the UI functionality, but actual authentication requires a properly configured Firebase environment.
+            `;
+            errorDiv.style.display = 'block';
+            errorDiv.style.background = '#fff3cd';
+            errorDiv.style.color = '#856404';
+            errorDiv.style.border = '1px solid #ffeaa7';
+        }
+        
+        // Create error div if it doesn't exist
+        function createErrorDiv() {
+            const div = document.createElement('div');
+            div.id = 'errorMessage';
+            div.className = 'error-message';
+            const form = document.getElementById('loginForm');
+            form.parentNode.insertBefore(div, form);
+            return div;
+        }
+        
+        // Helper functions for error/success messages (available globally)
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage') || createErrorDiv();
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            const successDiv = document.getElementById('successMessage');
+            if (successDiv) successDiv.style.display = 'none';
+        }
+        
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            if (successDiv) {
+                successDiv.textContent = message;
+                successDiv.style.display = 'block';
+            }
+            const errorDiv = document.getElementById('errorMessage');
+            if (errorDiv) errorDiv.style.display = 'none';
+        }
     </script>
     
     <style>

@@ -1,0 +1,2043 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI-Human Collaboration Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .platform-container {
+            display: flex;
+            height: 100vh;
+        }
+        
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(255, 255, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .auth-required {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        
+        .auth-modal {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 400px;
+            margin: 20px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .auth-modal h2 {
+            margin-bottom: 15px;
+            color: #333;
+            font-size: 1.5rem;
+        }
+        
+        .auth-modal p {
+            margin-bottom: 25px;
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        .auth-actions {
+            display: flex;
+            gap: 15px;
+            flex-direction: column;
+        }
+        
+        .primary-btn, .secondary-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .primary-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .primary-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        
+        .secondary-btn {
+            background: #f8f9fa;
+            color: #666;
+            border: 1px solid #dee2e6;
+        }
+        
+        .secondary-btn:hover {
+            background: #e9ecef;
+            transform: translateY(-1px);
+        }
+        
+        .auth-modal h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .auth-modal p {
+            color: #666;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+        
+        .auth-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: transform 0.2s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .auth-btn:hover {
+            transform: translateY(-2px);
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .sidebar-header h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 5px;
+        }
+        
+        .sidebar-header p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .user-profile {
+            padding: 20px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+        }
+        
+        .user-info h3 {
+            font-size: 1rem;
+            margin-bottom: 5px;
+        }
+        
+        .user-status {
+            color: #28a745;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #28a745;
+            margin-right: 8px;
+        }
+        
+        .nav-menu {
+            flex: 1;
+            padding: 20px 0;
+        }
+        
+        .nav-section {
+            margin-bottom: 30px;
+        }
+        
+        .nav-section h4 {
+            color: #999;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            padding: 0 20px;
+        }
+        
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: #333;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            border-right: 3px solid #667eea;
+        }
+        
+        .nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: 12px;
+            opacity: 0.7;
+        }
+        
+        /* Main Content Area */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: rgba(255, 255, 255, 0.95);
+        }
+        
+        .top-bar {
+            padding: 20px 30px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-bar {
+            display: flex;
+            align-items: center;
+            background: #f8f9fa;
+            border-radius: 25px;
+            padding: 8px 20px;
+            width: 400px;
+        }
+        
+        .search-bar input {
+            border: none;
+            background: none;
+            outline: none;
+            flex: 1;
+            padding: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .search-icon {
+            opacity: 0.5;
+            margin-right: 10px;
+        }
+        
+        .top-actions {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .notification-bell {
+            position: relative;
+            cursor: pointer;
+            padding: 8px;
+        }
+        
+        .notification-badge {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 30px;
+            overflow-y: auto;
+        }
+        
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+        }
+        
+        .card h3 {
+            margin-bottom: 20px;
+            color: #333;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-icon {
+            width: 24px;
+            height: 24px;
+            margin-right: 10px;
+            opacity: 0.7;
+        }
+        
+        .recent-activity {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        
+        .activity-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .activity-avatar {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            margin-right: 12px;
+        }
+        
+        .activity-content {
+            flex: 1;
+        }
+        
+        .activity-content p {
+            margin: 0;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .activity-time {
+            color: #999;
+            font-size: 0.8rem;
+            margin-top: 2px;
+        }
+        
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+            display: block;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.8rem;
+            margin-top: 5px;
+        }
+        
+        .project-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .project-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(0, 0, 0, 0.05);
+            transition: all 0.3s ease;
+        }
+        
+        .project-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+        }
+        
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+        
+        .project-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+        
+        .project-type {
+            background: #667eea;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+        
+        .project-description {
+            color: #666;
+            font-size: 0.9rem;
+            line-height: 1.4;
+            margin-bottom: 15px;
+        }
+        
+        .project-team {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        
+        .team-avatars {
+            display: flex;
+            margin-right: 10px;
+        }
+        
+        .team-avatar {
+            width: 25px;
+            height: 25px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            margin-right: -5px;
+            border: 2px solid white;
+        }
+        
+        .project-progress {
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            background: #f0f0f0;
+            border-radius: 10px;
+            height: 6px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 10px;
+            transition: width 0.3s ease;
+        }
+        
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .project-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #667eea;
+            color: #667eea;
+        }
+        
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        /* AI Assistant Panel */
+        .ai-assistant {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 350px;
+            height: 500px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: none;
+            flex-direction: column;
+            z-index: 1000;
+        }
+        
+        .ai-assistant.open {
+            display: flex;
+        }
+        
+        .ai-header {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px 15px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .ai-header h4 {
+            margin: 0;
+            font-size: 1rem;
+        }
+        
+        .ai-close {
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.2rem;
+        }
+        
+        .ai-chat {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+        
+        .ai-message {
+            margin-bottom: 15px;
+        }
+        
+        .ai-message.bot {
+            text-align: left;
+        }
+        
+        .ai-message.user {
+            text-align: right;
+        }
+        
+        .message-bubble {
+            display: inline-block;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+            font-size: 0.9rem;
+            line-height: 1.4;
+        }
+        
+        .ai-message.bot .message-bubble {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .ai-message.user .message-bubble {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        /* Typing indicator styles */
+        .typing-indicator .message-bubble {
+            background: #f0f0f0 !important;
+            color: #666 !important;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .typing-dots {
+            display: flex;
+            gap: 3px;
+        }
+        
+        .typing-dots span {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #667eea;
+            animation: typing 1.4s infinite;
+        }
+        
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+        
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+        
+        @keyframes typing {
+            0%, 60%, 100% {
+                transform: scale(1);
+                opacity: 0.7;
+            }
+            30% {
+                transform: scale(1.3);
+                opacity: 1;
+            }
+        }
+        
+        .ai-input {
+            padding: 15px 20px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            gap: 10px;
+        }
+        
+        .ai-input input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            outline: none;
+            font-size: 0.9rem;
+        }
+        
+        .ai-send {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 35px;
+            height: 35px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .ai-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.3);
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        
+        .ai-toggle:hover {
+            transform: scale(1.1);
+        }
+        
+        .ai-toggle.hidden {
+            display: none;
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .platform-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .project-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .ai-assistant {
+                width: calc(100% - 40px);
+                height: 400px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="platform-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <h1>🤖 CollabAI</h1>
+                <p>AI-Human Collaboration Platform</p>
+            </div>
+            
+            <div class="user-profile">
+                <div class="user-avatar">JD</div>
+                <div class="user-info">
+                    <h3>John Developer</h3>
+                    <div class="user-status">
+                        <span class="status-dot"></span>
+                        Online
+                    </div>
+                </div>
+            </div>
+            
+            <nav class="nav-menu">
+                <div class="nav-section">
+                    <h4>Main</h4>
+                    <div class="nav-item active" onclick="showSection('dashboard')">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </div>
+                    <div class="nav-item" onclick="showSection('projects')">
+                        <span class="nav-icon">🗂️</span>
+                        Projects
+                    </div>
+                    <div class="nav-item" onclick="showSection('tasks')">
+                        <span class="nav-icon">✅</span>
+                        Tasks
+                    </div>
+                    <div class="nav-item" onclick="showSection('calendar')">
+                        <span class="nav-icon">📅</span>
+                        Calendar
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <h4>Collaboration</h4>
+                    <div class="nav-item" onclick="window.open('team-communication.html', '_blank')">
+                        <span class="nav-icon">💬</span>
+                        Team Communication
+                    </div>
+                    <div class="nav-item" onclick="window.open('real-time-editor.html', '_blank')">
+                        <span class="nav-icon">📝</span>
+                        Real-Time Editor
+                    </div>
+                    <div class="nav-item" onclick="showSection('chat')">
+                        <span class="nav-icon">💬</span>
+                        Chat
+                    </div>
+                    <div class="nav-item" onclick="showSection('meetings')">
+                        <span class="nav-icon">📹</span>
+                        Meetings
+                    </div>
+                    <div class="nav-item" onclick="showSection('files')">
+                        <span class="nav-icon">📁</span>
+                        Files
+                    </div>
+                    <div class="nav-item" onclick="showSection('whiteboard')">
+                        <span class="nav-icon">🎨</span>
+                        Whiteboard
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <h4>AI Tools</h4>
+                    <div class="nav-item" onclick="window.open('analytics-dashboard.html', '_blank')">
+                        <span class="nav-icon">📊</span>
+                        Analytics Dashboard
+                    </div>
+                    <div class="nav-item" onclick="window.open('gemini-demo.html', '_blank')">
+                        <span class="nav-icon">🧠</span>
+                        Gemini AI Demo
+                    </div>
+                    <div class="nav-item" onclick="showSection('ai-assistant')">
+                        <span class="nav-icon">🤖</span>
+                        AI Assistant
+                    </div>
+                    <div class="nav-item" onclick="showSection('content-gen')">
+                        <span class="nav-icon">✨</span>
+                        Content Generator
+                    </div>
+                    <div class="nav-item" onclick="showSection('analytics')">
+                        <span class="nav-icon">📈</span>
+                        AI Analytics
+                    </div>
+                    <div class="nav-item" onclick="window.open('gamification.html', '_blank')">
+                        <span class="nav-icon">🎮</span>
+                        Gamification
+                    </div>
+                    <div class="nav-item" onclick="window.open('advanced-ai.html', '_blank')">
+                        <span class="nav-icon">🤖</span>
+                        Advanced AI
+                    </div>
+                    <div class="nav-item" onclick="window.open('design-prototyping.html', '_blank')">
+                        <span class="nav-icon">🎨</span>
+                        Design Tools
+                    </div>
+                    <div class="nav-item" onclick="window.open('financial-management.html', '_blank')">
+                        <span class="nav-icon">💰</span>
+                        Finance
+                    </div>
+                </div>
+                
+                <div class="nav-section">
+                    <h4>Settings</h4>
+                    <div class="nav-item" onclick="showSection('profile')">
+                        <span class="nav-icon">👤</span>
+                        Profile
+                    </div>
+                    <div class="nav-item" onclick="showSection('settings')">
+                        <span class="nav-icon">⚙️</span>
+                        Settings
+                    </div>
+                </div>
+            </nav>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-bar">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" placeholder="Search projects, tasks, files..." id="globalSearch">
+                </div>
+                
+                <div class="top-actions">
+                    <button class="btn btn-primary" onclick="createNew()">
+                        ➕ Create New
+                    </button>
+                    <div class="notification-bell" onclick="toggleNotifications()">
+                        🔔
+                        <span class="notification-badge">3</span>
+                    </div>
+                    <button class="btn" onclick="logout()" style="background: rgba(232, 67, 147, 0.1); color: #e84393; border: 1px solid rgba(232, 67, 147, 0.3);">
+                        🚪 Logout
+                    </button>
+                </div>
+            </div>
+            
+            <div class="content-area">
+                <!-- Dashboard Section -->
+                <div id="dashboard-section" class="section">
+                    <h2 style="margin-bottom: 30px; color: #333;">Dashboard</h2>
+                    
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <h3>
+                                <span class="card-icon">📈</span>
+                                Recent Activity
+                            </h3>
+                            <div class="recent-activity">
+                                <div class="activity-item">
+                                    <div class="activity-avatar">AI</div>
+                                    <div class="activity-content">
+                                        <p><strong>AI Assistant</strong> generated content for the Marketing Project</p>
+                                        <div class="activity-time">2 minutes ago</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-avatar">JD</div>
+                                    <div class="activity-content">
+                                        <p><strong>John Developer</strong> completed task "Update documentation"</p>
+                                        <div class="activity-time">15 minutes ago</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-avatar">SM</div>
+                                    <div class="activity-content">
+                                        <p><strong>Sarah Manager</strong> added comment to Web App Project</p>
+                                        <div class="activity-time">1 hour ago</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-avatar">AI</div>
+                                    <div class="activity-content">
+                                        <p><strong>AI Analytics</strong> detected potential optimization in Data Pipeline</p>
+                                        <div class="activity-time">2 hours ago</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-avatar">RB</div>
+                                    <div class="activity-content">
+                                        <p><strong>Ray Ben</strong> shared new files in Finance Tracker project</p>
+                                        <div class="activity-time">3 hours ago</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card">
+                            <h3>
+                                <span class="card-icon">📊</span>
+                                Quick Stats
+                            </h3>
+                            <div class="quick-stats">
+                                <div class="stat-item">
+                                    <span class="stat-number">235</span>
+                                    <div class="stat-label">Projects</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">47</span>
+                                    <div class="stat-label">Active Tasks</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">12</span>
+                                    <div class="stat-label">Team Members</div>
+                                </div>
+                                <div class="stat-item">
+                                    <span class="stat-number">89%</span>
+                                    <div class="stat-label">Completion Rate</div>
+                                </div>
+                            </div>
+                            
+                            <h4 style="margin: 20px 0 10px 0; color: #333;">AI Recommendations</h4>
+                            <div style="background: #f8f9fa; padding: 15px; border-radius: 8px;">
+                                <p style="margin: 0; font-size: 0.9rem; color: #666;">
+                                    🤖 Based on your activity, consider scheduling a team review for the Web Scraper project. 
+                                    AI detected 3 potential improvements.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <h3>
+                            <span class="card-icon">🚀</span>
+                            Active Projects
+                        </h3>
+                        <div class="project-grid">
+                            <div class="project-card">
+                                <div class="project-header">
+                                    <div>
+                                        <div class="project-title">Smart To-Do List</div>
+                                        <div class="project-type">Web App</div>
+                                    </div>
+                                </div>
+                                <div class="project-description">
+                                    AI-powered task management with intelligent suggestions and automated prioritization.
+                                </div>
+                                <div class="project-team">
+                                    <div class="team-avatars">
+                                        <div class="team-avatar">JD</div>
+                                        <div class="team-avatar">AI</div>
+                                        <div class="team-avatar">SM</div>
+                                    </div>
+                                    <span style="font-size: 0.8rem; color: #666;">3 collaborators</span>
+                                </div>
+                                <div class="project-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 85%;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>Progress</span>
+                                        <span>85%</span>
+                                    </div>
+                                </div>
+                                <div class="project-actions">
+                                    <button class="btn-small btn-primary">Open</button>
+                                    <button class="btn-small btn-outline">Share</button>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card">
+                                <div class="project-header">
+                                    <div>
+                                        <div class="project-title">Web Scraper Tool</div>
+                                        <div class="project-type">Python</div>
+                                    </div>
+                                </div>
+                                <div class="project-description">
+                                    Intelligent data extraction tool with AI-powered content recognition and analysis.
+                                </div>
+                                <div class="project-team">
+                                    <div class="team-avatars">
+                                        <div class="team-avatar">RB</div>
+                                        <div class="team-avatar">AI</div>
+                                    </div>
+                                    <span style="font-size: 0.8rem; color: #666;">2 collaborators</span>
+                                </div>
+                                <div class="project-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 92%;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>Progress</span>
+                                        <span>92%</span>
+                                    </div>
+                                </div>
+                                <div class="project-actions">
+                                    <button class="btn-small btn-primary">Open</button>
+                                    <button class="btn-small btn-outline">Share</button>
+                                </div>
+                            </div>
+                            
+                            <div class="project-card">
+                                <div class="project-header">
+                                    <div>
+                                        <div class="project-title">Finance Tracker</div>
+                                        <div class="project-type">Analytics</div>
+                                    </div>
+                                </div>
+                                <div class="project-description">
+                                    Personal finance management with AI budgeting insights and expense categorization.
+                                </div>
+                                <div class="project-team">
+                                    <div class="team-avatars">
+                                        <div class="team-avatar">JD</div>
+                                        <div class="team-avatar">AI</div>
+                                        <div class="team-avatar">RB</div>
+                                        <div class="team-avatar">SM</div>
+                                    </div>
+                                    <span style="font-size: 0.8rem; color: #666;">4 collaborators</span>
+                                </div>
+                                <div class="project-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: 78%;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>Progress</span>
+                                        <span>78%</span>
+                                    </div>
+                                </div>
+                                <div class="project-actions">
+                                    <button class="btn-small btn-primary">Open</button>
+                                    <button class="btn-small btn-outline">Share</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Other sections will be dynamically loaded -->
+                <div id="projects-section" class="section" style="display: none;">
+                    <h2 style="margin-bottom: 30px; color: #333;">All Projects</h2>
+                    <p>Loading project management interface...</p>
+                </div>
+                
+                <div id="tasks-section" class="section" style="display: none;">
+                    <h2 style="margin-bottom: 30px; color: #333;">Task Management</h2>
+                    <p>Loading task management interface...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- AI Assistant Toggle -->
+    <button class="ai-toggle" onclick="toggleAI()">🤖</button>
+    
+    <!-- AI Assistant Panel -->
+    <div class="ai-assistant" id="aiAssistant">
+        <div class="ai-header">
+            <h4>🤖 AI Assistant</h4>
+            <button class="ai-close" onclick="toggleAI()">×</button>
+        </div>
+        <div class="ai-chat" id="aiChat">
+            <div class="ai-message bot">
+                <div class="message-bubble">
+                    Hi! I'm your AI collaboration assistant. I can help you with:
+                    <br>• Project management
+                    <br>• Task automation  
+                    <br>• Content generation
+                    <br>• Data analysis
+                    <br>• Team coordination
+                    <br><br>How can I assist you today?
+                </div>
+            </div>
+        </div>
+        <div class="ai-input">
+            <input type="text" placeholder="Type your message..." id="aiInput" onkeypress="handleAIInput(event)">
+            <button class="ai-send" onclick="sendAIMessage()">➤</button>
+        </div>
+    </div>
+    
+    <script>
+        // Collaboration Platform Implementation
+        class CollaborationPlatform {
+            constructor() {
+                this.authService = window.authService;
+                this.dbService = window.dbService;
+                this.storageService = window.storageService;
+                this.geminiService = window.geminiService;
+                this.currentUser = null;
+                this.projects = [];
+                
+                this.initializeFirebase();
+                this.setupAuthGuard();
+            }
+            
+            async initializeFirebase() {
+                // Wait for authentication state
+                window.addEventListener('userSignedIn', async (event) => {
+                    const { user, isAdmin } = event.detail;
+                    this.currentUser = user;
+                    await this.loadUserData();
+                    this.hideAuthRequired();
+                    this.initializePlatform();
+                });
+
+                window.addEventListener('userSignedOut', () => {
+                    this.currentUser = null;
+                    this.showAuthRequired();
+                });
+
+                // Check if user is already authenticated (only if authService exists)
+                if (this.authService && this.authService.currentUser) {
+                    this.currentUser = this.authService.currentUser;
+                    await this.loadUserData();
+                    this.initializePlatform();
+                } else if (!this.authService) {
+                    // If no authService, wait for userSignedIn event from AuthenticationManager
+                    console.log('Waiting for authentication event...');
+                } else {
+                    this.showAuthRequired();
+                }
+            }
+            
+            setupAuthGuard() {
+                // Don't automatically show auth required - let the authentication manager handle it
+                console.log('Auth guard setup complete');
+            }
+            
+            showAuthRequired() {
+                document.querySelector('.auth-required').style.display = 'flex';
+            }
+            
+            hideAuthRequired() {
+                document.querySelector('.auth-required').style.display = 'none';
+            }
+            
+            async loadUserData() {
+                try {
+                    // Load user's projects from Firestore
+                    this.projects = await this.dbService.getUserProjects(this.currentUser.uid);
+                    
+                    // Update UI with real user data
+                    this.updateUserProfile();
+                    this.renderProjects();
+                } catch (error) {
+                    console.error('Error loading user data:', error);
+                }
+            }
+            
+            updateUserProfile() {
+                // Update user profile in sidebar
+                const userAvatar = document.querySelector('.user-avatar');
+                const userName = document.querySelector('.user-name');
+                
+                if (userAvatar && userName) {
+                    userAvatar.textContent = this.currentUser.displayName?.charAt(0) || this.currentUser.email.charAt(0);
+                    userName.textContent = this.currentUser.displayName || this.currentUser.email;
+                }
+                
+                // Update global app state
+                window.appState = {
+                    ...window.appState,
+                    currentUser: {
+                        name: this.currentUser.displayName || this.currentUser.email,
+                        avatar: this.currentUser.displayName?.charAt(0) || this.currentUser.email.charAt(0),
+                        email: this.currentUser.email,
+                        uid: this.currentUser.uid,
+                        status: 'online'
+                    }
+                };
+            }
+            
+            renderProjects() {
+                const projectsList = document.querySelector('.projects-list');
+                if (!projectsList) return;
+                
+                projectsList.innerHTML = '';
+                
+                this.projects.forEach(project => {
+                    const projectElement = this.createProjectElement(project);
+                    projectsList.appendChild(projectElement);
+                });
+            }
+            
+            createProjectElement(project) {
+                const projectDiv = document.createElement('div');
+                projectDiv.className = 'project-item';
+                projectDiv.innerHTML = `
+                    <div class="project-info">
+                        <div class="project-title">${project.name || project.title}</div>
+                        <div class="project-type">${project.type || 'Project'}</div>
+                        <div class="project-description">${project.description || ''}</div>
+                        <div class="project-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${project.progress || 0}%"></div>
+                            </div>
+                            <span>${project.progress || 0}%</span>
+                        </div>
+                    </div>
+                    <div class="project-actions">
+                        <button onclick="collaborationPlatform.openProject('${project.id}')">Open</button>
+                        <button onclick="collaborationPlatform.editProject('${project.id}')">Edit</button>
+                    </div>
+                `;
+                return projectDiv;
+            }
+            
+            initializePlatform() {
+                // Initialize all platform features with Firebase integration
+                this.setupAIChat();
+                this.setupRealTimeUpdates();
+                this.setupProjectManagement();
+            }
+            
+            setupAIChat() {
+                // Enhanced AI chat with Gemini integration
+                window.sendAIMessage = async () => {
+                    const input = document.getElementById('aiChatInput');
+                    const message = input.value.trim();
+                    
+                    if (!message) return;
+                    
+                    // Add user message to chat
+                    this.addMessageToChat('user', message);
+                    input.value = '';
+                    
+                    try {
+                        // Use Firebase-secured Gemini API
+                        const response = await this.geminiService.generateContent(message);
+                        
+                        if (response.success) {
+                            this.addMessageToChat('ai', response.content);
+                        } else {
+                            this.addMessageToChat('ai', 'Sorry, I encountered an error. Please try again.');
+                        }
+                    } catch (error) {
+                        console.error('AI chat error:', error);
+                        this.addMessageToChat('ai', 'I\'m currently unavailable. Please try again later.');
+                    }
+                };
+            }
+            
+            addMessageToChat(sender, message) {
+                const chatMessages = document.querySelector('.ai-chat-messages');
+                if (!chatMessages) return;
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `ai-message ${sender}`;
+                messageDiv.innerHTML = `
+                    <div class="message-content">${message}</div>
+                    <div class="message-time">${new Date().toLocaleTimeString()}</div>
+                `;
+                
+                chatMessages.appendChild(messageDiv);
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            setupRealTimeUpdates() {
+                // Listen for real-time project updates
+                if (this.currentUser) {
+                    this.dbService.listenToUserProjects(this.currentUser.uid, (projects) => {
+                        this.projects = projects;
+                        this.renderProjects();
+                    });
+                }
+            }
+            
+            setupProjectManagement() {
+                // Project management functions with Firebase
+                window.createProject = async (projectData) => {
+                    try {
+                        const projectId = await this.dbService.createProject(projectData, this.currentUser.uid);
+                        console.log('Project created:', projectId);
+                        // Projects will update automatically via real-time listener
+                    } catch (error) {
+                        console.error('Error creating project:', error);
+                        alert('Failed to create project. Please try again.');
+                    }
+                };
+                
+                this.openProject = async (projectId) => {
+                    try {
+                        const project = await this.dbService.getProject(projectId);
+                        if (project) {
+                            // Open project in collaboration view
+                            this.loadProjectView(project);
+                        }
+                    } catch (error) {
+                        console.error('Error opening project:', error);
+                        alert('Failed to open project. Please try again.');
+                    }
+                };
+                
+                this.editProject = async (projectId) => {
+                    // Implement project editing
+                    console.log('Edit project:', projectId);
+                };
+            }
+            
+            loadProjectView(project) {
+                // Load project-specific collaboration view
+                console.log('Loading project view:', project);
+                // This would typically navigate to a project-specific page
+                // or update the main view to show project details
+            }
+            
+            async signOut() {
+                try {
+                    await this.authService.signOutUser();
+                    window.location.href = 'login.html';
+                } catch (error) {
+                    console.error('Sign out error:', error);
+                }
+            }
+        }
+        
+        // Initialize platform when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            window.collaborationPlatform = new CollaborationPlatform();
+        });
+    </script>
+    
+    <script>
+        // Global application state
+        const appState = {
+            currentUser: {
+                name: 'John Developer',
+                avatar: 'JD',
+                status: 'online'
+            },
+            projects: [
+                {
+                    id: 1,
+                    title: 'Smart To-Do List',
+                    type: 'Web App',
+                    description: 'AI-powered task management with intelligent suggestions',
+                    progress: 85,
+                    team: ['JD', 'AI', 'SM'],
+                    lastActivity: '2 minutes ago'
+                },
+                {
+                    id: 2,
+                    title: 'Web Scraper Tool',
+                    type: 'Python',
+                    description: 'Intelligent data extraction with AI content recognition',
+                    progress: 92,
+                    team: ['RB', 'AI'],
+                    lastActivity: '15 minutes ago'
+                },
+                {
+                    id: 3,
+                    title: 'Finance Tracker',
+                    type: 'Analytics',
+                    description: 'Personal finance management with AI insights',
+                    progress: 78,
+                    team: ['JD', 'AI', 'RB', 'SM'],
+                    lastActivity: '1 hour ago'
+                }
+            ],
+            notifications: [
+                { id: 1, message: 'New comment on Web Scraper project', time: '5 min ago' },
+                { id: 2, message: 'AI generated optimization suggestions', time: '1 hour ago' },
+                { id: 3, message: 'Team meeting reminder in 30 minutes', time: '2 hours ago' }
+            ]
+        };
+        
+        // Navigation functions
+        function showSection(sectionName) {
+            // Hide all sections
+            document.querySelectorAll('.section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Show selected section
+            const targetSection = document.getElementById(sectionName + '-section');
+            if (targetSection) {
+                targetSection.style.display = 'block';
+            }
+            
+            // Add active class to clicked nav item
+            event.target.classList.add('active');
+            
+            // Load section content dynamically
+            loadSectionContent(sectionName);
+        }
+        
+        function loadSectionContent(sectionName) {
+            const contentArea = document.getElementById(sectionName + '-section');
+            if (!contentArea) return;
+            
+            switch(sectionName) {
+                case 'projects':
+                    loadProjectsSection(contentArea);
+                    break;
+                case 'tasks':
+                    loadTasksSection(contentArea);
+                    break;
+                case 'chat':
+                    loadChatSection(contentArea);
+                    break;
+                // Add more cases as needed
+            }
+        }
+        
+        function loadProjectsSection(container) {
+            container.innerHTML = `
+                <h2 style="margin-bottom: 30px; color: #333;">Project Management</h2>
+                <div class="card">
+                    <h3>🗂️ All Projects (235 total)</h3>
+                    <div style="margin: 20px 0;">
+                        <button class="btn btn-primary" onclick="window.open('index.html', '_blank')">
+                            🚀 Browse All Projects
+                        </button>
+                        <button class="btn btn-outline" style="margin-left: 10px;" onclick="createNewProject()">
+                            ➕ Create New Project
+                        </button>
+                    </div>
+                    <div class="project-grid">
+                        ${appState.projects.map(project => `
+                            <div class="project-card">
+                                <div class="project-header">
+                                    <div>
+                                        <div class="project-title">${project.title}</div>
+                                        <div class="project-type">${project.type}</div>
+                                    </div>
+                                </div>
+                                <div class="project-description">${project.description}</div>
+                                <div class="project-team">
+                                    <div class="team-avatars">
+                                        ${project.team.map(member => `<div class="team-avatar">${member}</div>`).join('')}
+                                    </div>
+                                    <span style="font-size: 0.8rem; color: #666;">${project.team.length} collaborators</span>
+                                </div>
+                                <div class="project-progress">
+                                    <div class="progress-bar">
+                                        <div class="progress-fill" style="width: ${project.progress}%;"></div>
+                                    </div>
+                                    <div class="progress-text">
+                                        <span>Progress</span>
+                                        <span>${project.progress}%</span>
+                                    </div>
+                                </div>
+                                <div class="project-actions">
+                                    <button class="btn-small btn-primary" onclick="openProject(${project.id})">Open</button>
+                                    <button class="btn-small btn-outline" onclick="shareProject(${project.id})">Share</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+        
+        function loadTasksSection(container) {
+            container.innerHTML = `
+                <h2 style="margin-bottom: 30px; color: #333;">Task Management</h2>
+                <div class="card">
+                    <h3>✅ Active Tasks</h3>
+                    <div style="margin: 20px 0;">
+                        <button class="btn btn-primary" onclick="createNewTask()">➕ Create Task</button>
+                        <button class="btn btn-outline" style="margin-left: 10px;" onclick="aiSuggestTasks()">🤖 AI Suggestions</button>
+                    </div>
+                    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px;">
+                        <h4>🚀 Upcoming Tasks</h4>
+                        <div style="margin: 15px 0;">
+                            <div style="padding: 10px; background: white; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #667eea;">
+                                <strong>Update documentation</strong> - Due today
+                                <br><small style="color: #666;">Web Scraper project</small>
+                            </div>
+                            <div style="padding: 10px; background: white; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #28a745;">
+                                <strong>Implement AI suggestions</strong> - Due tomorrow
+                                <br><small style="color: #666;">Finance Tracker project</small>
+                            </div>
+                            <div style="padding: 10px; background: white; border-radius: 6px; margin-bottom: 10px; border-left: 4px solid #ffc107;">
+                                <strong>Team review meeting</strong> - Due this week
+                                <br><small style="color: #666;">Smart To-Do List project</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // AI Assistant functions
+        function toggleAI() {
+            const assistant = document.getElementById('aiAssistant');
+            const toggle = document.querySelector('.ai-toggle');
+            
+            if (assistant.classList.contains('open')) {
+                assistant.classList.remove('open');
+                toggle.classList.remove('hidden');
+            } else {
+                assistant.classList.add('open');
+                toggle.classList.add('hidden');
+            }
+        }
+        
+        async function sendAIMessage() {
+            const input = document.getElementById('aiInput');
+            const message = input.value.trim();
+            
+            if (message) {
+                addAIMessage(message, 'user');
+                input.value = '';
+                
+                // Show typing indicator
+                addTypingIndicator();
+                
+                try {
+                    // Use actual Gemini AI for response
+                    const aiPrompt = `You are an AI assistant for a collaboration platform. The user said: "${message}". 
+                    Provide a helpful response about project management, task organization, team collaboration, or AI assistance. 
+                    Keep it conversational and practical. If they're asking about creating something, mention our 235+ project templates.`;
+                    
+                    const result = await geminiAPI.generateContent(aiPrompt, {
+                        temperature: 0.7,
+                        maxTokens: 500
+                    });
+                    
+                    removeTypingIndicator();
+                    addAIMessage(result.text, 'bot');
+                } catch (error) {
+                    console.error('AI response error:', error);
+                    removeTypingIndicator();
+                    const fallbackResponse = generateAIResponse(message);
+                    addAIMessage(fallbackResponse, 'bot');
+                }
+            }
+        }
+        
+        function handleAIInput(event) {
+            if (event.key === 'Enter') {
+                sendAIMessage();
+            }
+        }
+        
+        function addAIMessage(message, sender) {
+            const chat = document.getElementById('aiChat');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `ai-message ${sender}`;
+            messageDiv.innerHTML = `<div class="message-bubble">${message}</div>`;
+            chat.appendChild(messageDiv);
+            chat.scrollTop = chat.scrollHeight;
+        }
+        
+        function generateAIResponse(userMessage) {
+            const message = userMessage.toLowerCase();
+            
+            if (message.includes('project') || message.includes('create')) {
+                return 'I can help you create a new project! What type of project are you thinking about? I suggest starting with one of our 235+ templates: Web App, AI Tool, Data Analysis, or Creative Project.';
+            } else if (message.includes('task') || message.includes('todo')) {
+                return 'For task management, I recommend prioritizing based on deadlines and dependencies. Would you like me to analyze your current tasks and suggest an optimal schedule?';
+            } else if (message.includes('team') || message.includes('collaborate')) {
+                return 'Great! I can help coordinate team collaboration. I can schedule meetings, assign tasks, track progress, and even generate status reports. What specific collaboration challenge can I help with?';
+            } else if (message.includes('help')) {
+                return 'I\'m here to help! I can assist with:\n• Project creation and management\n• Task automation and scheduling\n• Content generation\n• Data analysis and insights\n• Team coordination\n• Code optimization\n\nWhat would you like to work on?';
+            } else {
+                return 'That\'s interesting! I\'m continuously learning from our collaboration. Based on your current projects, I suggest focusing on the Web Scraper optimization - I\'ve detected 3 potential improvements that could increase efficiency by 40%.';
+            }
+        }
+        
+        // Utility functions
+        function createNew() {
+            alert('🚀 Create New:\n\n1. Project\n2. Task\n3. Document\n4. AI Workflow\n5. Team Space\n\nWhich would you like to create?');
+        }
+        
+        function toggleNotifications() {
+            alert('🔔 Notifications:\n\n' + appState.notifications.map(n => `• ${n.message} (${n.time})`).join('\n'));
+        }
+        
+        function openProject(projectId) {
+            const project = appState.projects.find(p => p.id === projectId);
+            if (project) {
+                alert(`🚀 Opening ${project.title}...\n\nThis would open the project workspace with:\n• Real-time collaboration\n• Version control\n• AI assistance\n• Team chat\n• File sharing`);
+            }
+        }
+        
+        function shareProject(projectId) {
+            const project = appState.projects.find(p => p.id === projectId);
+            if (project) {
+                alert(`📤 Sharing ${project.title}...\n\nShare options:\n• Copy link\n• Email invitation\n• Slack integration\n• Social media\n• Embed code`);
+            }
+        }
+        
+        function createNewProject() {
+            alert('🆕 Create New Project:\n\nChoose from 235+ templates:\n• Web Applications\n• AI & ML Tools\n• Data Analytics\n• Creative Projects\n• Business Tools\n• Games & Interactive\n• And more!\n\nEach template includes AI assistance and collaboration features.');
+        }
+        
+        function createNewTask() {
+            alert('✅ Create New Task:\n\n• Manual task creation\n• AI-generated tasks from project analysis\n• Import from calendar\n• Voice-to-task conversion\n• Template-based tasks');
+        }
+        
+        async function aiSuggestTasks() {
+            try {
+                const currentProjects = appState.projects.map(p => `${p.title} (${p.type})`).join(', ');
+                const completedTasks = ['Initial setup', 'Team onboarding', 'Basic configuration'];
+                
+                const suggestions = await geminiAPI.suggestTasks(
+                    `User is working on these collaboration projects: ${currentProjects}. Platform includes 235+ project templates across web apps, AI tools, games, and business applications.`,
+                    completedTasks
+                );
+                
+                const taskList = suggestions.map(task => `• ${task.title}: ${task.description}`).join('\n');
+                alert(`🤖 AI Task Suggestions:\n\nBased on your current projects:\n\n${taskList}`);
+            } catch (error) {
+                console.error('AI task suggestion error:', error);
+                // Fallback to static suggestions
+                alert('🤖 AI Task Suggestions:\n\nBased on your current projects:\n\n• Optimize Web Scraper performance (High Priority)\n• Update Finance Tracker documentation (Medium)\n• Plan team review for To-Do List (Low)\n• Research new AI integration opportunities (Medium)\n• Backup project files (High Priority)');
+            }
+        }
+        
+        // Search functionality
+        document.getElementById('globalSearch').addEventListener('input', function(e) {
+            const query = e.target.value.toLowerCase();
+            if (query.length > 2) {
+                // Simulate search results
+                console.log('Searching for:', query);
+                // In a real app, this would filter content dynamically
+            }
+        });
+        
+
+        
+        // Add logout functionality
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('collaborationUser');
+                window.location.href = 'login.html';
+            }
+        }
+        
+        // Add typing indicator functions for AI chat
+        function addTypingIndicator() {
+            const chat = document.getElementById('aiChat');
+            const indicator = document.createElement('div');
+            indicator.className = 'ai-message bot typing-indicator';
+            indicator.id = 'typing-indicator';
+            indicator.innerHTML = `
+                <div class="message-bubble">
+                    <div class="typing-dots">
+                        <span></span><span></span><span></span>
+                    </div>
+                    AI is thinking...
+                </div>
+            `;
+            chat.appendChild(indicator);
+            chat.scrollTop = chat.scrollHeight;
+        }
+        
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typing-indicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', async function() {
+            // Initialize authentication first
+            const authManager = new AuthenticationManager();
+            
+            // Initialize Gemini AI service
+            try {
+                await geminiAPI.initializeService();
+                if (geminiAPI.isInitialized()) {
+                    console.log('✅ Gemini AI service initialized successfully');
+                } else {
+                    console.warn('⚠️ Gemini AI service not available - using fallback responses');
+                }
+            } catch (error) {
+                console.error('❌ Failed to initialize Gemini AI service:', error);
+            }
+            
+            console.log('🤖 AI-Human Collaboration Platform initialized');
+            console.log('Features loaded: Dashboard, Projects, Tasks, Chat, AI Assistant, Advanced Features');
+        });
+    </script>
+    
+    <!-- Authentication Required Overlay -->
+    <div class="auth-required">
+        <div class="auth-modal">
+            <h2>🔐 Authentication Required</h2>
+            <p>Please sign in to access the collaboration platform.</p>
+            <div class="auth-actions">
+                <button onclick="window.location.href='login.html'" class="primary-btn">Sign In</button>
+                <button onclick="window.location.href='index.html'" class="secondary-btn">Back to Home</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Include Environment Configuration -->
+    <script src="js/env-config.js"></script>
+    
+    <!-- Include Firebase Configuration and Authentication -->
+    <script type="module">
+        let authService = null;
+        
+        try {
+            const { authService: importedAuthService } = await import('./js/firebase-auth.js');
+            authService = importedAuthService;
+            console.log('Firebase auth service loaded successfully');
+        } catch (error) {
+            console.log('Firebase auth service not available:', error.message);
+            authService = null;
+        }
+        
+        // Enhanced Authentication Manager for Collaboration Platform
+        class AuthenticationManager {
+            constructor() {
+                this.authService = authService;
+                this.currentUser = null;
+                this.initializeAuthentication();
+            }
+            
+            async initializeAuthentication() {
+                console.log('Initializing authentication...');
+                
+                try {
+                    // Check for universal authentication first
+                    const universalAuth = this.checkUniversalAuth();
+                    if (universalAuth) {
+                        console.log('Universal authentication found:', universalAuth);
+                        await this.handleUniversalAuth(universalAuth);
+                        return;
+                    }
+                    
+                    // Check if Firebase auth service is available
+                    if (!this.authService) {
+                        console.log('Firebase auth service not available, showing auth required');
+                        this.showAuthRequired();
+                        return;
+                    }
+                    
+                    // Wait for auth service to initialize
+                    await this.authService.waitForInitialization();
+                    
+                    // Set up authentication event listeners
+                    this.setupAuthEventListeners();
+                    
+                    // Check current authentication state
+                    if (this.authService.currentUser) {
+                        await this.handleUserSignedIn(this.authService.currentUser);
+                    } else {
+                        this.showAuthRequired();
+                    }
+                } catch (error) {
+                    console.error('Failed to initialize authentication:', error);
+                    this.showAuthRequired();
+                }
+            }
+            
+            checkUniversalAuth() {
+                try {
+                    const universalAuthData = localStorage.getItem('universalAuth');
+                    if (!universalAuthData) return null;
+                    
+                    const authData = JSON.parse(universalAuthData);
+                    
+                    // Check if authentication is still valid (24 hours)
+                    const TWENTY_FOUR_HOURS = 24 * 60 * 60 * 1000;
+                    if (Date.now() - authData.loginTime > TWENTY_FOUR_HOURS) {
+                        localStorage.removeItem('universalAuth');
+                        return null;
+                    }
+                    
+                    return authData;
+                } catch (error) {
+                    console.error('Error checking universal auth:', error);
+                    localStorage.removeItem('universalAuth');
+                    return null;
+                }
+            }
+            
+            async handleUniversalAuth(authData) {
+                // Create a mock user object compatible with the existing system
+                const mockUser = {
+                    email: authData.email,
+                    displayName: authData.displayName,
+                    uid: 'universal_' + authData.email.replace(/[^a-zA-Z0-9]/g, '_'),
+                    isUniversalAuth: true
+                };
+                
+                this.currentUser = mockUser;
+                
+                // Update UI with universal auth user
+                this.updateUserProfile(mockUser, null, authData.isAdmin);
+                this.hideAuthRequired();
+                
+                // Dispatch signed in event for other components
+                window.dispatchEvent(new CustomEvent('userSignedIn', {
+                    detail: { user: mockUser, isAdmin: authData.isAdmin, isUniversalAuth: true }
+                }));
+                
+                console.log('Universal authentication successful for:', authData.email);
+            }
+            
+            setupAuthEventListeners() {
+                window.addEventListener('userSignedIn', async (event) => {
+                    const { user, isAdmin } = event.detail;
+                    await this.handleUserSignedIn(user, isAdmin);
+                });
+
+                window.addEventListener('userSignedOut', () => {
+                    this.handleUserSignedOut();
+                });
+
+                window.addEventListener('authError', (event) => {
+                    console.error('Authentication error:', event.detail.error);
+                    this.showAuthRequired();
+                });
+            }
+            
+            async handleUserSignedIn(user, isAdmin = false) {
+                this.currentUser = user;
+                
+                try {
+                    // Load user data from Firestore
+                    const userData = await this.authService.getCurrentUserData();
+                    
+                    // Update UI
+                    this.updateUserProfile(user, userData, isAdmin);
+                    this.hideAuthRequired();
+                    
+                    // Initialize the collaboration platform
+                    if (window.CollaborationPlatform) {
+                        window.CollaborationPlatform.initializePlatform(user, userData);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error loading user data:', error);
+                    // Continue with basic user info
+                    this.updateUserProfile(user, null, isAdmin);
+                    this.hideAuthRequired();
+                }
+            }
+            
+            handleUserSignedOut() {
+                this.currentUser = null;
+                this.showAuthRequired();
+            }
+            
+            updateUserProfile(user, userData, isAdmin) {
+                // Update user profile in sidebar
+                const userNameElement = document.querySelector('.user-name');
+                const userEmailElement = document.querySelector('.user-email');
+                
+                if (userNameElement) {
+                    userNameElement.textContent = user.displayName || user.email.split('@')[0];
+                }
+                if (userEmailElement) {
+                    userEmailElement.textContent = user.email;
+                }
+                
+                // Add admin badge if user is admin
+                if (isAdmin || (this.authService && this.authService.isCurrentUserAdmin && this.authService.isCurrentUserAdmin())) {
+                    this.addAdminBadge();
+                }
+            }
+            
+            addAdminBadge() {
+                const userProfile = document.querySelector('.user-profile');
+                if (userProfile && !userProfile.querySelector('.admin-badge')) {
+                    const adminBadge = document.createElement('span');
+                    adminBadge.className = 'admin-badge';
+                    adminBadge.textContent = 'Admin';
+                    adminBadge.style.cssText = `
+                        background: linear-gradient(135deg, #00b894, #55a3ff);
+                        color: white;
+                        padding: 4px 8px;
+                        border-radius: 12px;
+                        font-size: 0.8rem;
+                        margin-left: 8px;
+                        display: inline-block;
+                    `;
+                    userProfile.appendChild(adminBadge);
+                }
+            }
+            
+            showAuthRequired() {
+                const authOverlay = document.querySelector('.auth-required');
+                if (authOverlay) {
+                    authOverlay.style.display = 'flex';
+                }
+            }
+            
+            hideAuthRequired() {
+                const authOverlay = document.querySelector('.auth-required');
+                if (authOverlay) {
+                    authOverlay.style.display = 'none';
+                }
+            }
+            
+            async signOut() {
+                try {
+                    // Clear universal authentication if it exists
+                    localStorage.removeItem('universalAuth');
+                    
+                    // Sign out from Firebase if user is authenticated there
+                    if (this.authService && this.authService.currentUser) {
+                        await this.authService.signOutUser();
+                    } else {
+                        // If using universal auth only, redirect immediately
+                        window.location.href = 'login.html';
+                    }
+                } catch (error) {
+                    console.error('Sign out error:', error);
+                    // Force redirect to login on error
+                    window.location.href = 'login.html';
+                }
+            }
+        }
+        
+        // Initialize authentication manager
+        window.authManager = new AuthenticationManager();
+        
+        // Make auth service available globally for other scripts (only if it exists)
+        if (typeof authService !== 'undefined') {
+            window.authService = authService;
+        }
+    </script>
+    
+    <!-- Include Fixed Gemini AI Service -->
+    <script src="js/gemini-api-clean.js"></script>
+    
+    <!-- Real-Time Status Bar -->
+    <script src="js/status-bar.js"></script>
+    
+    <!-- Collaboration Platform Core Script -->
+    <script>
+        // Enhanced Collaboration Platform
+        class CollaborationPlatform {
+            constructor() {
+                this.currentUser = null;
+                this.userProjects = [];
+                this.isInitialized = false;
+            }
+            
+            async initializePlatform(user, userData) {
+                this.currentUser = user;
+                this.isInitialized = true;
+                
+                try {
+                    // Load user projects
+                    await this.loadUserProjects();
+                    
+                    // Initialize real-time features
+                    this.initializeRealTimeFeatures();
+                    
+                    console.log('Collaboration platform initialized for user:', user.email);
+                } catch (error) {
+                    console.error('Error initializing collaboration platform:', error);
+                }
+            }
+            
+            async loadUserProjects() {
+                if (window.authService?.currentUser) {
+                    try {
+                        // In a real implementation, this would load from Firestore
+                        this.userProjects = [
+                            { id: 1, name: 'AI Chat Bot', description: 'Intelligent chatbot with NLP', progress: 75 },
+                            { id: 2, name: 'Data Analytics', description: 'Real-time data visualization', progress: 60 },
+                            { id: 3, name: 'Mobile App', description: 'Cross-platform mobile application', progress: 90 }
+                        ];
+                        
+                        // Update UI with projects
+                        this.updateProjectsList();
+                    } catch (error) {
+                        console.error('Error loading user projects:', error);
+                    }
+                }
+            }
+            
+            updateProjectsList() {
+                // This would update the projects UI
+                console.log('Updated projects list with', this.userProjects.length, 'projects');
+            }
+            
+            initializeRealTimeFeatures() {
+                // Initialize real-time collaboration features
+                console.log('Real-time features initialized');
+            }
+        }
+        
+        // Create global collaboration platform instance
+        window.CollaborationPlatform = new CollaborationPlatform();
+    </script>
+</body>
+</html>

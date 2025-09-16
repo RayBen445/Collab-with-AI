@@ -235,7 +235,262 @@
                 align-items: center;
             }
         }
-    </style>
+    
+        .demo-controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .demo-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .demo-output {
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .working-demo h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .calculator-container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+        }
+        
+        .calculator-display {
+            margin-bottom: 20px;
+        }
+        
+        #calc-display {
+            width: 100%;
+            height: 60px;
+            font-size: 24px;
+            text-align: right;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 0 15px;
+            background: #f9f9f9;
+            color: #333;
+        }
+        
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .calc-btn {
+            height: 50px;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .calc-btn:hover {
+            transform: scale(1.05);
+        }
+        
+        .calc-btn.number {
+            background: #667eea;
+            color: white;
+        }
+        
+        .calc-btn.number:hover {
+            background: #5a6fd8;
+        }
+        
+        .calc-btn.operator {
+            background: #764ba2;
+            color: white;
+        }
+        
+        .calc-btn.operator:hover {
+            background: #6a4190;
+        }
+        
+        .calc-btn.equals {
+            background: #00b894;
+            color: white;
+            grid-row: span 2;
+        }
+        
+        .calc-btn.equals:hover {
+            background: #00a085;
+        }
+        
+        .calc-btn.clear {
+            background: #fd79a8;
+            color: white;
+        }
+        
+        .calc-btn.clear:hover {
+            background: #fd6c9e;
+        }
+        
+        .calc-btn.function {
+            background: #fdcb6e;
+            color: #333;
+        }
+        
+        .calc-btn.function:hover {
+            background: #fdbf4f;
+        }
+        
+        .calc-btn.zero {
+            grid-column: span 2;
+        }
+        
+        .calculation-history {
+            background: #f8f9fa;
+            border-radius: 8px;
+            padding: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .calculation-history h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        #calc-history {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        .history-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .app-interface, .creative-interface {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .control-panel, .tool-palette {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .main-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .output-area {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 200px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+        
+        .tool-btn {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .tool-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .canvas-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        #creative-canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        .creative-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .primary {
+            background: #667eea !important;
+            color: white;
+        }
+        
+        .error {
+            color: #ff4757;
+            font-weight: bold;
+        }
+        </style>
 </head>
 <body>
     <div class="container">
@@ -272,11 +527,47 @@
         </div>
         
         <div class="main-content">
-            <div class="demo-area">
-                <div class="demo-placeholder">🧮</div>
-                <div class="demo-text">
-                    Interactive demo area for Advanced Calculator<br>
-                    <small>This is a template - customize with your implementation</small>
+            
+                <div class="working-demo">
+                    <h3>🧮 Advanced Calculator</h3>
+                    <div class="calculator-container">
+                        <div class="calculator-display">
+                            <input type="text" id="calc-display" readonly value="0">
+                        </div>
+                        <div class="calculator-buttons">
+                            <button class="calc-btn clear" onclick="clearCalculator()">C</button>
+                            <button class="calc-btn clear" onclick="clearEntry()">CE</button>
+                            <button class="calc-btn operator" onclick="setOperation('/')">/</button>
+                            <button class="calc-btn operator" onclick="setOperation('*')">×</button>
+                            
+                            <button class="calc-btn number" onclick="appendToDisplay('7')">7</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('8')">8</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('9')">9</button>
+                            <button class="calc-btn operator" onclick="setOperation('-')">-</button>
+                            
+                            <button class="calc-btn number" onclick="appendToDisplay('4')">4</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('5')">5</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('6')">6</button>
+                            <button class="calc-btn operator" onclick="setOperation('+')">+</button>
+                            
+                            <button class="calc-btn number" onclick="appendToDisplay('1')">1</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('2')">2</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('3')">3</button>
+                            <button class="calc-btn equals" onclick="calculateResult()">=</button>
+                            
+                            <button class="calc-btn number zero" onclick="appendToDisplay('0')">0</button>
+                            <button class="calc-btn number" onclick="appendToDisplay('.')">.</button>
+                            <button class="calc-btn function" onclick="calculateSquareRoot()">√</button>
+                            <button class="calc-btn clear" onclick="backspace()">⌫</button>
+                        </div>
+                        <div class="calculation-history">
+                            <h4>History</h4>
+                            <div id="calc-history"></div>
+                            <button class="demo-btn" onclick="clearHistory()">Clear History</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
                 </div>
             </div>
             
@@ -321,9 +612,9 @@
         </div>
         
         <div class="actions">
-            <a href="#" class="btn">🚀 Launch Application</a>
-            <a href="#" class="btn">📖 View Documentation</a>
-            <a href="#" class="btn">💾 Download Source</a>
+            <button class="btn" onclick="openCalculatorFullscreen()">🚀 Launch Application</button>
+            <a href="https://github.com/RayBen445/Collab-with-AI/blob/main/projects/web-apps/calculator.html" target="_blank" class="btn">📖 View Documentation</a>
+            <button class="btn" onclick="downloadCalculatorSource()">💾 Download Source</button>
         </div>
     </div>
     
@@ -359,6 +650,278 @@
         console.log('Welcome to Advanced Calculator!');
         console.log('This project was built using AI-Human collaboration.');
         console.log('Visit https://github.com/RayBen445/Collab-with-AI for more!');
+    
+        // Advanced Calculator Implementation
+        let currentDisplay = '0';
+        let previousDisplay = '';
+        let operation = null;
+        let waitingForNewOperand = false;
+        let history = [];
+
+        function updateDisplay() {
+            document.getElementById('calc-display').value = currentDisplay;
+        }
+
+        function appendToDisplay(value) {
+            if (waitingForNewOperand) {
+                currentDisplay = value;
+                waitingForNewOperand = false;
+            } else {
+                currentDisplay = currentDisplay === '0' ? value : currentDisplay + value;
+            }
+            updateDisplay();
+        }
+
+        function clearCalculator() {
+            currentDisplay = '0';
+            previousDisplay = '';
+            operation = null;
+            waitingForNewOperand = false;
+            updateDisplay();
+        }
+
+        function clearEntry() {
+            currentDisplay = '0';
+            updateDisplay();
+        }
+        
+        function setOperation(op) {
+            if (operation !== null && !waitingForNewOperand) {
+                calculateResult();
+            }
+            previousDisplay = currentDisplay;
+            operation = op;
+            waitingForNewOperand = true;
+        }
+        
+        function backspace() {
+            if (currentDisplay.length > 1) {
+                currentDisplay = currentDisplay.slice(0, -1);
+            } else {
+                currentDisplay = '0';
+            }
+            updateDisplay();
+        }
+
+        function calculateResult() {
+            if (operation && previousDisplay !== '') {
+                const prev = parseFloat(previousDisplay);
+                const current = parseFloat(currentDisplay);
+                let result;
+
+                switch (operation) {
+                    case '+':
+                        result = prev + current;
+                        break;
+                    case '-':
+                        result = prev - current;
+                        break;
+                    case '*':
+                        result = prev * current;
+                        break;
+                    case '/':
+                        if (current === 0) {
+                            showSuccessModal("Cannot divide by zero!");
+                            return;
+                        }
+                        result = prev / current;
+                        break;
+                    default:
+                        return;
+                }
+
+                const calculation = `${previousDisplay} ${operation} ${currentDisplay} = ${result}`;
+                addToHistory(calculation);
+                
+                currentDisplay = result.toString();
+                operation = null;
+                previousDisplay = '';
+                waitingForNewOperand = true;
+                updateDisplay();
+            }
+        }
+
+        function calculateSquareRoot() {
+            const current = parseFloat(currentDisplay);
+            if (current < 0) {
+                showSuccessModal("Cannot calculate square root of negative number!");
+                return;
+            }
+            const result = Math.sqrt(current);
+            addToHistory(`√${currentDisplay} = ${result}`);
+            currentDisplay = result.toString();
+            waitingForNewOperand = true;
+            updateDisplay();
+        }
+
+        function addToHistory(calculation) {
+            history.unshift(calculation);
+            if (history.length > 10) {
+                history.pop();
+            }
+            updateHistoryDisplay();
+        }
+
+        function updateHistoryDisplay() {
+            const historyElement = document.getElementById('calc-history');
+            historyElement.innerHTML = history.map(item => 
+                `<div class="history-item">${item}</div>`
+            ).join('');
+        }
+
+        function clearHistory() {
+            history = [];
+            updateHistoryDisplay();
+        }
+
+        // Handle operator buttons
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add click handlers for operators
+            const operatorButtons = document.querySelectorAll('.calc-btn.operator');
+            operatorButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    if (operation !== null && !waitingForNewOperand) {
+                        calculateResult();
+                    }
+                    
+                    previousDisplay = currentDisplay;
+                    operation = this.textContent === '×' ? '*' : this.textContent;
+                    waitingForNewOperand = true;
+                });
+            });
+
+            // Add keyboard support
+            document.addEventListener('keydown', function(event) {
+                if (event.key >= '0' && event.key <= '9' || event.key === '.') {
+                    appendToDisplay(event.key);
+                } else if (event.key === '+' || event.key === '-' || event.key === '*' || event.key === '/') {
+                    if (operation !== null && !waitingForNewOperand) {
+                        calculateResult();
+                    }
+                    previousDisplay = currentDisplay;
+                    operation = event.key;
+                    waitingForNewOperand = true;
+                } else if (event.key === 'Enter' || event.key === '=') {
+                    calculateResult();
+                } else if (event.key === 'Escape' || event.key === 'c' || event.key === 'C') {
+                    clearCalculator();
+                } else if (event.key === 'Backspace') {
+                    if (currentDisplay.length > 1) {
+                        currentDisplay = currentDisplay.slice(0, -1);
+                    } else {
+                        currentDisplay = '0';
+                    }
+                    updateDisplay();
+                }
+            });
+        });
+        
+        // Action button functions
+        function openCalculatorFullscreen() {
+            const calculatorContainer = document.querySelector('.calculator-container');
+            if (calculatorContainer.requestFullscreen) {
+                calculatorContainer.requestFullscreen();
+            } else if (calculatorContainer.mozRequestFullScreen) {
+                calculatorContainer.mozRequestFullScreen();
+            } else if (calculatorContainer.webkitRequestFullscreen) {
+                calculatorContainer.webkitRequestFullscreen();
+            } else if (calculatorContainer.msRequestFullscreen) {
+                calculatorContainer.msRequestFullscreen();
+            }
+            showSuccessModal("🚀 Calculator launched in fullscreen mode! Press ESC to exit.");
+        }
+
+        }
     </script>
+<script>
+        // Modal system for user feedback
+        function showSuccessModal(message) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.5); display: flex; align-items: center; 
+                justify-content: center; z-index: 10000;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white; padding: 30px; border-radius: 15px; 
+                max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+            
+            modalContent.innerHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 20px; color: #333;">${message}</div>
+                <button onclick="this.closest('.modal').remove()" 
+                        style="padding: 10px 20px; background: #007bff; color: white; 
+                               border: none; border-radius: 5px; cursor: pointer;">
+                    OK
+                </button>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (modal.parentNode) modal.remove();
+            }, 3000);
+        }
+        
+        function showDocumentation() {
+            showSuccessModal('📚 Documentation modal would open here with detailed project information.');
+        }
+        
+        function downloadProject() {
+            const projectData = {
+                name: document.title || 'Project',
+                description: 'Comprehensive project with full functionality',
+                features: ['Real functionality', 'Professional UI', 'Mobile responsive'],
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'project-info.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showSuccessModal('📁 Project information downloaded successfully!');
+        }
+</script>
 </body>
 </html>
+            margin: 20px 0;
+        }
+        
+        .control-panel, .tool-palette {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .main-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .output-area {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 200px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;

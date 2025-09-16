@@ -1,53 +1,80 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Users collection - users can read/write their own data
+    // Helper function to check admin status
+    function isAdmin() {
+      return request.auth != null && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+    }
+    
+    // Helper function to check if user owns the resource
+    function isOwner(resource) {
+      return request.auth != null && request.auth.uid == resource.data.owner;
+    }
+    
+    // Helper function to check if user is collaborator
+    function isCollaborator(resource) {
+      return request.auth != null && 
+             request.auth.uid in resource.data.collaborators;
+    }
+    
+    // Users collection - users can read/write their own data, admins can read all
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
-      allow read: if request.auth != null && 
-        (request.auth.token.email == 'oladoyeheritage445@gmail.com' || 
-         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+      allow read: if isAdmin();
+      
+      // Allow users to create their own profile during signup
+      allow create: if request.auth != null && 
+                   request.auth.uid == userId &&
+                   request.resource.data.keys().hasAll(['email', 'role', 'createdAt']);
     }
     
-    // Projects collection - authenticated users can read, creators/collaborators can write
+    // Projects collection - authenticated users can read, enhanced write permissions
     match /projects/{projectId} {
       allow read: if request.auth != null;
-      allow create: if request.auth != null;
+      allow create: if request.auth != null && 
+                   request.resource.data.owner == request.auth.uid;
       allow update, delete: if request.auth != null && 
-        (resource.data.owner == request.auth.uid || 
-         request.auth.uid in resource.data.collaborators ||
-         request.auth.token.email == 'oladoyeheritage445@gmail.com');
+        (isOwner(resource) || isCollaborator(resource) || isAdmin());
     }
     
-    // Tasks collection - authenticated users can read, assignees/creators can write
+    // Tasks collection - authenticated users can read, enhanced write permissions  
     match /tasks/{taskId} {
       allow read: if request.auth != null;
-      allow create: if request.auth != null;
+      allow create: if request.auth != null &&
+                   request.resource.data.creator == request.auth.uid;
       allow update, delete: if request.auth != null && 
         (resource.data.assignee == request.auth.uid || 
          resource.data.creator == request.auth.uid ||
-         request.auth.token.email == 'oladoyeheritage445@gmail.com');
+         isAdmin());
     }
     
-    // Chat messages - authenticated users can read project messages, creators can write
+    // Chat messages - authenticated users can read project messages, enhanced permissions
     match /chats/{chatId}/messages/{messageId} {
       allow read: if request.auth != null;
-      allow create: if request.auth != null;
+      allow create: if request.auth != null &&
+                   request.resource.data.sender == request.auth.uid;
       allow update, delete: if request.auth != null && 
-        (resource.data.sender == request.auth.uid ||
-         request.auth.token.email == 'oladoyeheritage445@gmail.com');
+        (resource.data.sender == request.auth.uid || isAdmin());
     }
     
     // Analytics - only admins can read/write
     match /analytics/{document=**} {
-      allow read, write: if request.auth != null && 
-        request.auth.token.email == 'oladoyeheritage445@gmail.com';
+      allow read, write: if isAdmin();
     }
     
     // Admin data - only admin can access
     match /admin/{document=**} {
-      allow read, write: if request.auth != null && 
-        request.auth.token.email == 'oladoyeheritage445@gmail.com';
+      allow read, write: if isAdmin();
+    }
+    
+    // Activity logs - users can read their own, admins can read all
+    match /userActivity/{activityId} {
+      allow read: if request.auth != null && 
+                 (resource.data.userId == request.auth.uid || isAdmin());
+      allow create: if request.auth != null &&
+                   request.resource.data.userId == request.auth.uid;
     }
   }
 }

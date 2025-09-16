@@ -178,6 +178,35 @@ class GeminiAPIService {
             throw error;
         }
     }
+
+    /**
+     * Get Firebase ID token for authentication
+     */
+    async getIdToken() {
+        try {
+            // Check if Firebase Auth is available
+            if (typeof firebase !== 'undefined' && firebase.auth && firebase.auth().currentUser) {
+                return await firebase.auth().currentUser.getIdToken();
+            }
+            
+            // Fallback - return null if no authentication
+            return null;
+        } catch (error) {
+            console.error('Failed to get ID token:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Make a secure API call to Cloud Functions
+     */
+    async makeSecureAPICall(prompt, model = 'gemini-1.5-flash-latest', features = []) {
+        try {
+            // Get user ID token for authentication
+            const idToken = await this.getIdToken();
+            if (!idToken) {
+                throw new Error('Authentication required');
+            }
             
             // Call the Cloud Function
             const response = await fetch(`${this.getFunctionURL()}/geminiApiProxy`, {

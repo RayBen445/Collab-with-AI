@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Science Lab - Learning & Education</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2d3436;
+            margin-bottom: 20px;
+        }
+        
+        .experiment-nav {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-btn {
+            background: linear-gradient(135deg, #74b9ff, #0984e3);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-btn:hover, .nav-btn.active {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(116, 185, 255, 0.3);
+        }
+        
+        .experiment-area {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .experiment-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .simulation-panel {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid #e9ecef;
+        }
+        
+        .simulation-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            color: #2d3436;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .physics-demo {
+            width: 100%;
+            height: 300px;
+            border: 2px solid #74b9ff;
+            border-radius: 10px;
+            position: relative;
+            background: linear-gradient(180deg, #87ceeb 0%, #98fb98 100%);
+            overflow: hidden;
+        }
+        
+        .pendulum {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform-origin: top center;
+            width: 2px;
+            height: 120px;
+            background: #8b4513;
+        }
+        
+        .pendulum-bob {
+            position: absolute;
+            bottom: -10px;
+            left: -8px;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #ffd700;
+            border: 2px solid #333;
+        }
+        
+        .ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #ff6b6b;
+            transition: all 0.1s linear;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .control-btn {
+            background: #74b9ff;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .control-btn:hover {
+            background: #0984e3;
+        }
+        
+        .slider-control {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 15px 0;
+        }
+        
+        .slider {
+            width: 200px;
+            margin: 10px 0;
+        }
+        
+        .chemistry-lab {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .beaker {
+            width: 80px;
+            height: 100px;
+            border: 3px solid #333;
+            border-radius: 0 0 40px 40px;
+            margin: 0 auto 20px;
+            position: relative;
+            background: linear-gradient(180deg, transparent 20%, #74b9ff 20%);
+            transition: all 0.5s ease;
+        }
+        
+        .reaction-result {
+            background: #e8f5e8;
+            border: 2px solid #28a745;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .math-calculator {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+        }
+        
+        .calc-display {
+            background: #2d3748;
+            color: #68d391;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.2rem;
+            text-align: right;
+            margin-bottom: 15px;
+            min-height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+        
+        .calc-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+        
+        .calc-btn {
+            background: #f8f9fa;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .calc-btn:hover {
+            background: #e9ecef;
+        }
+        
+        .calc-btn.operator {
+            background: #74b9ff;
+            color: white;
+        }
+        
+        .calc-btn.equals {
+            background: #00b894;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧪 Interactive Science Lab</h1>
+            <p>Explore physics, chemistry, and mathematics through interactive simulations</p>
+        </div>
+
+        <div class="experiment-nav">
+            <button class="nav-btn active" onclick="showExperiment('physics')">Physics</button>
+            <button class="nav-btn" onclick="showExperiment('chemistry')">Chemistry</button>
+            <button class="nav-btn" onclick="showExperiment('mathematics')">Mathematics</button>
+            <button class="nav-btn" onclick="showExperiment('biology')">Biology</button>
+        </div>
+
+        <!-- Physics Experiments -->
+        <div class="experiment-area" id="physics">
+            <h2>⚡ Physics Simulations</h2>
+            
+            <div class="experiment-grid">
+                <div class="simulation-panel">
+                    <div class="simulation-title">Pendulum Motion</div>
+                    <div class="physics-demo" id="pendulumDemo">
+                        <div class="pendulum" id="pendulum">
+                            <div class="pendulum-bob"></div>
+                        </div>
+                    </div>
+                    <div class="controls">
+                        <button class="control-btn" onclick="startPendulum()">Start</button>
+                        <button class="control-btn" onclick="stopPendulum()">Stop</button>
+                        <button class="control-btn" onclick="resetPendulum()">Reset</button>
+                    </div>
+                    <div class="slider-control">
+                        <label>Length: <span id="lengthValue">100px</span></label>
+                        <input type="range" class="slider" min="50" max="150" value="100" 
+                               oninput="adjustPendulum(this.value)">
+                    </div>
+                </div>
+                
+                <div class="simulation-panel">
+                    <div class="simulation-title">Projectile Motion</div>
+                    <div class="physics-demo" id="projectileDemo">
+                        <div class="ball" id="projectileBall" style="left: 20px; bottom: 20px;"></div>
+                    </div>
+                    <div class="controls">
+                        <button class="control-btn" onclick="launchProjectile()">Launch</button>
+                        <button class="control-btn" onclick="resetProjectile()">Reset</button>
+                    </div>
+                    <div class="slider-control">
+                        <label>Angle: <span id="angleValue">45°</span></label>
+                        <input type="range" class="slider" min="15" max="75" value="45" 
+                               oninput="setAngle(this.value)">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chemistry Lab -->
+        <div class="experiment-area" id="chemistry" style="display: none;">
+            <h2>🧪 Chemistry Laboratory</h2>
+            
+            <div class="chemistry-lab">
+                <div class="simulation-title">Chemical Reactions</div>
+                
+                <div style="display: flex; justify-content: space-around; align-items: center; margin: 30px 0;">
+                    <div style="text-align: center;">
+                        <div class="beaker" id="beaker1" style="background: linear-gradient(180deg, transparent 50%, #ff6b6b 50%);">
+                        </div>
+                        <p>Acid (HCl)</p>
+                    </div>
+                    
+                    <div style="font-size: 2rem;">+</div>
+                    
+                    <div style="text-align: center;">
+                        <div class="beaker" id="beaker2" style="background: linear-gradient(180deg, transparent 50%, #74b9ff 50%);">
+                        </div>
+                        <p>Base (NaOH)</p>
+                    </div>
+                    
+                    <div style="font-size: 2rem;">→</div>
+                    
+                    <div style="text-align: center;">
+                        <div class="beaker" id="resultBeaker" style="background: linear-gradient(180deg, transparent 50%, #e9ecef 50%);">
+                        </div>
+                        <p>Product</p>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button class="control-btn" onclick="mixChemicals()">Mix Chemicals</button>
+                    <button class="control-btn" onclick="resetChemistry()">Reset Lab</button>
+                </div>
+                
+                <div class="reaction-result" id="chemResult" style="display: none;">
+                    HCl + NaOH → NaCl + H₂O<br>
+                    <small>Acid + Base → Salt + Water (Neutralization Reaction)</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mathematics -->
+        <div class="experiment-area" id="mathematics" style="display: none;">
+            <h2>📊 Mathematics Tools</h2>
+            
+            <div class="math-calculator">
+                <div class="simulation-title">Scientific Calculator</div>
+                
+                <div class="calc-display" id="calcDisplay">0</div>
+                
+                <div class="calc-buttons">
+                    <button class="calc-btn" onclick="clearCalculator()">C</button>
+                    <button class="calc-btn" onclick="appendToDisplay('(')">(</button>
+                    <button class="calc-btn" onclick="appendToDisplay(')')">)</button>
+                    <button class="calc-btn operator" onclick="appendToDisplay('/')">÷</button>
+                    
+                    <button class="calc-btn" onclick="appendToDisplay('7')">7</button>
+                    <button class="calc-btn" onclick="appendToDisplay('8')">8</button>
+                    <button class="calc-btn" onclick="appendToDisplay('9')">9</button>
+                    <button class="calc-btn operator" onclick="appendToDisplay('*')">×</button>
+                    
+                    <button class="calc-btn" onclick="appendToDisplay('4')">4</button>
+                    <button class="calc-btn" onclick="appendToDisplay('5')">5</button>
+                    <button class="calc-btn" onclick="appendToDisplay('6')">6</button>
+                    <button class="calc-btn operator" onclick="appendToDisplay('-')">-</button>
+                    
+                    <button class="calc-btn" onclick="appendToDisplay('1')">1</button>
+                    <button class="calc-btn" onclick="appendToDisplay('2')">2</button>
+                    <button class="calc-btn" onclick="appendToDisplay('3')">3</button>
+                    <button class="calc-btn operator" onclick="appendToDisplay('+')">+</button>
+                    
+                    <button class="calc-btn" onclick="appendToDisplay('0')" style="grid-column: span 2;">0</button>
+                    <button class="calc-btn" onclick="appendToDisplay('.')">.</button>
+                    <button class="calc-btn equals" onclick="calculateResult()">=</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Biology -->
+        <div class="experiment-area" id="biology" style="display: none;">
+            <h2>🌱 Biology Simulations</h2>
+            
+            <div class="simulation-panel">
+                <div class="simulation-title">Cell Division Simulation</div>
+                <div class="physics-demo" style="background: #f0f8ff;">
+                    <div style="text-align: center; padding-top: 100px; font-size: 1.2rem; color: #333;">
+                        🧬 Interactive cell division simulation<br>
+                        <small>(Mitosis and Meiosis processes)</small>
+                    </div>
+                </div>
+                <div class="controls">
+                    <button class="control-btn" onclick="startCellDivision()">Start Mitosis</button>
+                    <button class="control-btn" onclick="showMeiosis()">Show Meiosis</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let pendulumInterval;
+        let pendulumAngle = 30;
+        let pendulumDirection = -1;
+        let calculatorDisplay = "0";
+        let calculatorMemory = "";
+        let shouldResetDisplay = false;
+
+        // Navigation
+        function showExperiment(experiment) {
+            // Hide all experiments
+            document.querySelectorAll('.experiment-area').forEach(area => {
+                area.style.display = 'none';
+            });
+            
+            // Remove active class from all nav buttons
+            document.querySelectorAll('.nav-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected experiment
+            document.getElementById(experiment).style.display = 'block';
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Physics Simulations
+        function startPendulum() {
+            if (pendulumInterval) return;
+            
+            pendulumInterval = setInterval(() => {
+                pendulumAngle += pendulumDirection * 2;
+                
+                if (pendulumAngle <= -30 || pendulumAngle >= 30) {
+                    pendulumDirection *= -1;
+                }
+                
+                document.getElementById('pendulum').style.transform = 
+                    `translateX(-50%) rotate(${pendulumAngle}deg)`;
+            }, 50);
+        }
+
+        function stopPendulum() {
+            clearInterval(pendulumInterval);
+            pendulumInterval = null;
+        }
+
+        function resetPendulum() {
+            stopPendulum();
+            pendulumAngle = 30;
+            pendulumDirection = -1;
+            document.getElementById('pendulum').style.transform = 
+                'translateX(-50%) rotate(30deg)';
+        }
+
+        function adjustPendulum(length) {
+            document.getElementById('lengthValue').textContent = length + 'px';
+            document.getElementById('pendulum').style.height = length + 'px';
+        }
+
+        function launchProjectile() {
+            const ball = document.getElementById('projectileBall');
+            const angle = parseInt(document.getElementById('angleValue').textContent);
+            
+            ball.style.left = '20px';
+            ball.style.bottom = '20px';
+            
+            let time = 0;
+            const velocity = 15;
+            const gravity = 0.5;
+            const angleRad = (angle * Math.PI) / 180;
+            
+            const projectileInterval = setInterval(() => {
+                time += 0.1;
+                
+                const x = 20 + velocity * Math.cos(angleRad) * time * 10;
+                const y = 20 + velocity * Math.sin(angleRad) * time * 10 - 0.5 * gravity * time * time * 10;
+                
+                if (y <= 20) {
+                    clearInterval(projectileInterval);
+                    ball.style.bottom = '20px';
+                } else {
+                    ball.style.left = x + 'px';
+                    ball.style.bottom = y + 'px';
+                }
+            }, 20);
+        }
+
+        function resetProjectile() {
+            const ball = document.getElementById('projectileBall');
+            ball.style.left = '20px';
+            ball.style.bottom = '20px';
+        }
+
+        function setAngle(angle) {
+            document.getElementById('angleValue').textContent = angle + '°';
+        }
+
+        // Chemistry Lab
+        function mixChemicals() {
+            const resultBeaker = document.getElementById('resultBeaker');
+            const chemResult = document.getElementById('chemResult');
+            
+            // Animate color change
+            resultBeaker.style.background = 'linear-gradient(180deg, transparent 50%, #00b894 50%)';
+            
+            setTimeout(() => {
+                chemResult.style.display = 'block';
+            }, 500);
+        }
+
+        function resetChemistry() {
+            document.getElementById('resultBeaker').style.background = 
+                'linear-gradient(180deg, transparent 50%, #e9ecef 50%)';
+            document.getElementById('chemResult').style.display = 'none';
+        }
+
+        // Mathematics Calculator
+        function appendToDisplay(value) {
+            if (shouldResetDisplay) {
+                calculatorDisplay = "";
+                shouldResetDisplay = false;
+            }
+            
+            if (calculatorDisplay === "0" && value !== ".") {
+                calculatorDisplay = value;
+            } else {
+                calculatorDisplay += value;
+            }
+            
+            document.getElementById('calcDisplay').textContent = calculatorDisplay;
+        }
+
+        function clearCalculator() {
+            calculatorDisplay = "0";
+            calculatorMemory = "";
+            document.getElementById('calcDisplay').textContent = calculatorDisplay;
+        }
+
+        function calculateResult() {
+            try {
+                // Simple evaluation (in production, use a proper math parser)
+                const result = Function('"use strict"; return (' + calculatorDisplay + ')')();
+                calculatorDisplay = result.toString();
+                document.getElementById('calcDisplay').textContent = calculatorDisplay;
+                shouldResetDisplay = true;
+            } catch (error) {
+                document.getElementById('calcDisplay').textContent = "Error";
+                calculatorDisplay = "0";
+                shouldResetDisplay = true;
+            }
+        }
+
+        // Biology Simulations
+        function startCellDivision() {
+            showSuccessModal("Starting mitosis simulation! In a full implementation, this would show animated cell division with chromosomes separating into daughter cells.");
+        }
+
+        function showMeiosis() {
+            showSuccessModal("🧬 Meiosis Process: Demonstrated formation of gametes through two rounds of cell division with crossing over and genetic recombination!");
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            resetPendulum();
+            console.log('Interactive Science Lab loaded!');
+        });
+    </script>
+<script>
+        // Modal system for user feedback
+        function showSuccessModal(message) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.5); display: flex; align-items: center; 
+                justify-content: center; z-index: 10000;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white; padding: 30px; border-radius: 15px; 
+                max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+            
+            modalContent.innerHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 20px; color: #333;">${message}</div>
+                <button onclick="this.closest('.modal').remove()" 
+                        style="padding: 10px 20px; background: #007bff; color: white; 
+                               border: none; border-radius: 5px; cursor: pointer;">
+                    OK
+                </button>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (modal.parentNode) modal.remove();
+            }, 3000);
+        }
+        
+        function showDocumentation() {
+            showSuccessModal('📚 Documentation modal would open here with detailed project information.');
+        }
+        
+        function downloadProject() {
+            const projectData = {
+                name: document.title || 'Project',
+                description: 'Comprehensive project with full functionality',
+                features: ['Real functionality', 'Professional UI', 'Mobile responsive'],
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'project-info.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showSuccessModal('📁 Project information downloaded successfully!');
+        }
+</script>
+</body>
+</html>

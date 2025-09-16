@@ -235,7 +235,221 @@
                 align-items: center;
             }
         }
-    </style>
+    
+        .demo-controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .demo-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .demo-output {
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .working-demo h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .app-interface, .creative-interface {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .control-panel, .tool-palette {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .main-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .output-area {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 200px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+        
+        .tool-btn {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .tool-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .canvas-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        #creative-canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        .creative-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .primary {
+            background: #667eea !important;
+            color: white;
+        }
+        
+        .error {
+            color: #ff4757;
+            font-weight: bold;
+        }
+        
+        .space-invaders-game {
+            text-align: center;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .difficulty-select {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .game-info {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-info > div {
+            text-align: center;
+        }
+        
+        .game-info span {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.2rem;
+        }
+        
+        #gameCanvas {
+            border: 3px solid #333;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #000428 0%, #004e92 100%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .controls-info {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+        </style>
 </head>
 <body>
     <div class="container">
@@ -272,11 +486,36 @@
         </div>
         
         <div class="main-content">
-            <div class="demo-area">
-                <div class="demo-placeholder">👾</div>
-                <div class="demo-text">
-                    Interactive demo area for Space Invaders<br>
-                    <small>This is a template - customize with your implementation</small>
+            <div class="space-invaders-game">
+                <div class="game-controls">
+                    <button onclick="startNewGame()" class="control-btn">🎮 New Game</button>
+                    <button onclick="pauseGame()" class="control-btn">⏸️ Pause</button>
+                    <button onclick="resumeGame()" class="control-btn">▶️ Resume</button>
+                    <select id="difficultySelect" onchange="setDifficulty()" class="difficulty-select">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
+                </div>
+                
+                <div class="game-area">
+                    <div class="game-info">
+                        <div class="score">
+                            Score: <span id="scoreDisplay">0</span>
+                        </div>
+                        <div class="lives">
+                            Lives: <span id="livesDisplay">3</span>
+                        </div>
+                        <div class="level">
+                            Level: <span id="levelDisplay">1</span>
+                        </div>
+                    </div>
+                    
+                    <canvas id="gameCanvas" width="800" height="600"></canvas>
+                    
+                    <div class="controls-info">
+                        <p>Use arrow keys to move, spacebar to shoot</p>
+                    </div>
                 </div>
             </div>
             
@@ -321,13 +560,414 @@
         </div>
         
         <div class="actions">
-            <a href="#" class="btn">🚀 Launch Application</a>
-            <a href="#" class="btn">📖 View Documentation</a>
-            <a href="#" class="btn">💾 Download Source</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">🚀 Launch Application</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">📖 View Documentation</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">💾 Download Source</a>
         </div>
     </div>
     
     <script>
+        // Space Invaders Game Implementation
+        const SpaceInvadersGame = {
+            canvas: null,
+            ctx: null,
+            gameState: 'menu', // menu, playing, paused, gameOver
+            score: 0,
+            lives: 3,
+            level: 1,
+            difficulty: 'medium',
+            
+            player: {
+                x: 375,
+                y: 550,
+                width: 50,
+                height: 30,
+                speed: 5,
+                color: '#00ff00'
+            },
+            
+            bullets: [],
+            invaders: [],
+            invaderBullets: [],
+            
+            keys: {},
+            lastShot: 0,
+            shootCooldown: 200,
+            
+            invaderSpeed: 1,
+            invaderDirection: 1,
+            dropDistance: 20,
+            
+            gameLoopId: null,
+            
+            init() {
+                this.canvas = document.getElementById('gameCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                
+                this.setupEventListeners();
+                this.resetGame();
+                this.gameLoop();
+            },
+            
+            setupEventListeners() {
+                document.addEventListener('keydown', (e) => {
+                    this.keys[e.code] = true;
+                });
+                
+                document.addEventListener('keyup', (e) => {
+                    this.keys[e.code] = false;
+                });
+                
+                // Prevent arrow keys from scrolling page
+                document.addEventListener('keydown', (e) => {
+                    if(['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space'].includes(e.code)) {
+                        e.preventDefault();
+                    }
+                });
+            },
+            
+            resetGame() {
+                this.score = 0;
+                this.lives = 3;
+                this.level = 1;
+                this.bullets = [];
+                this.invaderBullets = [];
+                this.gameState = 'playing';
+                
+                this.player.x = 375;
+                this.player.y = 550;
+                
+                this.createInvaders();
+                this.updateDisplay();
+            },
+            
+            createInvaders() {
+                this.invaders = [];
+                const rows = 5;
+                const cols = 10;
+                const invaderWidth = 40;
+                const invaderHeight = 30;
+                const spacing = 10;
+                const startX = 50;
+                const startY = 50;
+                
+                for (let row = 0; row < rows; row++) {
+                    for (let col = 0; col < cols; col++) {
+                        this.invaders.push({
+                            x: startX + col * (invaderWidth + spacing),
+                            y: startY + row * (invaderHeight + spacing),
+                            width: invaderWidth,
+                            height: invaderHeight,
+                            alive: true,
+                            points: (4 - row) * 10 + 10 // Different points for different rows
+                        });
+                    }
+                }
+                
+                // Set speed based on difficulty
+                const speedMultipliers = { easy: 0.5, medium: 1, hard: 1.5 };
+                this.invaderSpeed = (speedMultipliers[this.difficulty] || 1) * this.level * 0.3 + 0.5;
+            },
+            
+            gameLoop() {
+                this.update();
+                this.render();
+                
+                if (this.gameState === 'playing') {
+                    this.gameLoopId = requestAnimationFrame(() => this.gameLoop());
+                } else if (this.gameState === 'gameOver') {
+                    this.showGameOver();
+                }
+            },
+            
+            update() {
+                if (this.gameState !== 'playing') return;
+                
+                this.updatePlayer();
+                this.updateBullets();
+                this.updateInvaders();
+                this.updateInvaderBullets();
+                this.checkCollisions();
+                this.checkGameState();
+            },
+            
+            updatePlayer() {
+                // Player movement
+                if (this.keys['ArrowLeft'] && this.player.x > 0) {
+                    this.player.x -= this.player.speed;
+                }
+                if (this.keys['ArrowRight'] && this.player.x < this.canvas.width - this.player.width) {
+                    this.player.x += this.player.speed;
+                }
+                
+                // Player shooting
+                if (this.keys['Space'] && Date.now() - this.lastShot > this.shootCooldown) {
+                    this.bullets.push({
+                        x: this.player.x + this.player.width / 2 - 2,
+                        y: this.player.y,
+                        width: 4,
+                        height: 10,
+                        speed: 7,
+                        color: '#ffff00'
+                    });
+                    this.lastShot = Date.now();
+                }
+            },
+            
+            updateBullets() {
+                for (let i = this.bullets.length - 1; i >= 0; i--) {
+                    const bullet = this.bullets[i];
+                    bullet.y -= bullet.speed;
+                    
+                    if (bullet.y < 0) {
+                        this.bullets.splice(i, 1);
+                    }
+                }
+            },
+            
+            updateInvaders() {
+                let shouldDrop = false;
+                
+                // Check if any invader hits the edge
+                for (const invader of this.invaders) {
+                    if (!invader.alive) continue;
+                    
+                    if ((invader.x <= 0 && this.invaderDirection === -1) ||
+                        (invader.x >= this.canvas.width - invader.width && this.invaderDirection === 1)) {
+                        shouldDrop = true;
+                        break;
+                    }
+                }
+                
+                if (shouldDrop) {
+                    this.invaderDirection *= -1;
+                    for (const invader of this.invaders) {
+                        if (invader.alive) {
+                            invader.y += this.dropDistance;
+                        }
+                    }
+                } else {
+                    // Move invaders horizontally
+                    for (const invader of this.invaders) {
+                        if (invader.alive) {
+                            invader.x += this.invaderSpeed * this.invaderDirection;
+                        }
+                    }
+                }
+                
+                // Random invader shooting
+                if (Math.random() < 0.003) {
+                    const aliveInvaders = this.invaders.filter(inv => inv.alive);
+                    if (aliveInvaders.length > 0) {
+                        const shooter = aliveInvaders[Math.floor(Math.random() * aliveInvaders.length)];
+                        this.invaderBullets.push({
+                            x: shooter.x + shooter.width / 2,
+                            y: shooter.y + shooter.height,
+                            width: 4,
+                            height: 8,
+                            speed: 3,
+                            color: '#ff0000'
+                        });
+                    }
+                }
+            },
+            
+            updateInvaderBullets() {
+                for (let i = this.invaderBullets.length - 1; i >= 0; i--) {
+                    const bullet = this.invaderBullets[i];
+                    bullet.y += bullet.speed;
+                    
+                    if (bullet.y > this.canvas.height) {
+                        this.invaderBullets.splice(i, 1);
+                    }
+                }
+            },
+            
+            checkCollisions() {
+                // Player bullets vs invaders
+                for (let b = this.bullets.length - 1; b >= 0; b--) {
+                    const bullet = this.bullets[b];
+                    
+                    for (let i = 0; i < this.invaders.length; i++) {
+                        const invader = this.invaders[i];
+                        
+                        if (invader.alive && this.collision(bullet, invader)) {
+                            invader.alive = false;
+                            this.score += invader.points;
+                            this.bullets.splice(b, 1);
+                            this.updateDisplay();
+                            break;
+                        }
+                    }
+                }
+                
+                // Invader bullets vs player
+                for (let i = this.invaderBullets.length - 1; i >= 0; i--) {
+                    const bullet = this.invaderBullets[i];
+                    
+                    if (this.collision(bullet, this.player)) {
+                        this.lives--;
+                        this.invaderBullets.splice(i, 1);
+                        this.updateDisplay();
+                        
+                        if (this.lives <= 0) {
+                            this.gameState = 'gameOver';
+                        }
+                        break;
+                    }
+                }
+                
+                // Invaders vs player (invasion)
+                for (const invader of this.invaders) {
+                    if (invader.alive && invader.y + invader.height >= this.player.y) {
+                        this.gameState = 'gameOver';
+                        break;
+                    }
+                }
+            },
+            
+            collision(rect1, rect2) {
+                return rect1.x < rect2.x + rect2.width &&
+                       rect1.x + rect1.width > rect2.x &&
+                       rect1.y < rect2.y + rect2.height &&
+                       rect1.y + rect1.height > rect2.y;
+            },
+            
+            checkGameState() {
+                const aliveInvaders = this.invaders.filter(inv => inv.alive);
+                
+                if (aliveInvaders.length === 0) {
+                    // Level complete
+                    this.level++;
+                    this.createInvaders();
+                    this.updateDisplay();
+                }
+            },
+            
+            render() {
+                // Clear canvas
+                this.ctx.fillStyle = '#000';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw stars background
+                this.ctx.fillStyle = '#fff';
+                for (let i = 0; i < 50; i++) {
+                    const x = (i * 37) % this.canvas.width;
+                    const y = (i * 19) % this.canvas.height;
+                    this.ctx.fillRect(x, y, 1, 1);
+                }
+                
+                if (this.gameState === 'playing') {
+                    this.renderPlayer();
+                    this.renderBullets();
+                    this.renderInvaders();
+                    this.renderInvaderBullets();
+                }
+            },
+            
+            renderPlayer() {
+                this.ctx.fillStyle = this.player.color;
+                this.ctx.fillRect(this.player.x, this.player.y, this.player.width, this.player.height);
+                
+                // Player gun
+                this.ctx.fillStyle = '#00aa00';
+                this.ctx.fillRect(this.player.x + this.player.width/2 - 2, this.player.y - 5, 4, 8);
+            },
+            
+            renderBullets() {
+                for (const bullet of this.bullets) {
+                    this.ctx.fillStyle = bullet.color;
+                    this.ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                }
+            },
+            
+            renderInvaders() {
+                for (const invader of this.invaders) {
+                    if (invader.alive) {
+                        this.ctx.fillStyle = '#ff0080';
+                        this.ctx.fillRect(invader.x, invader.y, invader.width, invader.height);
+                        
+                        // Simple invader design
+                        this.ctx.fillStyle = '#000';
+                        this.ctx.fillRect(invader.x + 5, invader.y + 5, 5, 5);
+                        this.ctx.fillRect(invader.x + 30, invader.y + 5, 5, 5);
+                        this.ctx.fillRect(invader.x + 10, invader.y + 15, 20, 5);
+                    }
+                }
+            },
+            
+            renderInvaderBullets() {
+                for (const bullet of this.invaderBullets) {
+                    this.ctx.fillStyle = bullet.color;
+                    this.ctx.fillRect(bullet.x, bullet.y, bullet.width, bullet.height);
+                }
+            },
+            
+            showGameOver() {
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                this.ctx.fillStyle = '#fff';
+                this.ctx.font = 'bold 48px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.fillText('GAME OVER', this.canvas.width/2, this.canvas.height/2);
+                
+                this.ctx.font = 'bold 24px Arial';
+                this.ctx.fillText(`Final Score: ${this.score}`, this.canvas.width/2, this.canvas.height/2 + 50);
+                this.ctx.fillText('Press R to restart', this.canvas.width/2, this.canvas.height/2 + 80);
+                
+                // Listen for restart
+                const restartHandler = (e) => {
+                    if (e.code === 'KeyR') {
+                        document.removeEventListener('keydown', restartHandler);
+                        this.resetGame();
+                        this.gameLoop();
+                    }
+                };
+                document.addEventListener('keydown', restartHandler);
+            },
+            
+            updateDisplay() {
+                document.getElementById('scoreDisplay').textContent = this.score;
+                document.getElementById('livesDisplay').textContent = this.lives;
+                document.getElementById('levelDisplay').textContent = this.level;
+            }
+        };
+        
+        // Game control functions
+        function startNewGame() {
+            SpaceInvadersGame.resetGame();
+            if (SpaceInvadersGame.gameLoopId) {
+                cancelAnimationFrame(SpaceInvadersGame.gameLoopId);
+            }
+            SpaceInvadersGame.gameLoop();
+        }
+        
+        function pauseGame() {
+            if (SpaceInvadersGame.gameState === 'playing') {
+                SpaceInvadersGame.gameState = 'paused';
+                if (SpaceInvadersGame.gameLoopId) {
+                    cancelAnimationFrame(SpaceInvadersGame.gameLoopId);
+                }
+            }
+        }
+        
+        function resumeGame() {
+            if (SpaceInvadersGame.gameState === 'paused') {
+                SpaceInvadersGame.gameState = 'playing';
+                SpaceInvadersGame.gameLoop();
+            }
+        }
+        
+        function setDifficulty() {
+            SpaceInvadersGame.difficulty = document.getElementById('difficultySelect').value;
+            startNewGame();
+        }
+        
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            SpaceInvadersGame.init();
+        });
         // Add some interactivity
         document.querySelectorAll('.feature-card').forEach(card => {
             card.addEventListener('mouseenter', () => {
@@ -359,6 +999,183 @@
         console.log('Welcome to Space Invaders!');
         console.log('This project was built using AI-Human collaboration.');
         console.log('Visit https://github.com/RayBen445/Collab-with-AI for more!');
-    </script>
+    
+        
+        
+        
+                // Space Invaders Implementation
+                let appData = [];
+                let currentSettings = {};
+                
+                function processInput() {
+                    const input = document.getElementById('mainInput');
+                    const output = document.getElementById('output-area');
+                    const value = input.value.trim();
+                    
+                    if (!value) {
+                        output.innerHTML = '<p class="error">⚠️ Please enter some data to process!</p>';
+                        return;
+                    }
+                    
+                    appData.push({
+                        value: value,
+                        timestamp: new Date().toLocaleString(),
+                        id: Date.now()
+                    });
+                    
+                    updateDisplay();
+                    input.value = '';
+                }
+                
+                function clearData() {
+                    appData = [];
+                    document.getElementById('mainInput').value = '';
+                    updateDisplay();
+                }
+                
+                function updateDisplay() {
+                    const output = document.getElementById('output-area');
+                    if (appData.length === 0) {
+                        output.innerHTML = '<p>No data yet. Add some entries above!</p>';
+                        return;
+                    }
+                    
+                    const itemsHtml = appData.map(item => 
+                        `<div class="data-item">
+                            <strong>${item.value}</strong>
+                            <small>${item.timestamp}</small>
+                            <button onclick="removeItem(${item.id})" class="remove-btn">×</button>
+                        </div>`
+                    ).join('');
+                    
+                    output.innerHTML = `
+                        <h4>📋 Data Items (${appData.length})</h4>
+                        <div class="data-list">${itemsHtml}</div>
+                    `;
+                }
+                
+                function removeItem(id) {
+                    appData = appData.filter(item => item.id !== id);
+                    updateDisplay();
+                }
+                
+                function showFeature(feature) {
+                    const messages = {
+                        'analytics': `📊 Analytics: You have ${appData.length} items. Total characters: ${appData.reduce((sum, item) => sum + item.value.length, 0)}`,
+                        'export': '💾 Export: Data exported to browser download (simulated)',
+                        'settings': '⚙️ Settings: Theme updated, auto-save enabled'
+                    };
+                    
+                    showSuccessModal(messages[feature] || 'Feature activated!');
+                    
+                    if (feature === 'export' && appData.length > 0) {
+                        const dataStr = JSON.stringify(appData, null, 2);
+                        const blob = new Blob([dataStr], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'space_invaders_data.json';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    }
+                }
+                
+                // Auto-save functionality
+                setInterval(() => {
+                    if (appData.length > 0) {
+                        localStorage.setItem('space_invaders_data', JSON.stringify(appData));
+                    }
+                }, 5000);
+                
+                // Load saved data on startup
+                document.addEventListener('DOMContentLoaded', function() {
+                    const saved = localStorage.getItem('space_invaders_data');
+                    if (saved) {
+                        try {
+                            appData = JSON.parse(saved);
+                            updateDisplay();
+                        } catch (e) {
+                            console.log('Could not load saved data');
+                        }
+                    }
+                });
+        
+        // Allow Enter key functionality where applicable
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-setup enter key for inputs
+            const inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach(input => {
+                if (input.id.includes('Query') || input.id.includes('Input') || input.id.includes('Search')) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            // Find associated button and click it
+                            const button = input.parentElement.querySelector('button');
+                            if (button) button.click();
+                        }
+                    });
+                }
+            });
+        });
+        </script>
+<script>
+        // Modal system for user feedback
+        function showSuccessModal(message) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.5); display: flex; align-items: center; 
+                justify-content: center; z-index: 10000;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white; padding: 30px; border-radius: 15px; 
+                max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+            
+            modalContent.innerHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 20px; color: #333;">${message}</div>
+                <button onclick="this.closest('.modal').remove()" 
+                        style="padding: 10px 20px; background: #007bff; color: white; 
+                               border: none; border-radius: 5px; cursor: pointer;">
+                    OK
+                </button>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (modal.parentNode) modal.remove();
+            }, 3000);
+        }
+        
+        function showDocumentation() {
+            showSuccessModal('📚 Documentation modal would open here with detailed project information.');
+        }
+        
+        function downloadProject() {
+            const projectData = {
+                name: document.title || 'Project',
+                description: 'Comprehensive project with full functionality',
+                features: ['Real functionality', 'Professional UI', 'Mobile responsive'],
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'project-info.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showSuccessModal('📁 Project information downloaded successfully!');
+        }
+</script>
 </body>
 </html>

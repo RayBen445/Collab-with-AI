@@ -30,10 +30,40 @@ class FirebaseAuthService {
     this.db = db;
     this.googleProvider = new GoogleAuthProvider();
     this.currentUser = null;
-    this.adminEmail = window.ENV?.ADMIN_EMAIL || null;
+    this.adminEmail = null;
+    this.isInitialized = false;
+    
+    // Wait for environment config to load before setting admin email
+    this.initializeAdminEmail();
     
     // Set up authentication state listener
     this.setupAuthStateListener();
+  }
+
+  /**
+   * Initialize admin email from environment config
+   */
+  async initializeAdminEmail() {
+    // Wait for environment config to load
+    if (window.ENV?.ADMIN_EMAIL) {
+      this.adminEmail = window.ENV.ADMIN_EMAIL;
+      this.isInitialized = true;
+    } else {
+      // Listen for config load event
+      window.addEventListener('envConfigLoaded', (event) => {
+        this.adminEmail = event.detail.config.ADMIN_EMAIL;
+        this.isInitialized = true;
+        console.log('Firebase auth service initialized with admin email:', this.adminEmail);
+      });
+
+      // Listen for config error event
+      window.addEventListener('envConfigError', (event) => {
+        // Use fallback admin email
+        this.adminEmail = 'oladoyeheritage445@gmail.com';
+        this.isInitialized = true;
+        console.warn('Using fallback admin email due to config error');
+      });
+    }
   }
 
   /**
@@ -41,13 +71,21 @@ class FirebaseAuthService {
    */
   setupAuthStateListener() {
     onAuthStateChanged(this.auth, async (user) => {
-      if (user) {
-        this.currentUser = user;
-        await this.updateUserData(user);
-        this.onUserSignedIn(user);
-      } else {
-        this.currentUser = null;
-        this.onUserSignedOut();
+      try {
+        if (user) {
+          this.currentUser = user;
+          await this.updateUserData(user);
+          this.onUserSignedIn(user);
+        } else {
+          this.currentUser = null;
+          this.onUserSignedOut();
+        }
+      } catch (error) {
+        console.error('Error in auth state change:', error);
+        // Dispatch error event for UI to handle
+        window.dispatchEvent(new CustomEvent('authError', { 
+          detail: { error: error.message, type: 'state_change' }
+        }));
       }
     });
   }
@@ -239,7 +277,43 @@ class FirebaseAuthService {
    * Check if current user is admin
    */
   isCurrentUserAdmin() {
-    return this.currentUser && this.currentUser.email === this.adminEmail;
+    if (!this.currentUser || !this.adminEmail) return false;
+    
+    // Normalize emails for comparison (case-insensitive)
+    const userEmail = this.currentUser.email?.toLowerCase().trim();
+    const adminEmail = this.adminEmail?.toLowerCase().trim();
+    
+    return userEmail === adminEmail;
+  }
+
+  /**
+   * Check if a given email is admin (for use with any email)
+   */
+  isAdminEmail(email) {
+    if (!email || !this.adminEmail) return false;
+    
+    // Normalize emails for comparison (case-insensitive)
+    const normalizedEmail = email.toLowerCase().trim();
+    const adminEmail = this.adminEmail.toLowerCase().trim();
+    
+    return normalizedEmail === adminEmail;
+  }
+
+  /**
+   * Wait for auth service to be initialized
+   */
+  async waitForInitialization(timeout = 5000) {
+    const startTime = Date.now();
+    
+    while (!this.isInitialized && (Date.now() - startTime) < timeout) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+    
+    if (!this.isInitialized) {
+      throw new Error('Auth service initialization timeout');
+    }
+    
+    return true;
   }
 
   /**

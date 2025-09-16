@@ -235,7 +235,311 @@
                 align-items: center;
             }
         }
-    </style>
+    
+        .demo-controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .demo-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .demo-output {
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        .working-demo h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+        
+        .app-interface, .creative-interface {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .control-panel, .tool-palette {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .main-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+        }
+        
+        .output-area {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin: 15px 0;
+            min-height: 200px;
+        }
+        
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .remove-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+        }
+        
+        .tool-btn {
+            padding: 10px 15px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        
+        .tool-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+        
+        .canvas-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        #creative-canvas {
+            display: block;
+            cursor: crosshair;
+        }
+        
+        .creative-controls {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .primary {
+            background: #667eea !important;
+            color: white;
+        }
+        
+        .error {
+            color: #ff4757;
+            font-weight: bold;
+        }
+        
+        .checkers-game {
+            text-align: center;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .difficulty-select {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .game-info {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-info > div {
+            text-align: center;
+        }
+        
+        .game-info span {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .checkers-board {
+            display: grid;
+            grid-template-columns: repeat(8, 60px);
+            grid-template-rows: repeat(8, 60px);
+            gap: 0;
+            border: 3px solid #8b4513;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .checkers-square {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+        
+        .checkers-square.light {
+            background-color: #f0d9b5;
+        }
+        
+        .checkers-square.dark {
+            background-color: #b58863;
+        }
+        
+        .checkers-square.selected {
+            background-color: #7fb069 !important;
+            box-shadow: inset 0 0 0 3px #5a8a4a;
+        }
+        
+        .checkers-square.valid-move {
+            background-color: rgba(255, 255, 0, 0.5) !important;
+        }
+        
+        .checkers-square:hover {
+            transform: scale(1.05);
+        }
+        
+        .checker-piece {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #333;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        
+        .checker-piece.red {
+            background: radial-gradient(circle, #ff4757, #c23616);
+            color: white;
+        }
+        
+        .checker-piece.black {
+            background: radial-gradient(circle, #2f3542, #1e2328);
+            color: white;
+        }
+        
+        .checker-piece.king::after {
+            content: '♔';
+            position: absolute;
+            color: gold;
+        }
+        
+        .captured-pieces {
+            display: flex;
+            gap: 40px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .captured-red, .captured-black {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            min-width: 200px;
+        }
+        
+        .captured-red h4, .captured-black h4 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .pieces-display {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            min-height: 40px;
+        }
+        
+        .captured-piece {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 1px solid #333;
+        }
+        </style>
 </head>
 <body>
     <div class="container">
@@ -272,11 +576,43 @@
         </div>
         
         <div class="main-content">
-            <div class="demo-area">
-                <div class="demo-placeholder">🔴</div>
-                <div class="demo-text">
-                    Interactive demo area for Checkers Game<br>
-                    <small>This is a template - customize with your implementation</small>
+            <div class="checkers-game">
+                <div class="game-controls">
+                    <button onclick="startNewGame()" class="control-btn">🎮 New Game</button>
+                    <button onclick="toggleGameMode()" class="control-btn">🤖 Toggle AI</button>
+                    <button onclick="undoMove()" class="control-btn">↶ Undo</button>
+                    <select id="difficultySelect" onchange="setDifficulty()" class="difficulty-select">
+                        <option value="1">Easy</option>
+                        <option value="2" selected>Medium</option>
+                        <option value="3">Hard</option>
+                    </select>
+                </div>
+                
+                <div class="game-area">
+                    <div class="game-info">
+                        <div class="current-player">
+                            <span id="currentPlayerDisplay">Red's Turn</span>
+                        </div>
+                        <div class="game-status">
+                            <span id="gameStatus">Game in progress</span>
+                        </div>
+                        <div class="ai-status">
+                            <span id="aiStatus">AI: Medium</span>
+                        </div>
+                    </div>
+                    
+                    <div class="checkers-board" id="checkersBoard"></div>
+                    
+                    <div class="captured-pieces">
+                        <div class="captured-red">
+                            <h4>Captured Red:</h4>
+                            <div id="capturedRed" class="pieces-display"></div>
+                        </div>
+                        <div class="captured-black">
+                            <h4>Captured Black:</h4>
+                            <div id="capturedBlack" class="pieces-display"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
@@ -321,13 +657,338 @@
         </div>
         
         <div class="actions">
-            <a href="#" class="btn">🚀 Launch Application</a>
-            <a href="#" class="btn">📖 View Documentation</a>
-            <a href="#" class="btn">💾 Download Source</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">🚀 Launch Application</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">📖 View Documentation</a>
+            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">💾 Download Source</a>
         </div>
     </div>
     
     <script>
+        // Checkers Game Implementation
+        const CheckersGame = {
+            board: [],
+            currentPlayer: 'red',
+            selectedSquare: null,
+            gameOver: false,
+            isAI: true,
+            difficulty: 2,
+            capturedPieces: { red: [], black: [] },
+            moveHistory: [],
+            
+            init() {
+                this.setupBoard();
+                this.renderBoard();
+                this.updateDisplay();
+            },
+            
+            setupBoard() {
+                // Initialize empty board
+                this.board = Array(8).fill(null).map(() => Array(8).fill(null));
+                
+                // Place red pieces (bottom)
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        if ((row + col) % 2 === 1) {
+                            this.board[row][col] = { color: 'red', isKing: false };
+                        }
+                    }
+                }
+                
+                // Place black pieces (top)
+                for (let row = 5; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        if ((row + col) % 2 === 1) {
+                            this.board[row][col] = { color: 'black', isKing: false };
+                        }
+                    }
+                }
+            },
+            
+            renderBoard() {
+                const boardElement = document.getElementById('checkersBoard');
+                boardElement.innerHTML = '';
+                
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const square = document.createElement('div');
+                        square.className = `checkers-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                        square.dataset.row = row;
+                        square.dataset.col = col;
+                        
+                        const piece = this.board[row][col];
+                        if (piece) {
+                            const pieceElement = document.createElement('div');
+                            pieceElement.className = `checker-piece ${piece.color} ${piece.isKing ? 'king' : ''}`;
+                            if (piece.isKing) {
+                                pieceElement.textContent = '♔';
+                            }
+                            square.appendChild(pieceElement);
+                        }
+                        
+                        square.addEventListener('click', () => this.handleSquareClick(row, col));
+                        boardElement.appendChild(square);
+                    }
+                }
+            },
+            
+            handleSquareClick(row, col) {
+                if (this.gameOver) return;
+                
+                if (this.selectedSquare) {
+                    if (this.selectedSquare.row === row && this.selectedSquare.col === col) {
+                        this.clearSelection();
+                        return;
+                    }
+                    
+                    // Try to make a move
+                    const moveResult = this.tryMove(this.selectedSquare.row, this.selectedSquare.col, row, col);
+                    if (moveResult.valid) {
+                        this.makeMove(moveResult);
+                        this.clearSelection();
+                        
+                        if (!this.gameOver && this.isAI && this.currentPlayer === 'black') {
+                            setTimeout(() => this.makeAIMove(), 500);
+                        }
+                    } else {
+                        this.clearSelection();
+                        if (this.board[row][col] && this.board[row][col].color === this.currentPlayer) {
+                            this.selectSquare(row, col);
+                        }
+                    }
+                } else {
+                    if (this.board[row][col] && this.board[row][col].color === this.currentPlayer) {
+                        this.selectSquare(row, col);
+                    }
+                }
+            },
+            
+            selectSquare(row, col) {
+                this.selectedSquare = { row, col };
+                const square = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                square.classList.add('selected');
+                
+                // Highlight valid moves
+                const moves = this.getValidMoves(row, col);
+                moves.forEach(move => {
+                    const validSquare = document.querySelector(`[data-row="${move.toRow}"][data-col="${move.toCol}"]`);
+                    validSquare.classList.add('valid-move');
+                });
+            },
+            
+            clearSelection() {
+                this.selectedSquare = null;
+                document.querySelectorAll('.checkers-square').forEach(square => {
+                    square.classList.remove('selected', 'valid-move');
+                });
+            },
+            
+            getValidMoves(row, col) {
+                const piece = this.board[row][col];
+                if (!piece) return [];
+                
+                const moves = [];
+                const directions = piece.isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]] : 
+                                  piece.color === 'red' ? [[1,-1], [1,1]] : [[-1,-1], [-1,1]];
+                
+                directions.forEach(([dr, dc]) => {
+                    const newRow = row + dr;
+                    const newCol = col + dc;
+                    
+                    if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+                        if (!this.board[newRow][newCol]) {
+                            // Normal move
+                            moves.push({ fromRow: row, fromCol: col, toRow: newRow, toCol: newCol, isJump: false });
+                        } else if (this.board[newRow][newCol].color !== piece.color) {
+                            // Jump move
+                            const jumpRow = newRow + dr;
+                            const jumpCol = newCol + dc;
+                            
+                            if (jumpRow >= 0 && jumpRow < 8 && jumpCol >= 0 && jumpCol < 8 && !this.board[jumpRow][jumpCol]) {
+                                moves.push({ 
+                                    fromRow: row, fromCol: col, toRow: jumpRow, toCol: jumpCol, 
+                                    isJump: true, capturedRow: newRow, capturedCol: newCol 
+                                });
+                            }
+                        }
+                    }
+                });
+                
+                return moves;
+            },
+            
+            tryMove(fromRow, fromCol, toRow, toCol) {
+                const moves = this.getValidMoves(fromRow, fromCol);
+                const move = moves.find(m => m.toRow === toRow && m.toCol === toCol);
+                return move ? { valid: true, ...move } : { valid: false };
+            },
+            
+            makeMove(move) {
+                const piece = this.board[move.fromRow][move.fromCol];
+                
+                // Record move
+                this.moveHistory.push({
+                    from: { row: move.fromRow, col: move.fromCol },
+                    to: { row: move.toRow, col: move.toCol },
+                    piece: piece,
+                    captured: move.isJump ? this.board[move.capturedRow][move.capturedCol] : null,
+                    capturedPos: move.isJump ? { row: move.capturedRow, col: move.capturedCol } : null
+                });
+                
+                // Handle capture
+                if (move.isJump) {
+                    const capturedPiece = this.board[move.capturedRow][move.capturedCol];
+                    this.capturedPieces[capturedPiece.color].push(capturedPiece);
+                    this.board[move.capturedRow][move.capturedCol] = null;
+                    this.updateCapturedPieces();
+                }
+                
+                // Move piece
+                this.board[move.toRow][move.toCol] = piece;
+                this.board[move.fromRow][move.fromCol] = null;
+                
+                // Check for king promotion
+                if (!piece.isKing) {
+                    if ((piece.color === 'red' && move.toRow === 7) || 
+                        (piece.color === 'black' && move.toRow === 0)) {
+                        piece.isKing = true;
+                    }
+                }
+                
+                // Check for additional jumps
+                if (move.isJump) {
+                    const additionalMoves = this.getValidMoves(move.toRow, move.toCol).filter(m => m.isJump);
+                    if (additionalMoves.length > 0) {
+                        // Player must continue jumping
+                        this.renderBoard();
+                        this.selectSquare(move.toRow, move.toCol);
+                        return;
+                    }
+                }
+                
+                this.currentPlayer = this.currentPlayer === 'red' ? 'black' : 'red';
+                this.renderBoard();
+                this.updateDisplay();
+                this.checkGameEnd();
+            },
+            
+            makeAIMove() {
+                const moves = this.getAllValidMoves(this.currentPlayer);
+                if (moves.length === 0) {
+                    this.gameOver = true;
+                    this.updateDisplay();
+                    return;
+                }
+                
+                // Simple AI: prefer jumps, then random
+                let selectedMove = moves[Math.floor(Math.random() * moves.length)];
+                const jumpMoves = moves.filter(move => move.isJump);
+                
+                if (jumpMoves.length > 0) {
+                    selectedMove = jumpMoves[Math.floor(Math.random() * jumpMoves.length)];
+                }
+                
+                this.makeMove(selectedMove);
+            },
+            
+            getAllValidMoves(color) {
+                const moves = [];
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const piece = this.board[row][col];
+                        if (piece && piece.color === color) {
+                            moves.push(...this.getValidMoves(row, col));
+                        }
+                    }
+                }
+                return moves;
+            },
+            
+            checkGameEnd() {
+                const redMoves = this.getAllValidMoves('red');
+                const blackMoves = this.getAllValidMoves('black');
+                
+                if (redMoves.length === 0) {
+                    this.gameOver = true;
+                    document.getElementById('gameStatus').textContent = 'Game Over - Black wins!';
+                } else if (blackMoves.length === 0) {
+                    this.gameOver = true;
+                    document.getElementById('gameStatus').textContent = 'Game Over - Red wins!';
+                }
+            },
+            
+            updateDisplay() {
+                document.getElementById('currentPlayerDisplay').textContent = 
+                    this.gameOver ? 'Game Over' : `${this.currentPlayer.charAt(0).toUpperCase() + this.currentPlayer.slice(1)}'s Turn`;
+                
+                if (!this.gameOver) {
+                    document.getElementById('gameStatus').textContent = 'Game in progress';
+                }
+                
+                document.getElementById('aiStatus').textContent = 
+                    `AI: ${this.isAI ? ['Easy', 'Medium', 'Hard'][this.difficulty - 1] : 'Off'}`;
+            },
+            
+            updateCapturedPieces() {
+                const redElement = document.getElementById('capturedRed');
+                const blackElement = document.getElementById('capturedBlack');
+                
+                redElement.innerHTML = this.capturedPieces.red
+                    .map(() => '<div class="captured-piece" style="background: #ff4757;"></div>')
+                    .join('');
+                
+                blackElement.innerHTML = this.capturedPieces.black
+                    .map(() => '<div class="captured-piece" style="background: #2f3542;"></div>')
+                    .join('');
+            }
+        };
+        
+        // Game control functions
+        function startNewGame() {
+            CheckersGame.currentPlayer = 'red';
+            CheckersGame.gameOver = false;
+            CheckersGame.capturedPieces = { red: [], black: [] };
+            CheckersGame.moveHistory = [];
+            CheckersGame.selectedSquare = null;
+            CheckersGame.init();
+        }
+        
+        function toggleGameMode() {
+            CheckersGame.isAI = !CheckersGame.isAI;
+            CheckersGame.updateDisplay();
+        }
+        
+        function undoMove() {
+            if (CheckersGame.moveHistory.length === 0) return;
+            
+            const lastMove = CheckersGame.moveHistory.pop();
+            
+            // Restore piece positions
+            CheckersGame.board[lastMove.from.row][lastMove.from.col] = lastMove.piece;
+            CheckersGame.board[lastMove.to.row][lastMove.to.col] = null;
+            
+            // Restore captured piece
+            if (lastMove.captured && lastMove.capturedPos) {
+                CheckersGame.board[lastMove.capturedPos.row][lastMove.capturedPos.col] = lastMove.captured;
+                const capturedArray = CheckersGame.capturedPieces[lastMove.captured.color];
+                capturedArray.pop();
+            }
+            
+            CheckersGame.currentPlayer = CheckersGame.currentPlayer === 'red' ? 'black' : 'red';
+            CheckersGame.gameOver = false;
+            CheckersGame.renderBoard();
+            CheckersGame.updateDisplay();
+            CheckersGame.updateCapturedPieces();
+        }
+        
+        function setDifficulty() {
+            CheckersGame.difficulty = parseInt(document.getElementById('difficultySelect').value);
+            CheckersGame.updateDisplay();
+        }
+        
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            CheckersGame.init();
+        });
         // Add some interactivity
         document.querySelectorAll('.feature-card').forEach(card => {
             card.addEventListener('mouseenter', () => {
@@ -359,6 +1020,183 @@
         console.log('Welcome to Checkers Game!');
         console.log('This project was built using AI-Human collaboration.');
         console.log('Visit https://github.com/RayBen445/Collab-with-AI for more!');
-    </script>
+    
+        
+        
+        
+                // Checkers Game Implementation
+                let appData = [];
+                let currentSettings = {};
+                
+                function processInput() {
+                    const input = document.getElementById('mainInput');
+                    const output = document.getElementById('output-area');
+                    const value = input.value.trim();
+                    
+                    if (!value) {
+                        output.innerHTML = '<p class="error">⚠️ Please enter some data to process!</p>';
+                        return;
+                    }
+                    
+                    appData.push({
+                        value: value,
+                        timestamp: new Date().toLocaleString(),
+                        id: Date.now()
+                    });
+                    
+                    updateDisplay();
+                    input.value = '';
+                }
+                
+                function clearData() {
+                    appData = [];
+                    document.getElementById('mainInput').value = '';
+                    updateDisplay();
+                }
+                
+                function updateDisplay() {
+                    const output = document.getElementById('output-area');
+                    if (appData.length === 0) {
+                        output.innerHTML = '<p>No data yet. Add some entries above!</p>';
+                        return;
+                    }
+                    
+                    const itemsHtml = appData.map(item => 
+                        `<div class="data-item">
+                            <strong>${item.value}</strong>
+                            <small>${item.timestamp}</small>
+                            <button onclick="removeItem(${item.id})" class="remove-btn">×</button>
+                        </div>`
+                    ).join('');
+                    
+                    output.innerHTML = `
+                        <h4>📋 Data Items (${appData.length})</h4>
+                        <div class="data-list">${itemsHtml}</div>
+                    `;
+                }
+                
+                function removeItem(id) {
+                    appData = appData.filter(item => item.id !== id);
+                    updateDisplay();
+                }
+                
+                function showFeature(feature) {
+                    const messages = {
+                        'analytics': `📊 Analytics: You have ${appData.length} items. Total characters: ${appData.reduce((sum, item) => sum + item.value.length, 0)}`,
+                        'export': '💾 Export: Data exported to browser download (simulated)',
+                        'settings': '⚙️ Settings: Theme updated, auto-save enabled'
+                    };
+                    
+                    showSuccessModal(messages[feature] || 'Feature activated!');
+                    
+                    if (feature === 'export' && appData.length > 0) {
+                        const dataStr = JSON.stringify(appData, null, 2);
+                        const blob = new Blob([dataStr], { type: 'application/json' });
+                        const url = URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = 'checkers_game_data.json';
+                        a.click();
+                        URL.revokeObjectURL(url);
+                    }
+                }
+                
+                // Auto-save functionality
+                setInterval(() => {
+                    if (appData.length > 0) {
+                        localStorage.setItem('checkers_game_data', JSON.stringify(appData));
+                    }
+                }, 5000);
+                
+                // Load saved data on startup
+                document.addEventListener('DOMContentLoaded', function() {
+                    const saved = localStorage.getItem('checkers_game_data');
+                    if (saved) {
+                        try {
+                            appData = JSON.parse(saved);
+                            updateDisplay();
+                        } catch (e) {
+                            console.log('Could not load saved data');
+                        }
+                    }
+                });
+        
+        // Allow Enter key functionality where applicable
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-setup enter key for inputs
+            const inputs = document.querySelectorAll('input[type="text"]');
+            inputs.forEach(input => {
+                if (input.id.includes('Query') || input.id.includes('Input') || input.id.includes('Search')) {
+                    input.addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            // Find associated button and click it
+                            const button = input.parentElement.querySelector('button');
+                            if (button) button.click();
+                        }
+                    });
+                }
+            });
+        });
+        </script>
+<script>
+        // Modal system for user feedback
+        function showSuccessModal(message) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.5); display: flex; align-items: center; 
+                justify-content: center; z-index: 10000;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white; padding: 30px; border-radius: 15px; 
+                max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+            
+            modalContent.innerHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 20px; color: #333;">${message}</div>
+                <button onclick="this.closest('.modal').remove()" 
+                        style="padding: 10px 20px; background: #007bff; color: white; 
+                               border: none; border-radius: 5px; cursor: pointer;">
+                    OK
+                </button>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (modal.parentNode) modal.remove();
+            }, 3000);
+        }
+        
+        function showDocumentation() {
+            showSuccessModal('📚 Documentation modal would open here with detailed project information.');
+        }
+        
+        function downloadProject() {
+            const projectData = {
+                name: document.title || 'Project',
+                description: 'Comprehensive project with full functionality',
+                features: ['Real functionality', 'Professional UI', 'Mobile responsive'],
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'project-info.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showSuccessModal('📁 Project information downloaded successfully!');
+        }
+</script>
 </body>
 </html>
