@@ -403,35 +403,48 @@
         </div>
         
         <div class="main-content">
-            
-                <div class="working-demo">
-                    <h3>🚀 Solitaire - Interactive Demo</h3>
-                    <div class="app-interface">
-                        <div class="control-panel">
-                            <input type="text" id="mainInput" placeholder="Enter your data..." class="main-input">
-                            <button onclick="processInput()" class="demo-btn primary">Process</button>
-                            <button onclick="clearData()" class="demo-btn">Clear</button>
-                        </div>
-                        <div id="output-area" class="output-area">
-                            <p>Ready to process your input. Try entering some data above!</p>
-                        </div>
-                        <div class="feature-showcase">
-                            <button onclick="showFeature('analytics')" class="demo-btn">📊 Analytics</button>
-                            <button onclick="showFeature('export')" class="demo-btn">💾 Export Data</button>
-                            <button onclick="showFeature('settings')" class="demo-btn">⚙️ Settings</button>
-                        </div>
-                    </div>
+            <div class="solitaire-game">
+                <div class="game-controls">
+                    <button onclick="startNewGame()" class="control-btn">🎮 New Deal</button>
+                    <button onclick="undoMove()" class="control-btn">↶ Undo</button>
+                    <button onclick="autoComplete()" class="control-btn">🎯 Auto Complete</button>
+                    <select id="gameType" onchange="changeGameType()" class="difficulty-select">
+                        <option value="klondike" selected>Klondike</option>
+                        <option value="freecell">FreeCell</option>
+                    </select>
                 </div>
-            </div>
-            </div>
-                                <div class="working-demo">
-                    <h3>🚀 Solitaire Demo</h3>
-                    <div class="demo-controls">
-                        <button class="demo-btn" onclick="runDemo()">Try Demo</button>
-                        <button class="demo-btn" onclick="resetDemo()">Reset</button>
+                
+                <div class="game-area">
+                    <div class="game-info">
+                        <div class="moves">
+                            Moves: <span id="movesCount">0</span>
+                        </div>
+                        <div class="score">
+                            Score: <span id="scoreDisplay">0</span>
+                        </div>
+                        <div class="timer">
+                            Time: <span id="timerDisplay">00:00</span>
+                        </div>
                     </div>
-                    <div id="demoOutput" class="demo-output">
-                        This is a working demo of solitaire. Click the buttons above to interact!
+                    
+                    <div class="solitaire-board">
+                        <div class="top-area">
+                            <div class="stock-waste">
+                                <div class="stock" id="stock" onclick="drawCards()">
+                                    <div class="card-back">🂠</div>
+                                </div>
+                                <div class="waste" id="waste"></div>
+                            </div>
+                            
+                            <div class="foundations" id="foundations">
+                                <div class="foundation" data-suit="hearts" onclick="handleFoundationClick(this)">♥</div>
+                                <div class="foundation" data-suit="diamonds" onclick="handleFoundationClick(this)">♦</div>
+                                <div class="foundation" data-suit="clubs" onclick="handleFoundationClick(this)">♣</div>
+                                <div class="foundation" data-suit="spades" onclick="handleFoundationClick(this)">♠</div>
+                            </div>
+                        </div>
+                        
+                        <div class="tableau" id="tableau"></div>
                     </div>
                 </div>
             </div>

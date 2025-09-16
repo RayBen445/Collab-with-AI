@@ -366,6 +366,207 @@
             color: #ff4757;
             font-weight: bold;
         }
+        
+        .mastermind-game {
+            text-align: center;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .difficulty-select {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .game-info {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-info > div {
+            text-align: center;
+        }
+        
+        .game-info span {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .game-board {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+        
+        .secret-code {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            justify-content: center;
+        }
+        
+        .code-peg {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid #333;
+            background: #f8f9fa;
+        }
+        
+        .code-peg.hidden {
+            background: #333;
+        }
+        
+        .guesses-board {
+            margin-bottom: 30px;
+        }
+        
+        .guess-row {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 10px;
+            padding: 10px;
+            border-radius: 10px;
+            background: #f8f9fa;
+        }
+        
+        .guess-pegs {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .guess-peg-small {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            background: #fff;
+        }
+        
+        .feedback-pegs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4px;
+            width: 40px;
+        }
+        
+        .feedback-peg {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+        }
+        
+        .current-guess {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 15px;
+        }
+        
+        .guess-peg {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            border: 3px solid #667eea;
+            background: #f8f9fa;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .guess-peg.selected {
+            border-color: #ff4757;
+            transform: scale(1.1);
+        }
+        
+        .guess-peg.filled {
+            border-color: #333;
+        }
+        
+        .submit-btn {
+            background: linear-gradient(135deg, #2ed573, #27ae60);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(46, 213, 115, 0.3);
+        }
+        
+        .color-palette {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .color-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 3px solid #333;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .color-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
         </style>
 </head>
 <body>
@@ -499,6 +700,303 @@
     </div>
     
     <script>
+        // Mastermind Game Implementation
+        const MastermindGame = {
+            secretCode: [],
+            currentGuess: [null, null, null, null],
+            guesses: [],
+            attempts: 0,
+            maxAttempts: 10,
+            difficulty: 'medium',
+            hintsRemaining: 3,
+            gameOver: false,
+            won: false,
+            
+            colors: {
+                easy: ['#ff4757', '#2ed573', '#3742fa', '#ffa726'],
+                medium: ['#ff4757', '#2ed573', '#3742fa', '#ffa726', '#9c88ff', '#ff6b6b'],
+                hard: ['#ff4757', '#2ed573', '#3742fa', '#ffa726', '#9c88ff', '#ff6b6b', '#ff9ff3', '#54a0ff']
+            },
+            
+            selectedPeg: null,
+            
+            init() {
+                this.generateSecretCode();
+                this.setupColorPalette();
+                this.setupGuessesBoard();
+                this.updateDisplay();
+                this.gameOver = false;
+                this.won = false;
+                this.attempts = 0;
+                this.guesses = [];
+                this.hintsRemaining = 3;
+            },
+            
+            generateSecretCode() {
+                this.secretCode = [];
+                const availableColors = this.colors[this.difficulty];
+                
+                for (let i = 0; i < 4; i++) {
+                    const randomColor = availableColors[Math.floor(Math.random() * availableColors.length)];
+                    this.secretCode.push(randomColor);
+                }
+                
+                console.log('Secret code:', this.secretCode); // For debugging
+            },
+            
+            setupColorPalette() {
+                const palette = document.getElementById('colorPalette');
+                palette.innerHTML = '';
+                
+                const availableColors = this.colors[this.difficulty];
+                availableColors.forEach(color => {
+                    const colorBtn = document.createElement('div');
+                    colorBtn.className = 'color-btn';
+                    colorBtn.style.backgroundColor = color;
+                    colorBtn.onclick = () => this.selectColor(color);
+                    palette.appendChild(colorBtn);
+                });
+            },
+            
+            setupGuessesBoard() {
+                const board = document.getElementById('guessesBoard');
+                board.innerHTML = '';
+                
+                for (let i = 0; i < this.maxAttempts; i++) {
+                    const guessRow = document.createElement('div');
+                    guessRow.className = 'guess-row';
+                    
+                    // Guess pegs
+                    const guessPegs = document.createElement('div');
+                    guessPegs.className = 'guess-pegs';
+                    
+                    for (let j = 0; j < 4; j++) {
+                        const peg = document.createElement('div');
+                        peg.className = 'guess-peg-small';
+                        guessPegs.appendChild(peg);
+                    }
+                    
+                    // Feedback pegs
+                    const feedbackPegs = document.createElement('div');
+                    feedbackPegs.className = 'feedback-pegs';
+                    
+                    for (let j = 0; j < 4; j++) {
+                        const feedbackPeg = document.createElement('div');
+                        feedbackPeg.className = 'feedback-peg';
+                        feedbackPegs.appendChild(feedbackPeg);
+                    }
+                    
+                    guessRow.appendChild(guessPegs);
+                    guessRow.appendChild(feedbackPegs);
+                    board.appendChild(guessRow);
+                }
+            },
+            
+            selectPeg(pegIndex) {
+                this.selectedPeg = pegIndex;
+                
+                // Highlight selected peg
+                document.querySelectorAll('.guess-peg').forEach((peg, index) => {
+                    peg.classList.toggle('selected', index === pegIndex);
+                });
+            },
+            
+            selectColor(color) {
+                if (this.selectedPeg !== null && !this.gameOver) {
+                    this.currentGuess[this.selectedPeg] = color;
+                    this.updateCurrentGuess();
+                }
+            },
+            
+            updateCurrentGuess() {
+                const guessPegs = document.querySelectorAll('#currentGuess .guess-peg');
+                guessPegs.forEach((peg, index) => {
+                    if (this.currentGuess[index]) {
+                        peg.style.backgroundColor = this.currentGuess[index];
+                        peg.classList.add('filled');
+                    } else {
+                        peg.style.backgroundColor = '#f8f9fa';
+                        peg.classList.remove('filled');
+                    }
+                });
+            },
+            
+            submitGuess() {
+                if (this.gameOver || this.currentGuess.some(color => color === null)) {
+                    return;
+                }
+                
+                const feedback = this.calculateFeedback(this.currentGuess, this.secretCode);
+                this.guesses.push({
+                    guess: [...this.currentGuess],
+                    feedback: feedback
+                });
+                
+                this.updateGuessesBoard();
+                
+                // Check win condition
+                if (feedback.exact === 4) {
+                    this.gameOver = true;
+                    this.won = true;
+                    this.revealSecretCode();
+                    setTimeout(() => {
+                        alert(`Congratulations! You cracked the code in ${this.attempts + 1} attempts!`);
+                    }, 100);
+                } else {
+                    this.attempts++;
+                    
+                    if (this.attempts >= this.maxAttempts) {
+                        this.gameOver = true;
+                        this.won = false;
+                        this.revealSecretCode();
+                        setTimeout(() => {
+                            alert(`Game Over! The secret code was revealed above.`);
+                        }, 100);
+                    }
+                }
+                
+                // Reset current guess
+                this.currentGuess = [null, null, null, null];
+                this.selectedPeg = null;
+                this.updateCurrentGuess();
+                this.updateDisplay();
+                
+                // Clear selection
+                document.querySelectorAll('.guess-peg').forEach(peg => {
+                    peg.classList.remove('selected');
+                });
+            },
+            
+            calculateFeedback(guess, secret) {
+                let exact = 0; // Black pegs - correct color and position
+                let near = 0;  // White pegs - correct color, wrong position
+                
+                const secretCopy = [...secret];
+                const guessCopy = [...guess];
+                
+                // First pass: find exact matches
+                for (let i = 0; i < 4; i++) {
+                    if (guessCopy[i] === secretCopy[i]) {
+                        exact++;
+                        guessCopy[i] = null;
+                        secretCopy[i] = null;
+                    }
+                }
+                
+                // Second pass: find near matches
+                for (let i = 0; i < 4; i++) {
+                    if (guessCopy[i] !== null) {
+                        const secretIndex = secretCopy.indexOf(guessCopy[i]);
+                        if (secretIndex !== -1) {
+                            near++;
+                            secretCopy[secretIndex] = null;
+                        }
+                    }
+                }
+                
+                return { exact, near };
+            },
+            
+            updateGuessesBoard() {
+                const rows = document.querySelectorAll('#guessesBoard .guess-row');
+                const currentRow = rows[this.attempts];
+                
+                if (currentRow) {
+                    const guessPegs = currentRow.querySelectorAll('.guess-peg-small');
+                    const feedbackPegs = currentRow.querySelectorAll('.feedback-peg');
+                    const currentGuessData = this.guesses[this.attempts];
+                    
+                    // Update guess pegs
+                    guessPegs.forEach((peg, index) => {
+                        peg.style.backgroundColor = currentGuessData.guess[index];
+                    });
+                    
+                    // Update feedback pegs
+                    let feedbackIndex = 0;
+                    
+                    // Add black pegs for exact matches
+                    for (let i = 0; i < currentGuessData.feedback.exact; i++) {
+                        feedbackPegs[feedbackIndex].style.backgroundColor = '#333';
+                        feedbackIndex++;
+                    }
+                    
+                    // Add white pegs for near matches
+                    for (let i = 0; i < currentGuessData.feedback.near; i++) {
+                        feedbackPegs[feedbackIndex].style.backgroundColor = '#fff';
+                        feedbackPegs[feedbackIndex].style.border = '1px solid #333';
+                        feedbackIndex++;
+                    }
+                }
+            },
+            
+            revealSecretCode() {
+                const secretCodePegs = document.querySelectorAll('#secretCode .code-peg');
+                secretCodePegs.forEach((peg, index) => {
+                    peg.style.backgroundColor = this.secretCode[index];
+                    peg.classList.remove('hidden');
+                });
+            },
+            
+            getHint() {
+                if (this.hintsRemaining <= 0 || this.gameOver) return;
+                
+                // Reveal one position of the secret code
+                const hintIndex = Math.floor(Math.random() * 4);
+                this.currentGuess[hintIndex] = this.secretCode[hintIndex];
+                this.updateCurrentGuess();
+                
+                this.hintsRemaining--;
+                this.updateDisplay();
+            },
+            
+            clearCurrentGuess() {
+                this.currentGuess = [null, null, null, null];
+                this.selectedPeg = null;
+                this.updateCurrentGuess();
+                
+                document.querySelectorAll('.guess-peg').forEach(peg => {
+                    peg.classList.remove('selected');
+                });
+            },
+            
+            updateDisplay() {
+                document.getElementById('attemptsDisplay').textContent = this.attempts;
+                document.getElementById('difficultyDisplay').textContent = 
+                    this.difficulty.charAt(0).toUpperCase() + this.difficulty.slice(1);
+                document.getElementById('hintsDisplay').textContent = this.hintsRemaining;
+            }
+        };
+        
+        // Game control functions
+        function startNewGame() {
+            MastermindGame.init();
+        }
+        
+        function getHint() {
+            MastermindGame.getHint();
+        }
+        
+        function clearCurrentGuess() {
+            MastermindGame.clearCurrentGuess();
+        }
+        
+        function submitGuess() {
+            MastermindGame.submitGuess();
+        }
+        
+        function selectPeg(index) {
+            MastermindGame.selectPeg(index);
+        }
+        
+        function setDifficulty() {
+            MastermindGame.difficulty = document.getElementById('difficultySelect').value;
+            startNewGame();
+        }
+        
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            MastermindGame.init();
+        });
         // Add some interactivity
         document.querySelectorAll('.feature-card').forEach(card => {
             card.addEventListener('mouseenter', () => {

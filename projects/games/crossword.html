@@ -403,35 +403,37 @@
         </div>
         
         <div class="main-content">
-            
-                <div class="working-demo">
-                    <h3>🚀 Crossword Puzzle - Interactive Demo</h3>
-                    <div class="app-interface">
-                        <div class="control-panel">
-                            <input type="text" id="mainInput" placeholder="Enter your data..." class="main-input">
-                            <button onclick="processInput()" class="demo-btn primary">Process</button>
-                            <button onclick="clearData()" class="demo-btn">Clear</button>
-                        </div>
-                        <div id="output-area" class="output-area">
-                            <p>Ready to process your input. Try entering some data above!</p>
-                        </div>
-                        <div class="feature-showcase">
-                            <button onclick="showFeature('analytics')" class="demo-btn">📊 Analytics</button>
-                            <button onclick="showFeature('export')" class="demo-btn">💾 Export Data</button>
-                            <button onclick="showFeature('settings')" class="demo-btn">⚙️ Settings</button>
-                        </div>
-                    </div>
+            <div class="crossword-game">
+                <div class="game-controls">
+                    <button onclick="startNewGame()" class="control-btn">🎮 New Game</button>
+                    <button onclick="checkAnswers()" class="control-btn">✅ Check</button>
+                    <button onclick="getHint()" class="control-btn">💡 Hint</button>
+                    <button onclick="clearGrid()" class="control-btn">🧹 Clear</button>
                 </div>
-            </div>
-            </div>
-                                <div class="working-demo">
-                    <h3>🚀 Crossword Demo</h3>
-                    <div class="demo-controls">
-                        <button class="demo-btn" onclick="runDemo()">Try Demo</button>
-                        <button class="demo-btn" onclick="resetDemo()">Reset</button>
+                
+                <div class="game-area">
+                    <div class="game-info">
+                        <div class="completed">
+                            Completed: <span id="completedCount">0</span>/10
+                        </div>
+                        <div class="timer">
+                            Time: <span id="timerDisplay">00:00</span>
+                        </div>
                     </div>
-                    <div id="demoOutput" class="demo-output">
-                        This is a working demo of crossword. Click the buttons above to interact!
+                    
+                    <div class="crossword-container">
+                        <div class="crossword-grid" id="crosswordGrid"></div>
+                        
+                        <div class="clues-section">
+                            <div class="clues-column">
+                                <h4>Across</h4>
+                                <div id="acrossClues" class="clues-list"></div>
+                            </div>
+                            <div class="clues-column">
+                                <h4>Down</h4>
+                                <div id="downClues" class="clues-list"></div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
