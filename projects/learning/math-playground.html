@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Math Playground</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .header h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        
+        .nav-link {
+            text-decoration: none;
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .math-tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+        
+        .tool-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 2rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .tool-title {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: #FFD700;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .calculator-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            font-family: monospace;
+            font-size: 1.5rem;
+            text-align: right;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .calculator-buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.5rem;
+        }
+        
+        .calc-btn {
+            padding: 1rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .calc-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+        
+        .calc-btn.operator {
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            color: #333;
+        }
+        
+        .calc-btn.equals {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            grid-column: span 2;
+        }
+        
+        .calc-btn.clear {
+            background: linear-gradient(45deg, #dc3545, #c82333);
+        }
+        
+        .graph-area {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            padding: 1rem;
+            margin: 1rem 0;
+            position: relative;
+        }
+        
+        .graph-canvas {
+            width: 100%;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+        
+        .input-group {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        
+        .input-group input, .input-group select {
+            flex: 1;
+            padding: 0.75rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 8px;
+            font-size: 1rem;
+            min-width: 120px;
+        }
+        
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.25rem;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(45deg, #28a745, #20c997);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .equation-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 1rem;
+        }
+        
+        .equation-item {
+            padding: 0.5rem;
+            margin: 0.25rem 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            font-family: monospace;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .result-display {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            font-family: monospace;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .matrix-grid {
+            display: grid;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        
+        .matrix-input {
+            padding: 0.5rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 1rem;
+            width: 60px;
+        }
+        
+        .stats-display {
+            background: rgba(0, 0, 0, 0.2);
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            margin: 0.5rem 0;
+        }
+        
+        .stat-label {
+            font-weight: 600;
+        }
+        
+        .stat-value {
+            color: #FFD700;
+            font-family: monospace;
+        }
+        
+        .geometry-canvas {
+            width: 100%;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🧮 Interactive Math Playground</h1>
+            <p>Explore mathematics through interactive tools and visualizations</p>
+            
+            <div class="nav-links">
+                <a href="index.html" class="nav-link">📚 Learning Hub</a>
+                <a href="physics-simulator.html" class="nav-link">🔬 Physics</a>
+                <a href="algorithm-visualizer.html" class="nav-link">🧠 Algorithms</a>
+                <a href="science-lab.html" class="nav-link">🧪 Science Lab</a>
+            </div>
+        </div>
+        
+        <div class="math-tools-grid">
+            <!-- Scientific Calculator -->
+            <div class="tool-card">
+                <h2 class="tool-title">🔢 Scientific Calculator</h2>
+                <div class="calculator-display" id="calcDisplay">0</div>
+                <div class="calculator-buttons">
+                    <button class="calc-btn clear" onclick="clearCalc()">C</button>
+                    <button class="calc-btn clear" onclick="clearEntry()">CE</button>
+                    <button class="calc-btn operator" onclick="appendCalc('(')">(</button>
+                    <button class="calc-btn operator" onclick="appendCalc(')')">)</button>
+                    
+                    <button class="calc-btn" onclick="appendCalc('7')">7</button>
+                    <button class="calc-btn" onclick="appendCalc('8')">8</button>
+                    <button class="calc-btn" onclick="appendCalc('9')">9</button>
+                    <button class="calc-btn operator" onclick="appendCalc('/')">÷</button>
+                    
+                    <button class="calc-btn" onclick="appendCalc('4')">4</button>
+                    <button class="calc-btn" onclick="appendCalc('5')">5</button>
+                    <button class="calc-btn" onclick="appendCalc('6')">6</button>
+                    <button class="calc-btn operator" onclick="appendCalc('*')">×</button>
+                    
+                    <button class="calc-btn" onclick="appendCalc('1')">1</button>
+                    <button class="calc-btn" onclick="appendCalc('2')">2</button>
+                    <button class="calc-btn" onclick="appendCalc('3')">3</button>
+                    <button class="calc-btn operator" onclick="appendCalc('-')">-</button>
+                    
+                    <button class="calc-btn" onclick="appendCalc('0')">0</button>
+                    <button class="calc-btn" onclick="appendCalc('.')">.</button>
+                    <button class="calc-btn operator" onclick="appendCalc('+')">+</button>
+                    <button class="calc-btn equals" onclick="calculateResult()">=</button>
+                    
+                    <button class="calc-btn operator" onclick="appendCalc('Math.sin(')">sin</button>
+                    <button class="calc-btn operator" onclick="appendCalc('Math.cos(')">cos</button>
+                    <button class="calc-btn operator" onclick="appendCalc('Math.tan(')">tan</button>
+                    <button class="calc-btn operator" onclick="appendCalc('Math.log(')">log</button>
+                    
+                    <button class="calc-btn operator" onclick="appendCalc('Math.sqrt(')">√</button>
+                    <button class="calc-btn operator" onclick="appendCalc('Math.pow(')">x^y</button>
+                    <button class="calc-btn operator" onclick="appendCalc('Math.PI')">π</button>
+                    <button class="calc-btn operator" onclick="appendCalc('Math.E')">e</button>
+                </div>
+                
+                <div class="equation-list" id="calcHistory"></div>
+            </div>
+            
+            <!-- Function Grapher -->
+            <div class="tool-card">
+                <h2 class="tool-title">📈 Function Grapher</h2>
+                <div class="input-group">
+                    <input type="text" id="functionInput" placeholder="Enter function: x^2, sin(x), etc." value="x^2">
+                    <button class="btn btn-primary" onclick="plotFunction()">Plot</button>
+                </div>
+                
+                <div class="graph-area">
+                    <canvas id="graphCanvas" class="graph-canvas" width="350" height="280"></canvas>
+                </div>
+                
+                <div class="input-group">
+                    <input type="number" id="xMin" placeholder="X Min" value="-10">
+                    <input type="number" id="xMax" placeholder="X Max" value="10">
+                    <input type="number" id="yMin" placeholder="Y Min" value="-10">
+                    <input type="number" id="yMax" placeholder="Y Max" value="10">
+                </div>
+                
+                <div class="input-group">
+                    <button class="btn btn-success" onclick="setFunction('x^2')">x²</button>
+                    <button class="btn btn-success" onclick="setFunction('Math.sin(x)')">sin(x)</button>
+                    <button class="btn btn-success" onclick="setFunction('Math.cos(x)')">cos(x)</button>
+                    <button class="btn btn-success" onclick="setFunction('Math.exp(x)')">e^x</button>
+                </div>
+            </div>
+            
+            <!-- Statistics Calculator -->
+            <div class="tool-card">
+                <h2 class="tool-title">📊 Statistics Calculator</h2>
+                <div class="input-group">
+                    <input type="text" id="dataInput" placeholder="Enter numbers separated by commas" value="1, 2, 3, 4, 5, 6, 7, 8, 9, 10">
+                    <button class="btn btn-primary" onclick="calculateStats()">Calculate</button>
+                </div>
+                
+                <div class="stats-display" id="statsDisplay">
+                    <div class="stat-row">
+                        <span class="stat-label">Count:</span>
+                        <span class="stat-value" id="count">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Sum:</span>
+                        <span class="stat-value" id="sum">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Mean:</span>
+                        <span class="stat-value" id="mean">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Median:</span>
+                        <span class="stat-value" id="median">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Mode:</span>
+                        <span class="stat-value" id="mode">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Range:</span>
+                        <span class="stat-value" id="range">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Standard Deviation:</span>
+                        <span class="stat-value" id="stdDev">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Variance:</span>
+                        <span class="stat-value" id="variance">0</span>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <button class="btn btn-success" onclick="generateRandomData()">Random Data</button>
+                    <button class="btn btn-success" onclick="plotHistogram()">Histogram</button>
+                </div>
+            </div>
+            
+            <!-- Matrix Calculator -->
+            <div class="tool-card">
+                <h2 class="tool-title">⬜ Matrix Calculator</h2>
+                <div class="input-group">
+                    <select id="matrixSize" onchange="createMatrix()">
+                        <option value="2">2×2 Matrix</option>
+                        <option value="3">3×3 Matrix</option>
+                        <option value="4">4×4 Matrix</option>
+                    </select>
+                    <button class="btn btn-primary" onclick="createMatrix()">Create</button>
+                </div>
+                
+                <div id="matrixContainer">
+                    <h4>Matrix A:</h4>
+                    <div class="matrix-grid" id="matrixA" style="grid-template-columns: repeat(2, 1fr);"></div>
+                    
+                    <h4>Matrix B:</h4>
+                    <div class="matrix-grid" id="matrixB" style="grid-template-columns: repeat(2, 1fr);"></div>
+                </div>
+                
+                <div class="input-group">
+                    <button class="btn btn-success" onclick="addMatrices()">A + B</button>
+                    <button class="btn btn-success" onclick="subtractMatrices()">A - B</button>
+                    <button class="btn btn-success" onclick="multiplyMatrices()">A × B</button>
+                    <button class="btn btn-success" onclick="determinant()">Det(A)</button>
+                </div>
+                
+                <div class="result-display" id="matrixResult">Result will appear here...</div>
+            </div>
+            
+            <!-- Geometry Calculator -->
+            <div class="tool-card">
+                <h2 class="tool-title">📐 Geometry Calculator</h2>
+                <div class="input-group">
+                    <select id="shapeType" onchange="updateShapeInputs()">
+                        <option value="circle">Circle</option>
+                        <option value="rectangle">Rectangle</option>
+                        <option value="triangle">Triangle</option>
+                        <option value="sphere">Sphere</option>
+                        <option value="cylinder">Cylinder</option>
+                    </select>
+                </div>
+                
+                <div id="shapeInputs">
+                    <div class="input-group">
+                        <input type="number" id="radius" placeholder="Radius" value="5">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <button class="btn btn-primary" onclick="calculateGeometry()">Calculate</button>
+                    <button class="btn btn-success" onclick="drawShape()">Draw</button>
+                </div>
+                
+                <canvas id="geometryCanvas" class="geometry-canvas" width="350" height="240"></canvas>
+                
+                <div class="result-display" id="geometryResult">
+                    <div class="stat-row">
+                        <span class="stat-label">Area/Surface Area:</span>
+                        <span class="stat-value" id="area">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Perimeter/Circumference:</span>
+                        <span class="stat-value" id="perimeter">0</span>
+                    </div>
+                    <div class="stat-row">
+                        <span class="stat-label">Volume:</span>
+                        <span class="stat-value" id="volume">N/A</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Equation Solver -->
+            <div class="tool-card">
+                <h2 class="tool-title">⚡ Equation Solver</h2>
+                <div class="input-group">
+                    <input type="text" id="equationInput" placeholder="Enter equation: x^2 - 5*x + 6 = 0" value="x^2 - 5*x + 6">
+                    <button class="btn btn-primary" onclick="solveEquation()">Solve</button>
+                </div>
+                
+                <div class="input-group">
+                    <select id="equationType">
+                        <option value="quadratic">Quadratic (ax² + bx + c = 0)</option>
+                        <option value="linear">Linear (ax + b = 0)</option>
+                        <option value="cubic">Cubic (ax³ + bx² + cx + d = 0)</option>
+                    </select>
+                </div>
+                
+                <div class="result-display" id="equationResult">Solutions will appear here...</div>
+                
+                <div class="input-group">
+                    <button class="btn btn-success" onclick="setEquation('x^2 - 4')">x² - 4 = 0</button>
+                    <button class="btn btn-success" onclick="setEquation('2*x + 5')">2x + 5 = 0</button>
+                    <button class="btn btn-success" onclick="setEquation('x^3 - x')">x³ - x = 0</button>
+                </div>
+                
+                <div class="graph-area">
+                    <canvas id="equationGraph" class="graph-canvas" width="350" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Calculator functionality
+        let calcExpression = '';
+        let calcHistory = [];
+        
+        function appendCalc(value) {
+            if (value === '/' || value === '*') {
+                value = value === '/' ? '/' : '*';
+            }
+            calcExpression += value;
+            document.getElementById('calcDisplay').textContent = calcExpression || '0';
+        }
+        
+        function clearCalc() {
+            calcExpression = '';
+            document.getElementById('calcDisplay').textContent = '0';
+        }
+        
+        function clearEntry() {
+            calcExpression = calcExpression.slice(0, -1);
+            document.getElementById('calcDisplay').textContent = calcExpression || '0';
+        }
+        
+        function calculateResult() {
+            try {
+                // Replace display symbols with JS operators
+                let expression = calcExpression.replace(/÷/g, '/').replace(/×/g, '*');
+                let result = eval(expression);
+                
+                calcHistory.unshift(`${calcExpression} = ${result}`);
+                if (calcHistory.length > 5) calcHistory.pop();
+                
+                document.getElementById('calcDisplay').textContent = result;
+                updateCalcHistory();
+                calcExpression = result.toString();
+            } catch (error) {
+                document.getElementById('calcDisplay').textContent = 'Error';
+                calcExpression = '';
+            }
+        }
+        
+        function updateCalcHistory() {
+            const historyDiv = document.getElementById('calcHistory');
+            historyDiv.innerHTML = calcHistory.map(eq => `<div class="equation-item">${eq}</div>`).join('');
+        }
+        
+        // Function Grapher
+        function plotFunction() {
+            const canvas = document.getElementById('graphCanvas');
+            const ctx = canvas.getContext('2d');
+            const func = document.getElementById('functionInput').value;
+            
+            const xMin = parseFloat(document.getElementById('xMin').value) || -10;
+            const xMax = parseFloat(document.getElementById('xMax').value) || 10;
+            const yMin = parseFloat(document.getElementById('yMin').value) || -10;
+            const yMax = parseFloat(document.getElementById('yMax').value) || 10;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw axes
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 1;
+            
+            // X-axis
+            const yZero = canvas.height * (yMax / (yMax - yMin));
+            ctx.beginPath();
+            ctx.moveTo(0, yZero);
+            ctx.lineTo(canvas.width, yZero);
+            ctx.stroke();
+            
+            // Y-axis
+            const xZero = canvas.width * (-xMin / (xMax - xMin));
+            ctx.beginPath();
+            ctx.moveTo(xZero, 0);
+            ctx.lineTo(xZero, canvas.height);
+            ctx.stroke();
+            
+            // Plot function
+            ctx.strokeStyle = '#00cec9';
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            
+            let firstPoint = true;
+            for (let pixelX = 0; pixelX < canvas.width; pixelX++) {
+                const x = xMin + (pixelX / canvas.width) * (xMax - xMin);
+                let y;
+                
+                try {
+                    // Evaluate function
+                    y = eval(func.replace(/x/g, x).replace(/\^/g, '**'));
+                    
+                    if (isFinite(y)) {
+                        const pixelY = canvas.height - (canvas.height * (y - yMin) / (yMax - yMin));
+                        
+                        if (firstPoint) {
+                            ctx.moveTo(pixelX, pixelY);
+                            firstPoint = false;
+                        } else {
+                            ctx.lineTo(pixelX, pixelY);
+                        }
+                    } else {
+                        firstPoint = true;
+                    }
+                } catch (error) {
+                    firstPoint = true;
+                }
+            }
+            
+            ctx.stroke();
+        }
+        
+        function setFunction(func) {
+            document.getElementById('functionInput').value = func;
+            plotFunction();
+        }
+        
+        // Statistics Calculator
+        function calculateStats() {
+            const input = document.getElementById('dataInput').value;
+            const data = input.split(',').map(x => parseFloat(x.trim())).filter(x => !isNaN(x));
+            
+            if (data.length === 0) return;
+            
+            const count = data.length;
+            const sum = data.reduce((a, b) => a + b, 0);
+            const mean = sum / count;
+            
+            const sortedData = [...data].sort((a, b) => a - b);
+            const median = count % 2 === 0 
+                ? (sortedData[count/2 - 1] + sortedData[count/2]) / 2 
+                : sortedData[Math.floor(count/2)];
+            
+            // Mode calculation
+            const frequency = {};
+            data.forEach(x => frequency[x] = (frequency[x] || 0) + 1);
+            const maxFreq = Math.max(...Object.values(frequency));
+            const modes = Object.keys(frequency).filter(x => frequency[x] === maxFreq);
+            const mode = modes.length === count ? 'No mode' : modes.join(', ');
+            
+            const range = Math.max(...data) - Math.min(...data);
+            
+            const variance = data.reduce((acc, x) => acc + Math.pow(x - mean, 2), 0) / count;
+            const stdDev = Math.sqrt(variance);
+            
+            document.getElementById('count').textContent = count;
+            document.getElementById('sum').textContent = sum.toFixed(2);
+            document.getElementById('mean').textContent = mean.toFixed(2);
+            document.getElementById('median').textContent = median.toFixed(2);
+            document.getElementById('mode').textContent = mode;
+            document.getElementById('range').textContent = range.toFixed(2);
+            document.getElementById('stdDev').textContent = stdDev.toFixed(2);
+            document.getElementById('variance').textContent = variance.toFixed(2);
+        }
+        
+        function generateRandomData() {
+            const data = Array.from({length: 20}, () => Math.floor(Math.random() * 100) + 1);
+            document.getElementById('dataInput').value = data.join(', ');
+            calculateStats();
+        }
+        
+        function plotHistogram() {
+            // Placeholder for histogram plotting
+            alert('📊 Histogram feature: This would create a visual histogram of your data!');
+        }
+        
+        // Matrix Calculator
+        let matrixSize = 2;
+        
+        function createMatrix() {
+            matrixSize = parseInt(document.getElementById('matrixSize').value);
+            
+            const matrixA = document.getElementById('matrixA');
+            const matrixB = document.getElementById('matrixB');
+            
+            matrixA.style.gridTemplateColumns = `repeat(${matrixSize}, 1fr)`;
+            matrixB.style.gridTemplateColumns = `repeat(${matrixSize}, 1fr)`;
+            
+            matrixA.innerHTML = '';
+            matrixB.innerHTML = '';
+            
+            for (let i = 0; i < matrixSize * matrixSize; i++) {
+                const inputA = document.createElement('input');
+                inputA.type = 'number';
+                inputA.className = 'matrix-input';
+                inputA.value = Math.floor(Math.random() * 10);
+                inputA.id = `a${i}`;
+                
+                const inputB = document.createElement('input');
+                inputB.type = 'number';
+                inputB.className = 'matrix-input';
+                inputB.value = Math.floor(Math.random() * 10);
+                inputB.id = `b${i}`;
+                
+                matrixA.appendChild(inputA);
+                matrixB.appendChild(inputB);
+            }
+        }
+        
+        function getMatrix(prefix) {
+            const matrix = [];
+            for (let i = 0; i < matrixSize; i++) {
+                matrix[i] = [];
+                for (let j = 0; j < matrixSize; j++) {
+                    const value = parseFloat(document.getElementById(`${prefix}${i * matrixSize + j}`).value) || 0;
+                    matrix[i][j] = value;
+                }
+            }
+            return matrix;
+        }
+        
+        function displayMatrix(matrix, title) {
+            let result = `${title}:\n`;
+            matrix.forEach(row => {
+                result += '[' + row.map(x => x.toFixed(2)).join(', ') + ']\n';
+            });
+            return result;
+        }
+        
+        function addMatrices() {
+            const matrixA = getMatrix('a');
+            const matrixB = getMatrix('b');
+            const result = [];
+            
+            for (let i = 0; i < matrixSize; i++) {
+                result[i] = [];
+                for (let j = 0; j < matrixSize; j++) {
+                    result[i][j] = matrixA[i][j] + matrixB[i][j];
+                }
+            }
+            
+            document.getElementById('matrixResult').innerHTML = 
+                '<pre>' + displayMatrix(result, 'A + B') + '</pre>';
+        }
+        
+        function subtractMatrices() {
+            const matrixA = getMatrix('a');
+            const matrixB = getMatrix('b');
+            const result = [];
+            
+            for (let i = 0; i < matrixSize; i++) {
+                result[i] = [];
+                for (let j = 0; j < matrixSize; j++) {
+                    result[i][j] = matrixA[i][j] - matrixB[i][j];
+                }
+            }
+            
+            document.getElementById('matrixResult').innerHTML = 
+                '<pre>' + displayMatrix(result, 'A - B') + '</pre>';
+        }
+        
+        function multiplyMatrices() {
+            const matrixA = getMatrix('a');
+            const matrixB = getMatrix('b');
+            const result = [];
+            
+            for (let i = 0; i < matrixSize; i++) {
+                result[i] = [];
+                for (let j = 0; j < matrixSize; j++) {
+                    result[i][j] = 0;
+                    for (let k = 0; k < matrixSize; k++) {
+                        result[i][j] += matrixA[i][k] * matrixB[k][j];
+                    }
+                }
+            }
+            
+            document.getElementById('matrixResult').innerHTML = 
+                '<pre>' + displayMatrix(result, 'A × B') + '</pre>';
+        }
+        
+        function determinant() {
+            const matrix = getMatrix('a');
+            let det = 0;
+            
+            if (matrixSize === 2) {
+                det = matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+            } else if (matrixSize === 3) {
+                det = matrix[0][0] * (matrix[1][1] * matrix[2][2] - matrix[1][2] * matrix[2][1]) -
+                      matrix[0][1] * (matrix[1][0] * matrix[2][2] - matrix[1][2] * matrix[2][0]) +
+                      matrix[0][2] * (matrix[1][0] * matrix[2][1] - matrix[1][1] * matrix[2][0]);
+            } else {
+                det = 'Complex calculation - use specialized software';
+            }
+            
+            document.getElementById('matrixResult').innerHTML = 
+                `<pre>Determinant of A: ${typeof det === 'number' ? det.toFixed(4) : det}</pre>`;
+        }
+        
+        // Geometry Calculator
+        function updateShapeInputs() {
+            const shape = document.getElementById('shapeType').value;
+            const container = document.getElementById('shapeInputs');
+            
+            let inputs = '';
+            switch (shape) {
+                case 'circle':
+                    inputs = '<div class="input-group"><input type="number" id="radius" placeholder="Radius" value="5"></div>';
+                    break;
+                case 'rectangle':
+                    inputs = '<div class="input-group"><input type="number" id="length" placeholder="Length" value="8"><input type="number" id="width" placeholder="Width" value="5"></div>';
+                    break;
+                case 'triangle':
+                    inputs = '<div class="input-group"><input type="number" id="base" placeholder="Base" value="6"><input type="number" id="height" placeholder="Height" value="4"></div>';
+                    break;
+                case 'sphere':
+                    inputs = '<div class="input-group"><input type="number" id="radius" placeholder="Radius" value="5"></div>';
+                    break;
+                case 'cylinder':
+                    inputs = '<div class="input-group"><input type="number" id="radius" placeholder="Radius" value="3"><input type="number" id="height" placeholder="Height" value="8"></div>';
+                    break;
+            }
+            container.innerHTML = inputs;
+        }
+        
+        function calculateGeometry() {
+            const shape = document.getElementById('shapeType').value;
+            let area = 0, perimeter = 0, volume = 'N/A';
+            
+            switch (shape) {
+                case 'circle':
+                    const r = parseFloat(document.getElementById('radius').value) || 0;
+                    area = Math.PI * r * r;
+                    perimeter = 2 * Math.PI * r;
+                    break;
+                case 'rectangle':
+                    const l = parseFloat(document.getElementById('length').value) || 0;
+                    const w = parseFloat(document.getElementById('width').value) || 0;
+                    area = l * w;
+                    perimeter = 2 * (l + w);
+                    break;
+                case 'triangle':
+                    const b = parseFloat(document.getElementById('base').value) || 0;
+                    const h = parseFloat(document.getElementById('height').value) || 0;
+                    area = 0.5 * b * h;
+                    perimeter = 'Requires all sides';
+                    break;
+                case 'sphere':
+                    const rs = parseFloat(document.getElementById('radius').value) || 0;
+                    area = 4 * Math.PI * rs * rs;
+                    perimeter = 'N/A';
+                    volume = (4/3) * Math.PI * rs * rs * rs;
+                    break;
+                case 'cylinder':
+                    const rc = parseFloat(document.getElementById('radius').value) || 0;
+                    const hc = parseFloat(document.getElementById('height').value) || 0;
+                    area = 2 * Math.PI * rc * (rc + hc);
+                    perimeter = 'N/A';
+                    volume = Math.PI * rc * rc * hc;
+                    break;
+            }
+            
+            document.getElementById('area').textContent = typeof area === 'number' ? area.toFixed(2) : area;
+            document.getElementById('perimeter').textContent = typeof perimeter === 'number' ? perimeter.toFixed(2) : perimeter;
+            document.getElementById('volume').textContent = typeof volume === 'number' ? volume.toFixed(2) : volume;
+        }
+        
+        function drawShape() {
+            const canvas = document.getElementById('geometryCanvas');
+            const ctx = canvas.getContext('2d');
+            const shape = document.getElementById('shapeType').value;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.strokeStyle = '#FFD700';
+            ctx.fillStyle = 'rgba(255, 215, 0, 0.2)';
+            ctx.lineWidth = 3;
+            
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            
+            switch (shape) {
+                case 'circle':
+                case 'sphere':
+                    const r = Math.min(80, parseFloat(document.getElementById('radius').value) * 10);
+                    ctx.beginPath();
+                    ctx.arc(centerX, centerY, r, 0, 2 * Math.PI);
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+                case 'rectangle':
+                    const l = Math.min(120, parseFloat(document.getElementById('length').value) * 10);
+                    const w = Math.min(80, parseFloat(document.getElementById('width').value) * 10);
+                    ctx.fillRect(centerX - l/2, centerY - w/2, l, w);
+                    ctx.strokeRect(centerX - l/2, centerY - w/2, l, w);
+                    break;
+                case 'triangle':
+                    const base = Math.min(120, parseFloat(document.getElementById('base').value) * 15);
+                    const height = Math.min(80, parseFloat(document.getElementById('height').value) * 15);
+                    ctx.beginPath();
+                    ctx.moveTo(centerX, centerY - height/2);
+                    ctx.lineTo(centerX - base/2, centerY + height/2);
+                    ctx.lineTo(centerX + base/2, centerY + height/2);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.stroke();
+                    break;
+            }
+        }
+        
+        // Equation Solver
+        function solveEquation() {
+            const equation = document.getElementById('equationInput').value;
+            const type = document.getElementById('equationType').value;
+            
+            let solutions = [];
+            
+            try {
+                if (type === 'quadratic') {
+                    // Parse quadratic equation ax^2 + bx + c = 0
+                    solutions = solveQuadratic(equation);
+                } else if (type === 'linear') {
+                    // Parse linear equation ax + b = 0
+                    solutions = solveLinear(equation);
+                } else {
+                    solutions = ['Complex equations require numerical methods'];
+                }
+                
+                document.getElementById('equationResult').innerHTML = 
+                    '<h4>Solutions:</h4>' + solutions.map(s => `<div>x = ${s}</div>`).join('');
+                
+                plotEquation(equation);
+                
+            } catch (error) {
+                document.getElementById('equationResult').innerHTML = 'Error parsing equation';
+            }
+        }
+        
+        function solveQuadratic(equation) {
+            // Simple quadratic solver for standard form
+            const expr = equation.replace(/\s/g, '');
+            
+            // Extract coefficients (simplified)
+            let a = 1, b = 0, c = 0;
+            
+            if (expr.includes('x^2') || expr.includes('x²')) {
+                const match = expr.match(/([+-]?\d*\.?\d*)x\^?2/);
+                if (match) a = parseFloat(match[1]) || 1;
+            }
+            
+            const bMatch = expr.match(/([+-]?\d*\.?\d*)x(?!\^)/);
+            if (bMatch) b = parseFloat(bMatch[1]) || 1;
+            
+            const cMatch = expr.match(/([+-]?\d+\.?\d*)(?!.*x)/);
+            if (cMatch) c = parseFloat(cMatch[1]) || 0;
+            
+            const discriminant = b * b - 4 * a * c;
+            
+            if (discriminant > 0) {
+                const x1 = (-b + Math.sqrt(discriminant)) / (2 * a);
+                const x2 = (-b - Math.sqrt(discriminant)) / (2 * a);
+                return [x1.toFixed(4), x2.toFixed(4)];
+            } else if (discriminant === 0) {
+                const x = -b / (2 * a);
+                return [x.toFixed(4)];
+            } else {
+                return ['No real solutions'];
+            }
+        }
+        
+        function solveLinear(equation) {
+            // Simple linear solver for ax + b = 0
+            const expr = equation.replace(/\s/g, '');
+            
+            let a = 1, b = 0;
+            
+            const aMatch = expr.match(/([+-]?\d*\.?\d*)x/);
+            if (aMatch) a = parseFloat(aMatch[1]) || 1;
+            
+            const bMatch = expr.match(/([+-]?\d+\.?\d*)(?!.*x)/);
+            if (bMatch) b = parseFloat(bMatch[1]) || 0;
+            
+            if (a === 0) {
+                return b === 0 ? ['Infinite solutions'] : ['No solution'];
+            }
+            
+            const x = -b / a;
+            return [x.toFixed(4)];
+        }
+        
+        function plotEquation(equation) {
+            const canvas = document.getElementById('equationGraph');
+            const ctx = canvas.getContext('2d');
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw axes
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.5)';
+            ctx.lineWidth = 1;
+            
+            ctx.beginPath();
+            ctx.moveTo(0, canvas.height / 2);
+            ctx.lineTo(canvas.width, canvas.height / 2);
+            ctx.moveTo(canvas.width / 2, 0);
+            ctx.lineTo(canvas.width / 2, canvas.height);
+            ctx.stroke();
+            
+            // Plot equation
+            ctx.strokeStyle = '#ff6b6b';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            const xMin = -10, xMax = 10, yMin = -10, yMax = 10;
+            let firstPoint = true;
+            
+            for (let pixelX = 0; pixelX < canvas.width; pixelX++) {
+                const x = xMin + (pixelX / canvas.width) * (xMax - xMin);
+                
+                try {
+                    let y = eval(equation.replace(/x/g, x).replace(/\^/g, '**'));
+                    
+                    if (isFinite(y) && y >= yMin && y <= yMax) {
+                        const pixelY = canvas.height - (canvas.height * (y - yMin) / (yMax - yMin));
+                        
+                        if (firstPoint) {
+                            ctx.moveTo(pixelX, pixelY);
+                            firstPoint = false;
+                        } else {
+                            ctx.lineTo(pixelX, pixelY);
+                        }
+                    } else {
+                        firstPoint = true;
+                    }
+                } catch (error) {
+                    firstPoint = true;
+                }
+            }
+            
+            ctx.stroke();
+        }
+        
+        function setEquation(eq) {
+            document.getElementById('equationInput').value = eq;
+            solveEquation();
+        }
+        
+        // Initialize
+        window.addEventListener('load', () => {
+            createMatrix();
+            updateShapeInputs();
+            calculateGeometry();
+            calculateStats();
+            plotFunction();
+        });
+    </script>
+</body>
+</html>
