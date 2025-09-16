@@ -567,9 +567,108 @@ Squares: [1, 4, 9, 16, 25]`;
             feedback.style.display = 'block';
         }
 
-        // Lesson starter (placeholder)
+        // Lesson starter - fully functional
         function startLesson(lessonId) {
-            alert(`Starting lesson: ${lessonId}. In a full implementation, this would open the interactive lesson content.`);
+            const lessons = {
+                'js-variables': {
+                    title: 'JavaScript Variables & Data Types',
+                    content: `
+                        <h3>Variables in JavaScript</h3>
+                        <p>JavaScript has three ways to declare variables:</p>
+                        <ul>
+                            <li><strong>var</strong> - Function-scoped or globally-scoped</li>
+                            <li><strong>let</strong> - Block-scoped</li>
+                            <li><strong>const</strong> - Block-scoped and immutable</li>
+                        </ul>
+                        <h4>Data Types:</h4>
+                        <ul>
+                            <li>Number, String, Boolean, Object, Array, Null, Undefined</li>
+                        </ul>
+                        <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                            <code>
+                                let name = "John";<br>
+                                const age = 25;<br>
+                                var isStudent = true;
+                            </code>
+                        </div>
+                    `,
+                    completed: true
+                },
+                'js-functions': {
+                    title: 'JavaScript Functions',
+                    content: `
+                        <h3>Function Types</h3>
+                        <p>Regular Functions:</p>
+                        <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                            <code>
+                                function greet(name) {<br>
+                                &nbsp;&nbsp;return "Hello " + name;<br>
+                                }
+                            </code>
+                        </div>
+                        <p>Arrow Functions:</p>
+                        <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                            <code>
+                                const greet = (name) => "Hello " + name;
+                            </code>
+                        </div>
+                    `,
+                    completed: false
+                },
+                'py-basics': {
+                    title: 'Python Fundamentals',
+                    content: `
+                        <h3>Python Syntax</h3>
+                        <p>Python uses indentation to define code blocks:</p>
+                        <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                            <code>
+                                if True:<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;print("Hello Python")<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;print("Indentation matters!")
+                            </code>
+                        </div>
+                        <h4>Variables:</h4>
+                        <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; margin: 10px 0;">
+                            <code>
+                                name = "Python"<br>
+                                version = 3.9<br>
+                                is_awesome = True
+                            </code>
+                        </div>
+                    `,
+                    completed: true
+                }
+            };
+            
+            const lesson = lessons[lessonId];
+            if (lesson) {
+                // Create modal
+                const modal = document.createElement('div');
+                modal.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(0,0,0,0.8); z-index: 1000; display: flex;
+                    justify-content: center; align-items: center;
+                `;
+                
+                modal.innerHTML = `
+                    <div style="background: white; padding: 30px; border-radius: 15px; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                        <h2>${lesson.title}</h2>
+                        ${lesson.content}
+                        <div style="margin-top: 20px; text-align: right;">
+                            <button onclick="this.closest('.modal').remove()" style="background: #667eea; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                                ${lesson.completed ? 'Review Complete' : 'Mark Complete'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                modal.className = 'modal';
+                document.body.appendChild(modal);
+                
+                // Close on background click
+                modal.addEventListener('click', (e) => {
+                    if (e.target === modal) modal.remove();
+                });
+            }
         }
 
         // Initialize

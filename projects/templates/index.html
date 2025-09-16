@@ -90,6 +90,70 @@
             box-shadow: 0 10px 20px rgba(225, 112, 85, 0.1);
         }
         
+        .template-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            background: #e17055;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .action-btn:hover {
+            background: #d63031;
+            transform: translateY(-1px);
+        }
+        
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+        }
+        
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+            position: absolute;
+            right: 20px;
+            top: 15px;
+        }
+        
+        .close:hover {
+            color: #000;
+        }
+        
         .template-icon {
             font-size: 3rem;
             margin-bottom: 15px;
@@ -990,24 +1054,352 @@ export default config;`;
             closeTemplateModal();
         }
         
-        function showPreview(type) {
-            // Update active tab
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+        function downloadTemplate(templateId) {
+            const templates = {
+                'web-app': {
+                    name: 'Basic Web App',
+                    files: {
+                        'index.html': `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Web App</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar">
+            <div class="nav-brand">My App</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section id="hero">
+            <h1>Welcome to My Web App</h1>
+            <p>A modern, responsive web application</p>
+            <button class="cta-btn">Get Started</button>
+        </section>
+    </main>
+    
+    <script src="script.js"></script>
+</body>
+</html>`,
+                        'styles.css': `/* Web App Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: #333;
+}
+
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.nav-brand {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #007bff;
+}
+
+.nav-links {
+    display: flex;
+    list-style: none;
+    gap: 2rem;
+}
+
+.nav-links a {
+    text-decoration: none;
+    color: #333;
+    transition: color 0.3s;
+}
+
+.nav-links a:hover {
+    color: #007bff;
+}
+
+#hero {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+#hero h1 {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.cta-btn {
+    background: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 1rem 2rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+
+.cta-btn:hover {
+    transform: translateY(-2px);
+}`,
+                        'script.js': `// Web App JavaScript
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Web App Loaded!');
+    
+    // Add smooth scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href')).scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+    });
+    
+    // Add button click handler
+    document.querySelector('.cta-btn').addEventListener('click', function() {
+        alert('Welcome to the app!');
+    });
+});`
+                    }
+                },
+                'portfolio': {
+                    name: 'Creative Portfolio',
+                    files: {
+                        'index.html': `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Creative Portfolio</title>
+    <link rel="stylesheet" href="portfolio.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <h1>Your Name</h1>
+            <ul>
+                <li><a href="#about">About</a></li>
+                <li><a href="#portfolio">Portfolio</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+    
+    <section id="hero">
+        <h2>Creative Designer & Developer</h2>
+        <p>Crafting beautiful digital experiences</p>
+    </section>
+    
+    <section id="portfolio">
+        <h3>My Work</h3>
+        <div class="project-grid">
+            <div class="project-item">Project 1</div>
+            <div class="project-item">Project 2</div>
+            <div class="project-item">Project 3</div>
+        </div>
+    </section>
+    
+    <script src="portfolio.js"></script>
+</body>
+</html>`
+                    }
+                }
+            };
             
-            // Update preview content
-            const previewContent = document.getElementById('previewContent');
-            previewContent.textContent = templatePreviews[type] || 'Preview not available';
+            const template = templates[templateId];
+            if (template) {
+                // Create a zip-like download with all files
+                const fileContent = Object.entries(template.files)
+                    .map(([filename, content]) => `=== ${filename} ===\n${content}\n\n`)
+                    .join('');
+                
+                const blob = new Blob([fileContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                
+                const link = document.createElement('a');
+                link.href = url;
+                link.download = `${templateId}-template.txt`;
+                link.click();
+                
+                URL.revokeObjectURL(url);
+                
+                showSuccessMessage(`${template.name} template downloaded successfully!`);
+            }
         }
         
-        function downloadTemplate(templateName) {
-            // Simulate template download
-            showNotification(`Downloading ${templateName.replace('-', ' ')} template...`, 'success');
+        function showTemplateDemo(templateId) {
+            // Create demo modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.8); z-index: 1000; display: flex;
+                justify-content: center; align-items: center;
+            `;
             
-            // In a real implementation, this would trigger an actual download
-            setTimeout(() => {
-                showNotification(`${templateName.replace('-', ' ')} template downloaded successfully!`, 'success');
-            }, 2000);
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 15px; max-width: 80%; max-height: 80%; overflow-y: auto;">
+                    <h2>Template Preview: ${templateId}</h2>
+                    <div style="background: #f0f0f0; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                        <p><strong>Live Preview:</strong></p>
+                        <div style="border: 1px solid #ddd; padding: 15px; background: white; min-height: 200px;">
+                            ${getTemplatePreview(templateId)}
+                        </div>
+                    </div>
+                    <button onclick="this.closest('.modal').remove()" style="background: #e17055; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                        Close Preview
+                    </button>
+                </div>
+            `;
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
+        
+        function showTemplateDoc(templateId) {
+            const docs = {
+                'web-app': {
+                    title: 'Basic Web App Documentation',
+                    content: `
+                        <h3>Features:</h3>
+                        <ul>
+                            <li>📱 Responsive design</li>
+                            <li>🎨 Modern CSS with gradients</li>
+                            <li>⚡ JavaScript interactions</li>
+                            <li>🧭 Smooth navigation</li>
+                        </ul>
+                        <h3>Setup:</h3>
+                        <pre>1. Download template files
+2. Open index.html in browser
+3. Customize content and styles
+4. Deploy to your hosting platform</pre>
+                        <h3>Structure:</h3>
+                        <pre>web-app/
+├── index.html    (Main page)
+├── styles.css    (Styling)
+└── script.js     (Functionality)</pre>
+                    `
+                },
+                'portfolio': {
+                    title: 'Creative Portfolio Documentation',
+                    content: `
+                        <h3>Features:</h3>
+                        <ul>
+                            <li>🎨 Creative design layout</li>
+                            <li>📸 Project showcase grid</li>
+                            <li>📧 Contact form integration</li>
+                            <li>📱 Mobile-first approach</li>
+                        </ul>
+                        <h3>Customization:</h3>
+                        <pre>• Replace "Your Name" with actual name
+• Add your projects to the grid
+• Update colors in CSS variables
+• Add your contact information</pre>
+                    `
+                }
+            };
+            
+            const doc = docs[templateId] || { 
+                title: 'Template Documentation', 
+                content: '<p>Documentation for this template is being prepared.</p>' 
+            };
+            
+            // Create documentation modal
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                background: rgba(0,0,0,0.8); z-index: 1000; display: flex;
+                justify-content: center; align-items: center;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; padding: 30px; border-radius: 15px; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                    <h2>${doc.title}</h2>
+                    ${doc.content}
+                    <div style="margin-top: 20px; text-align: right;">
+                        <button onclick="this.closest('.modal').remove()" style="background: #e17055; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+                            Close Documentation
+                        </button>
+                    </div>
+                </div>
+            `;
+            modal.className = 'modal';
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
+        
+        function getTemplatePreview(templateId) {
+            const previews = {
+                'web-app': `
+                    <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+                        <div style="display: flex; justify-content: space-between; padding: 10px; background: #f8f9fa; border-bottom: 1px solid #ddd;">
+                            <strong style="color: #007bff;">My App</strong>
+                            <div>Home | About | Contact</div>
+                        </div>
+                        <div style="text-align: center; padding: 40px; background: linear-gradient(135deg, #667eea, #764ba2); color: white;">
+                            <h2>Welcome to My Web App</h2>
+                            <p>A modern, responsive web application</p>
+                            <button style="background: #ff6b6b; color: white; border: none; padding: 10px 20px; border-radius: 25px;">Get Started</button>
+                        </div>
+                    </div>
+                `,
+                'portfolio': `
+                    <div style="font-family: 'Georgia', serif;">
+                        <div style="text-align: center; padding: 20px; background: #2c3e50; color: white;">
+                            <h2>Your Name</h2>
+                            <p>Creative Designer & Developer</p>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding: 20px;">
+                            <div style="background: #ecf0f1; padding: 20px; text-align: center;">Project 1</div>
+                            <div style="background: #ecf0f1; padding: 20px; text-align: center;">Project 2</div>
+                            <div style="background: #ecf0f1; padding: 20px; text-align: center;">Project 3</div>
+                        </div>
+                    </div>
+                `
+            };
+            
+            return previews[templateId] || '<p>Preview not available</p>';
+        }
+        
+        function showSuccessMessage(message) {
+            const alert = document.createElement('div');
+            alert.style.cssText = `
+                position: fixed; top: 20px; right: 20px; background: #28a745; color: white;
+                padding: 15px 20px; border-radius: 5px; z-index: 2000;
+                font-weight: bold; box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            alert.textContent = message;
+            document.body.appendChild(alert);
+            
+            setTimeout(() => alert.remove(), 3000);
+        }
+        
+        function useTemplate(templateName) {
+            openTemplate(templateName);
         }
         
         function showNotification(message, type = 'info') {
