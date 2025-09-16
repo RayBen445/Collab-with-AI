@@ -366,6 +366,89 @@
             color: #ff4757;
             font-weight: bold;
         }
+        
+        .space-invaders-game {
+            text-align: center;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .difficulty-select {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+        }
+        
+        .game-info {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-info > div {
+            text-align: center;
+        }
+        
+        .game-info span {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.2rem;
+        }
+        
+        #gameCanvas {
+            border: 3px solid #333;
+            border-radius: 10px;
+            background: linear-gradient(180deg, #000428 0%, #004e92 100%);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .controls-info {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px;
+            border-radius: 10px;
+            font-weight: 600;
+            color: #333;
+        }
         </style>
 </head>
 <body>
@@ -403,35 +486,35 @@
         </div>
         
         <div class="main-content">
-            
-                <div class="working-demo">
-                    <h3>🚀 Space Invaders - Interactive Demo</h3>
-                    <div class="app-interface">
-                        <div class="control-panel">
-                            <input type="text" id="mainInput" placeholder="Enter your data..." class="main-input">
-                            <button onclick="processInput()" class="demo-btn primary">Process</button>
-                            <button onclick="clearData()" class="demo-btn">Clear</button>
-                        </div>
-                        <div id="output-area" class="output-area">
-                            <p>Ready to process your input. Try entering some data above!</p>
-                        </div>
-                        <div class="feature-showcase">
-                            <button onclick="showFeature('analytics')" class="demo-btn">📊 Analytics</button>
-                            <button onclick="showFeature('export')" class="demo-btn">💾 Export Data</button>
-                            <button onclick="showFeature('settings')" class="demo-btn">⚙️ Settings</button>
-                        </div>
-                    </div>
+            <div class="space-invaders-game">
+                <div class="game-controls">
+                    <button onclick="startNewGame()" class="control-btn">🎮 New Game</button>
+                    <button onclick="pauseGame()" class="control-btn">⏸️ Pause</button>
+                    <button onclick="resumeGame()" class="control-btn">▶️ Resume</button>
+                    <select id="difficultySelect" onchange="setDifficulty()" class="difficulty-select">
+                        <option value="easy">Easy</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="hard">Hard</option>
+                    </select>
                 </div>
-            </div>
-            </div>
-                                <div class="working-demo">
-                    <h3>🚀 Space Invaders Demo</h3>
-                    <div class="demo-controls">
-                        <button class="demo-btn" onclick="runDemo()">Try Demo</button>
-                        <button class="demo-btn" onclick="resetDemo()">Reset</button>
+                
+                <div class="game-area">
+                    <div class="game-info">
+                        <div class="score">
+                            Score: <span id="scoreDisplay">0</span>
+                        </div>
+                        <div class="lives">
+                            Lives: <span id="livesDisplay">3</span>
+                        </div>
+                        <div class="level">
+                            Level: <span id="levelDisplay">1</span>
+                        </div>
                     </div>
-                    <div id="demoOutput" class="demo-output">
-                        This is a working demo of space invaders. Click the buttons above to interact!
+                    
+                    <canvas id="gameCanvas" width="800" height="600"></canvas>
+                    
+                    <div class="controls-info">
+                        <p>Use arrow keys to move, spacebar to shoot</p>
                     </div>
                 </div>
             </div>

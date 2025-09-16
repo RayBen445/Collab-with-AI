@@ -664,6 +664,331 @@
     </div>
     
     <script>
+        // Checkers Game Implementation
+        const CheckersGame = {
+            board: [],
+            currentPlayer: 'red',
+            selectedSquare: null,
+            gameOver: false,
+            isAI: true,
+            difficulty: 2,
+            capturedPieces: { red: [], black: [] },
+            moveHistory: [],
+            
+            init() {
+                this.setupBoard();
+                this.renderBoard();
+                this.updateDisplay();
+            },
+            
+            setupBoard() {
+                // Initialize empty board
+                this.board = Array(8).fill(null).map(() => Array(8).fill(null));
+                
+                // Place red pieces (bottom)
+                for (let row = 0; row < 3; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        if ((row + col) % 2 === 1) {
+                            this.board[row][col] = { color: 'red', isKing: false };
+                        }
+                    }
+                }
+                
+                // Place black pieces (top)
+                for (let row = 5; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        if ((row + col) % 2 === 1) {
+                            this.board[row][col] = { color: 'black', isKing: false };
+                        }
+                    }
+                }
+            },
+            
+            renderBoard() {
+                const boardElement = document.getElementById('checkersBoard');
+                boardElement.innerHTML = '';
+                
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const square = document.createElement('div');
+                        square.className = `checkers-square ${(row + col) % 2 === 0 ? 'light' : 'dark'}`;
+                        square.dataset.row = row;
+                        square.dataset.col = col;
+                        
+                        const piece = this.board[row][col];
+                        if (piece) {
+                            const pieceElement = document.createElement('div');
+                            pieceElement.className = `checker-piece ${piece.color} ${piece.isKing ? 'king' : ''}`;
+                            if (piece.isKing) {
+                                pieceElement.textContent = '♔';
+                            }
+                            square.appendChild(pieceElement);
+                        }
+                        
+                        square.addEventListener('click', () => this.handleSquareClick(row, col));
+                        boardElement.appendChild(square);
+                    }
+                }
+            },
+            
+            handleSquareClick(row, col) {
+                if (this.gameOver) return;
+                
+                if (this.selectedSquare) {
+                    if (this.selectedSquare.row === row && this.selectedSquare.col === col) {
+                        this.clearSelection();
+                        return;
+                    }
+                    
+                    // Try to make a move
+                    const moveResult = this.tryMove(this.selectedSquare.row, this.selectedSquare.col, row, col);
+                    if (moveResult.valid) {
+                        this.makeMove(moveResult);
+                        this.clearSelection();
+                        
+                        if (!this.gameOver && this.isAI && this.currentPlayer === 'black') {
+                            setTimeout(() => this.makeAIMove(), 500);
+                        }
+                    } else {
+                        this.clearSelection();
+                        if (this.board[row][col] && this.board[row][col].color === this.currentPlayer) {
+                            this.selectSquare(row, col);
+                        }
+                    }
+                } else {
+                    if (this.board[row][col] && this.board[row][col].color === this.currentPlayer) {
+                        this.selectSquare(row, col);
+                    }
+                }
+            },
+            
+            selectSquare(row, col) {
+                this.selectedSquare = { row, col };
+                const square = document.querySelector(`[data-row="${row}"][data-col="${col}"]`);
+                square.classList.add('selected');
+                
+                // Highlight valid moves
+                const moves = this.getValidMoves(row, col);
+                moves.forEach(move => {
+                    const validSquare = document.querySelector(`[data-row="${move.toRow}"][data-col="${move.toCol}"]`);
+                    validSquare.classList.add('valid-move');
+                });
+            },
+            
+            clearSelection() {
+                this.selectedSquare = null;
+                document.querySelectorAll('.checkers-square').forEach(square => {
+                    square.classList.remove('selected', 'valid-move');
+                });
+            },
+            
+            getValidMoves(row, col) {
+                const piece = this.board[row][col];
+                if (!piece) return [];
+                
+                const moves = [];
+                const directions = piece.isKing ? [[-1,-1], [-1,1], [1,-1], [1,1]] : 
+                                  piece.color === 'red' ? [[1,-1], [1,1]] : [[-1,-1], [-1,1]];
+                
+                directions.forEach(([dr, dc]) => {
+                    const newRow = row + dr;
+                    const newCol = col + dc;
+                    
+                    if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8) {
+                        if (!this.board[newRow][newCol]) {
+                            // Normal move
+                            moves.push({ fromRow: row, fromCol: col, toRow: newRow, toCol: newCol, isJump: false });
+                        } else if (this.board[newRow][newCol].color !== piece.color) {
+                            // Jump move
+                            const jumpRow = newRow + dr;
+                            const jumpCol = newCol + dc;
+                            
+                            if (jumpRow >= 0 && jumpRow < 8 && jumpCol >= 0 && jumpCol < 8 && !this.board[jumpRow][jumpCol]) {
+                                moves.push({ 
+                                    fromRow: row, fromCol: col, toRow: jumpRow, toCol: jumpCol, 
+                                    isJump: true, capturedRow: newRow, capturedCol: newCol 
+                                });
+                            }
+                        }
+                    }
+                });
+                
+                return moves;
+            },
+            
+            tryMove(fromRow, fromCol, toRow, toCol) {
+                const moves = this.getValidMoves(fromRow, fromCol);
+                const move = moves.find(m => m.toRow === toRow && m.toCol === toCol);
+                return move ? { valid: true, ...move } : { valid: false };
+            },
+            
+            makeMove(move) {
+                const piece = this.board[move.fromRow][move.fromCol];
+                
+                // Record move
+                this.moveHistory.push({
+                    from: { row: move.fromRow, col: move.fromCol },
+                    to: { row: move.toRow, col: move.toCol },
+                    piece: piece,
+                    captured: move.isJump ? this.board[move.capturedRow][move.capturedCol] : null,
+                    capturedPos: move.isJump ? { row: move.capturedRow, col: move.capturedCol } : null
+                });
+                
+                // Handle capture
+                if (move.isJump) {
+                    const capturedPiece = this.board[move.capturedRow][move.capturedCol];
+                    this.capturedPieces[capturedPiece.color].push(capturedPiece);
+                    this.board[move.capturedRow][move.capturedCol] = null;
+                    this.updateCapturedPieces();
+                }
+                
+                // Move piece
+                this.board[move.toRow][move.toCol] = piece;
+                this.board[move.fromRow][move.fromCol] = null;
+                
+                // Check for king promotion
+                if (!piece.isKing) {
+                    if ((piece.color === 'red' && move.toRow === 7) || 
+                        (piece.color === 'black' && move.toRow === 0)) {
+                        piece.isKing = true;
+                    }
+                }
+                
+                // Check for additional jumps
+                if (move.isJump) {
+                    const additionalMoves = this.getValidMoves(move.toRow, move.toCol).filter(m => m.isJump);
+                    if (additionalMoves.length > 0) {
+                        // Player must continue jumping
+                        this.renderBoard();
+                        this.selectSquare(move.toRow, move.toCol);
+                        return;
+                    }
+                }
+                
+                this.currentPlayer = this.currentPlayer === 'red' ? 'black' : 'red';
+                this.renderBoard();
+                this.updateDisplay();
+                this.checkGameEnd();
+            },
+            
+            makeAIMove() {
+                const moves = this.getAllValidMoves(this.currentPlayer);
+                if (moves.length === 0) {
+                    this.gameOver = true;
+                    this.updateDisplay();
+                    return;
+                }
+                
+                // Simple AI: prefer jumps, then random
+                let selectedMove = moves[Math.floor(Math.random() * moves.length)];
+                const jumpMoves = moves.filter(move => move.isJump);
+                
+                if (jumpMoves.length > 0) {
+                    selectedMove = jumpMoves[Math.floor(Math.random() * jumpMoves.length)];
+                }
+                
+                this.makeMove(selectedMove);
+            },
+            
+            getAllValidMoves(color) {
+                const moves = [];
+                for (let row = 0; row < 8; row++) {
+                    for (let col = 0; col < 8; col++) {
+                        const piece = this.board[row][col];
+                        if (piece && piece.color === color) {
+                            moves.push(...this.getValidMoves(row, col));
+                        }
+                    }
+                }
+                return moves;
+            },
+            
+            checkGameEnd() {
+                const redMoves = this.getAllValidMoves('red');
+                const blackMoves = this.getAllValidMoves('black');
+                
+                if (redMoves.length === 0) {
+                    this.gameOver = true;
+                    document.getElementById('gameStatus').textContent = 'Game Over - Black wins!';
+                } else if (blackMoves.length === 0) {
+                    this.gameOver = true;
+                    document.getElementById('gameStatus').textContent = 'Game Over - Red wins!';
+                }
+            },
+            
+            updateDisplay() {
+                document.getElementById('currentPlayerDisplay').textContent = 
+                    this.gameOver ? 'Game Over' : `${this.currentPlayer.charAt(0).toUpperCase() + this.currentPlayer.slice(1)}'s Turn`;
+                
+                if (!this.gameOver) {
+                    document.getElementById('gameStatus').textContent = 'Game in progress';
+                }
+                
+                document.getElementById('aiStatus').textContent = 
+                    `AI: ${this.isAI ? ['Easy', 'Medium', 'Hard'][this.difficulty - 1] : 'Off'}`;
+            },
+            
+            updateCapturedPieces() {
+                const redElement = document.getElementById('capturedRed');
+                const blackElement = document.getElementById('capturedBlack');
+                
+                redElement.innerHTML = this.capturedPieces.red
+                    .map(() => '<div class="captured-piece" style="background: #ff4757;"></div>')
+                    .join('');
+                
+                blackElement.innerHTML = this.capturedPieces.black
+                    .map(() => '<div class="captured-piece" style="background: #2f3542;"></div>')
+                    .join('');
+            }
+        };
+        
+        // Game control functions
+        function startNewGame() {
+            CheckersGame.currentPlayer = 'red';
+            CheckersGame.gameOver = false;
+            CheckersGame.capturedPieces = { red: [], black: [] };
+            CheckersGame.moveHistory = [];
+            CheckersGame.selectedSquare = null;
+            CheckersGame.init();
+        }
+        
+        function toggleGameMode() {
+            CheckersGame.isAI = !CheckersGame.isAI;
+            CheckersGame.updateDisplay();
+        }
+        
+        function undoMove() {
+            if (CheckersGame.moveHistory.length === 0) return;
+            
+            const lastMove = CheckersGame.moveHistory.pop();
+            
+            // Restore piece positions
+            CheckersGame.board[lastMove.from.row][lastMove.from.col] = lastMove.piece;
+            CheckersGame.board[lastMove.to.row][lastMove.to.col] = null;
+            
+            // Restore captured piece
+            if (lastMove.captured && lastMove.capturedPos) {
+                CheckersGame.board[lastMove.capturedPos.row][lastMove.capturedPos.col] = lastMove.captured;
+                const capturedArray = CheckersGame.capturedPieces[lastMove.captured.color];
+                capturedArray.pop();
+            }
+            
+            CheckersGame.currentPlayer = CheckersGame.currentPlayer === 'red' ? 'black' : 'red';
+            CheckersGame.gameOver = false;
+            CheckersGame.renderBoard();
+            CheckersGame.updateDisplay();
+            CheckersGame.updateCapturedPieces();
+        }
+        
+        function setDifficulty() {
+            CheckersGame.difficulty = parseInt(document.getElementById('difficultySelect').value);
+            CheckersGame.updateDisplay();
+        }
+        
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            CheckersGame.init();
+        });
         // Add some interactivity
         document.querySelectorAll('.feature-card').forEach(card => {
             card.addEventListener('mouseenter', () => {

@@ -366,6 +366,234 @@
             color: #ff4757;
             font-weight: bold;
         }
+        
+        .hangman-game {
+            text-align: center;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .difficulty-select {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+        }
+        
+        .hangman-drawing {
+            width: 200px;
+            height: 250px;
+            position: relative;
+            margin: 0 auto;
+        }
+        
+        .gallows {
+            position: relative;
+        }
+        
+        .base {
+            width: 120px;
+            height: 10px;
+            background: #8b4513;
+            position: absolute;
+            bottom: 0;
+            left: 20px;
+        }
+        
+        .pole {
+            width: 10px;
+            height: 200px;
+            background: #8b4513;
+            position: absolute;
+            bottom: 10px;
+            left: 40px;
+        }
+        
+        .beam {
+            width: 80px;
+            height: 10px;
+            background: #8b4513;
+            position: absolute;
+            top: 10px;
+            left: 50px;
+        }
+        
+        .noose {
+            width: 5px;
+            height: 30px;
+            background: #654321;
+            position: absolute;
+            top: 20px;
+            left: 125px;
+        }
+        
+        .hangman-figure {
+            position: absolute;
+            top: 50px;
+            left: 110px;
+        }
+        
+        .head, .body, .left-arm, .right-arm, .left-leg, .right-leg {
+            position: absolute;
+            display: none;
+        }
+        
+        .head {
+            width: 30px;
+            height: 30px;
+            border: 3px solid #333;
+            border-radius: 50%;
+            top: 0;
+            left: 0;
+        }
+        
+        .body {
+            width: 3px;
+            height: 80px;
+            background: #333;
+            top: 30px;
+            left: 13px;
+        }
+        
+        .left-arm {
+            width: 30px;
+            height: 3px;
+            background: #333;
+            top: 45px;
+            left: -17px;
+            transform: rotate(-30deg);
+        }
+        
+        .right-arm {
+            width: 30px;
+            height: 3px;
+            background: #333;
+            top: 45px;
+            left: 13px;
+            transform: rotate(30deg);
+        }
+        
+        .left-leg {
+            width: 30px;
+            height: 3px;
+            background: #333;
+            top: 100px;
+            left: -17px;
+            transform: rotate(30deg);
+        }
+        
+        .right-leg {
+            width: 30px;
+            height: 3px;
+            background: #333;
+            top: 100px;
+            left: 13px;
+            transform: rotate(-30deg);
+        }
+        
+        .word-display {
+            text-align: center;
+        }
+        
+        .word-letters {
+            font-size: 2rem;
+            font-weight: bold;
+            letter-spacing: 10px;
+            margin-bottom: 20px;
+            color: #333;
+        }
+        
+        .category-hint {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .alphabet-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 10px;
+            max-width: 400px;
+            margin: 0 auto 30px;
+        }
+        
+        .letter-btn {
+            width: 50px;
+            height: 50px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .letter-btn:hover {
+            background: #667eea;
+            color: white;
+        }
+        
+        .letter-btn.guessed {
+            background: #ddd;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .letter-btn.correct {
+            background: #2ed573;
+            color: white;
+            border-color: #2ed573;
+        }
+        
+        .letter-btn.wrong {
+            background: #ff4757;
+            color: white;
+            border-color: #ff4757;
+        }
+        
+        .game-stats {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
         </style>
 </head>
 <body>
@@ -403,35 +631,43 @@
         </div>
         
         <div class="main-content">
-            
-                <div class="working-demo">
-                    <h3>🚀 Hangman Game - Interactive Demo</h3>
-                    <div class="app-interface">
-                        <div class="control-panel">
-                            <input type="text" id="mainInput" placeholder="Enter your data..." class="main-input">
-                            <button onclick="processInput()" class="demo-btn primary">Process</button>
-                            <button onclick="clearData()" class="demo-btn">Clear</button>
-                        </div>
-                        <div id="output-area" class="output-area">
-                            <p>Ready to process your input. Try entering some data above!</p>
-                        </div>
-                        <div class="feature-showcase">
-                            <button onclick="showFeature('analytics')" class="demo-btn">📊 Analytics</button>
-                            <button onclick="showFeature('export')" class="demo-btn">💾 Export Data</button>
-                            <button onclick="showFeature('settings')" class="demo-btn">⚙️ Settings</button>
-                        </div>
-                    </div>
+            <div class="hangman-game">
+                <div class="game-controls">
+                    <button onclick="startNewGame()" class="control-btn">🎮 New Game</button>
+                    <button onclick="getHint()" class="control-btn">💡 Hint</button>
+                    <select id="categorySelect" onchange="changeCategory()" class="difficulty-select">
+                        <option value="animals">Animals</option>
+                        <option value="countries" selected>Countries</option>
+                        <option value="movies">Movies</option>
+                        <option value="sports">Sports</option>
+                    </select>
                 </div>
-            </div>
-            </div>
-                                <div class="working-demo">
-                    <h3>🚀 Hangman Demo</h3>
-                    <div class="demo-controls">
-                        <button class="demo-btn" onclick="runDemo()">Try Demo</button>
-                        <button class="demo-btn" onclick="resetDemo()">Reset</button>
+                
+                <div class="game-area">
+                    <div class="hangman-drawing" id="hangmanDrawing">
+                        <div class="gallows">
+                            <div class="base"></div>
+                            <div class="pole"></div>
+                            <div class="beam"></div>
+                            <div class="noose"></div>
+                        </div>
+                        <div class="hangman-figure" id="hangmanFigure"></div>
                     </div>
-                    <div id="demoOutput" class="demo-output">
-                        This is a working demo of hangman. Click the buttons above to interact!
+                    
+                    <div class="word-display">
+                        <div id="wordDisplay" class="word-letters"></div>
+                        <div class="category-hint">Category: <span id="categoryDisplay">Countries</span></div>
+                    </div>
+                    
+                    <div class="alphabet-grid" id="alphabetGrid"></div>
+                    
+                    <div class="game-stats">
+                        <div class="wrong-guesses">
+                            Wrong: <span id="wrongCount">0</span>/6
+                        </div>
+                        <div class="guessed-letters">
+                            Guessed: <span id="guessedLetters"></span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -484,6 +720,183 @@
     </div>
     
     <script>
+        // Hangman Game Implementation
+        const HangmanGame = {
+            words: {
+                animals: ['ELEPHANT', 'GIRAFFE', 'PENGUIN', 'DOLPHIN', 'KANGAROO', 'RHINOCEROS', 'CHEETAH', 'BUTTERFLY'],
+                countries: ['BRAZIL', 'CANADA', 'AUSTRALIA', 'GERMANY', 'FRANCE', 'ITALY', 'SPAIN', 'PORTUGAL'],
+                movies: ['TITANIC', 'AVATAR', 'FROZEN', 'INCEPTION', 'GLADIATOR', 'BATMAN', 'SUPERMAN', 'IRONMAN'],
+                sports: ['FOOTBALL', 'BASKETBALL', 'TENNIS', 'VOLLEYBALL', 'SWIMMING', 'BOXING', 'CYCLING', 'RUNNING']
+            },
+            
+            currentWord: '',
+            guessedLetters: [],
+            wrongGuesses: 0,
+            maxWrongGuesses: 6,
+            category: 'countries',
+            gameOver: false,
+            won: false,
+            hintsUsed: 0,
+            
+            hangmanParts: ['head', 'body', 'left-arm', 'right-arm', 'left-leg', 'right-leg'],
+            
+            init() {
+                this.selectRandomWord();
+                this.setupAlphabet();
+                this.setupHangman();
+                this.updateDisplay();
+            },
+            
+            selectRandomWord() {
+                const categoryWords = this.words[this.category];
+                this.currentWord = categoryWords[Math.floor(Math.random() * categoryWords.length)];
+                this.guessedLetters = [];
+                this.wrongGuesses = 0;
+                this.gameOver = false;
+                this.won = false;
+            },
+            
+            setupAlphabet() {
+                const alphabetGrid = document.getElementById('alphabetGrid');
+                alphabetGrid.innerHTML = '';
+                
+                for (let i = 65; i <= 90; i++) {
+                    const letter = String.fromCharCode(i);
+                    const btn = document.createElement('button');
+                    btn.className = 'letter-btn';
+                    btn.textContent = letter;
+                    btn.onclick = () => this.guessLetter(letter);
+                    alphabetGrid.appendChild(btn);
+                }
+            },
+            
+            setupHangman() {
+                const hangmanFigure = document.getElementById('hangmanFigure');
+                hangmanFigure.innerHTML = `
+                    <div class="head"></div>
+                    <div class="body"></div>
+                    <div class="left-arm"></div>
+                    <div class="right-arm"></div>
+                    <div class="left-leg"></div>
+                    <div class="right-leg"></div>
+                `;
+                
+                // Hide all parts initially
+                hangmanFigure.querySelectorAll('div').forEach(part => {
+                    part.style.display = 'none';
+                });
+            },
+            
+            guessLetter(letter) {
+                if (this.gameOver || this.guessedLetters.includes(letter)) return;
+                
+                this.guessedLetters.push(letter);
+                
+                const btn = document.querySelector(`.letter-btn:nth-child(${letter.charCodeAt(0) - 64})`);
+                btn.classList.add('guessed');
+                
+                if (this.currentWord.includes(letter)) {
+                    btn.classList.add('correct');
+                    this.checkWin();
+                } else {
+                    btn.classList.add('wrong');
+                    this.wrongGuesses++;
+                    this.drawHangmanPart();
+                    this.checkLoss();
+                }
+                
+                this.updateDisplay();
+            },
+            
+            drawHangmanPart() {
+                if (this.wrongGuesses <= this.hangmanParts.length) {
+                    const partName = this.hangmanParts[this.wrongGuesses - 1];
+                    const part = document.querySelector(`.${partName}`);
+                    if (part) {
+                        part.style.display = 'block';
+                    }
+                }
+            },
+            
+            checkWin() {
+                const wordDisplay = this.getWordDisplay();
+                if (!wordDisplay.includes('_')) {
+                    this.gameOver = true;
+                    this.won = true;
+                    setTimeout(() => {
+                        alert(`Congratulations! You guessed "${this.currentWord}" correctly!`);
+                    }, 100);
+                }
+            },
+            
+            checkLoss() {
+                if (this.wrongGuesses >= this.maxWrongGuesses) {
+                    this.gameOver = true;
+                    this.won = false;
+                    setTimeout(() => {
+                        alert(`Game Over! The word was "${this.currentWord}"`);
+                    }, 100);
+                }
+            },
+            
+            getWordDisplay() {
+                return this.currentWord
+                    .split('')
+                    .map(letter => this.guessedLetters.includes(letter) ? letter : '_')
+                    .join(' ');
+            },
+            
+            getHint() {
+                if (this.gameOver) return;
+                
+                // Find unguessed letters in the word
+                const unguessedLetters = this.currentWord
+                    .split('')
+                    .filter(letter => !this.guessedLetters.includes(letter));
+                
+                if (unguessedLetters.length === 0) return;
+                
+                // Give hint for a random unguessed letter
+                const hintLetter = unguessedLetters[Math.floor(Math.random() * unguessedLetters.length)];
+                this.guessLetter(hintLetter);
+                this.hintsUsed++;
+            },
+            
+            updateDisplay() {
+                document.getElementById('wordDisplay').textContent = this.getWordDisplay();
+                document.getElementById('categoryDisplay').textContent = 
+                    this.category.charAt(0).toUpperCase() + this.category.slice(1);
+                document.getElementById('wrongCount').textContent = this.wrongGuesses;
+                document.getElementById('guessedLetters').textContent = this.guessedLetters.join(', ');
+            }
+        };
+        
+        // Game control functions
+        function startNewGame() {
+            HangmanGame.init();
+        }
+        
+        function getHint() {
+            HangmanGame.getHint();
+        }
+        
+        function changeCategory() {
+            HangmanGame.category = document.getElementById('categorySelect').value;
+            startNewGame();
+        }
+        
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            HangmanGame.init();
+            
+            // Add keyboard support
+            document.addEventListener('keydown', function(e) {
+                const letter = e.key.toUpperCase();
+                if (letter >= 'A' && letter <= 'Z') {
+                    HangmanGame.guessLetter(letter);
+                }
+            });
+        });
         // Add some interactivity
         document.querySelectorAll('.feature-card').forEach(card => {
             card.addEventListener('mouseenter', () => {

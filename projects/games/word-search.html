@@ -403,35 +403,35 @@
         </div>
         
         <div class="main-content">
-            
-                <div class="working-demo">
-                    <h3>🚀 Word Search - Interactive Demo</h3>
-                    <div class="app-interface">
-                        <div class="control-panel">
-                            <input type="text" id="mainInput" placeholder="Enter your data..." class="main-input">
-                            <button onclick="processInput()" class="demo-btn primary">Process</button>
-                            <button onclick="clearData()" class="demo-btn">Clear</button>
-                        </div>
-                        <div id="output-area" class="output-area">
-                            <p>Ready to process your input. Try entering some data above!</p>
-                        </div>
-                        <div class="feature-showcase">
-                            <button onclick="showFeature('analytics')" class="demo-btn">📊 Analytics</button>
-                            <button onclick="showFeature('export')" class="demo-btn">💾 Export Data</button>
-                            <button onclick="showFeature('settings')" class="demo-btn">⚙️ Settings</button>
-                        </div>
-                    </div>
+            <div class="word-search-game">
+                <div class="game-controls">
+                    <button onclick="startNewGame()" class="control-btn">🎮 New Game</button>
+                    <button onclick="getHint()" class="control-btn">💡 Hint</button>
+                    <button onclick="showSolution()" class="control-btn">👁️ Show All</button>
+                    <select id="difficultySelect" onchange="setDifficulty()" class="difficulty-select">
+                        <option value="easy">Easy (8x8)</option>
+                        <option value="medium" selected>Medium (12x12)</option>
+                        <option value="hard">Hard (16x16)</option>
+                    </select>
                 </div>
-            </div>
-            </div>
-                                <div class="working-demo">
-                    <h3>🚀 Word Search Demo</h3>
-                    <div class="demo-controls">
-                        <button class="demo-btn" onclick="runDemo()">Try Demo</button>
-                        <button class="demo-btn" onclick="resetDemo()">Reset</button>
+                
+                <div class="game-area">
+                    <div class="game-info">
+                        <div class="timer">
+                            Time: <span id="timerDisplay">00:00</span>
+                        </div>
+                        <div class="found-words">
+                            Found: <span id="foundCount">0</span>/<span id="totalWords">10</span>
+                        </div>
                     </div>
-                    <div id="demoOutput" class="demo-output">
-                        This is a working demo of word search. Click the buttons above to interact!
+                    
+                    <div class="game-grid">
+                        <div class="word-search-grid" id="wordSearchGrid"></div>
+                        
+                        <div class="words-list">
+                            <h4>Find These Words:</h4>
+                            <div id="wordsList" class="words-to-find"></div>
+                        </div>
                     </div>
                 </div>
             </div>
