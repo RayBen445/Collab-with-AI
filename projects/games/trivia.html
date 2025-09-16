@@ -366,6 +366,145 @@
             color: #ff4757;
             font-weight: bold;
         }
+        
+        .trivia-game {
+            text-align: center;
+        }
+        
+        .game-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .control-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+        
+        .control-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.3);
+        }
+        
+        .difficulty-select {
+            padding: 12px 20px;
+            border-radius: 25px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 30px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        
+        .game-info {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .game-info > div {
+            text-align: center;
+        }
+        
+        .game-info span {
+            font-weight: 600;
+            color: #333;
+            font-size: 1.2rem;
+        }
+        
+        .question-container {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            width: 100%;
+        }
+        
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        
+        .answers-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .answer-btn {
+            padding: 15px 20px;
+            border: 2px solid #667eea;
+            background: white;
+            color: #667eea;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-height: 60px;
+        }
+        
+        .answer-btn:hover {
+            background: #667eea;
+            color: white;
+            transform: translateY(-2px);
+        }
+        
+        .answer-btn:disabled {
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .question-feedback {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-top: 20px;
+            min-height: 30px;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e9ecef;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
         </style>
 </head>
 <body>
@@ -492,6 +631,254 @@
     </div>
     
     <script>
+        // Trivia Game Implementation
+        const TriviaGame = {
+            questions: {
+                general: [
+                    { q: "What is the capital of France?", a: ["Paris", "London", "Berlin", "Madrid"], correct: 0 },
+                    { q: "Which planet is known as the Red Planet?", a: ["Venus", "Mars", "Jupiter", "Saturn"], correct: 1 },
+                    { q: "What is the largest ocean on Earth?", a: ["Atlantic", "Indian", "Arctic", "Pacific"], correct: 3 },
+                    { q: "Who painted the Mona Lisa?", a: ["Van Gogh", "Picasso", "Da Vinci", "Monet"], correct: 2 }
+                ],
+                science: [
+                    { q: "What is the chemical symbol for gold?", a: ["Go", "Gd", "Au", "Ag"], correct: 2 },
+                    { q: "How many bones are in the human body?", a: ["206", "208", "210", "204"], correct: 0 },
+                    { q: "What is the speed of light?", a: ["300,000 km/s", "150,000 km/s", "450,000 km/s", "600,000 km/s"], correct: 0 },
+                    { q: "Which gas makes up most of Earth's atmosphere?", a: ["Oxygen", "Carbon Dioxide", "Nitrogen", "Hydrogen"], correct: 2 }
+                ],
+                history: [
+                    { q: "When did World War II end?", a: ["1944", "1945", "1946", "1947"], correct: 1 },
+                    { q: "Who was the first person on the moon?", a: ["Buzz Aldrin", "Neil Armstrong", "John Glenn", "Alan Shepard"], correct: 1 },
+                    { q: "Which empire was ruled by Julius Caesar?", a: ["Greek", "Persian", "Roman", "Egyptian"], correct: 2 },
+                    { q: "When did the Berlin Wall fall?", a: ["1987", "1988", "1989", "1990"], correct: 2 }
+                ],
+                sports: [
+                    { q: "How many players are on a basketball team?", a: ["4", "5", "6", "7"], correct: 1 },
+                    { q: "Which country won the 2018 FIFA World Cup?", a: ["Brazil", "Germany", "France", "Argentina"], correct: 2 },
+                    { q: "What is the maximum score in ten-pin bowling?", a: ["200", "250", "300", "350"], correct: 2 },
+                    { q: "In which sport would you perform a slam dunk?", a: ["Tennis", "Basketball", "Volleyball", "Baseball"], correct: 1 }
+                ]
+            },
+            
+            currentCategory: 'science',
+            currentQuestionIndex: 0,
+            score: 0,
+            timer: 30,
+            timerInterval: null,
+            gameQuestions: [],
+            answered: false,
+            totalQuestions: 10,
+            
+            init() {
+                this.setupGame();
+                this.displayQuestion();
+                this.startTimer();
+                this.updateDisplay();
+            },
+            
+            setupGame() {
+                this.score = 0;
+                this.currentQuestionIndex = 0;
+                this.answered = false;
+                
+                // Create a mix of questions from current category
+                const categoryQuestions = [...this.questions[this.currentCategory]];
+                this.gameQuestions = [];
+                
+                // Add questions and repeat if needed to reach total
+                while (this.gameQuestions.length < this.totalQuestions) {
+                    if (categoryQuestions.length === 0) {
+                        categoryQuestions.push(...this.questions[this.currentCategory]);
+                    }
+                    const randomIndex = Math.floor(Math.random() * categoryQuestions.length);
+                    this.gameQuestions.push(categoryQuestions.splice(randomIndex, 1)[0]);
+                }
+            },
+            
+            displayQuestion() {
+                if (this.currentQuestionIndex >= this.gameQuestions.length) {
+                    this.endGame();
+                    return;
+                }
+                
+                const question = this.gameQuestions[this.currentQuestionIndex];
+                document.getElementById('questionText').textContent = question.q;
+                
+                const answersGrid = document.getElementById('answersGrid');
+                answersGrid.innerHTML = '';
+                
+                question.a.forEach((answer, index) => {
+                    const button = document.createElement('button');
+                    button.className = 'answer-btn';
+                    button.textContent = answer;
+                    button.onclick = () => this.selectAnswer(index);
+                    answersGrid.appendChild(button);
+                });
+                
+                document.getElementById('questionFeedback').textContent = '';
+                this.answered = false;
+                this.resetTimer();
+            },
+            
+            selectAnswer(selectedIndex) {
+                if (this.answered) return;
+                
+                this.answered = true;
+                const question = this.gameQuestions[this.currentQuestionIndex];
+                const isCorrect = selectedIndex === question.correct;
+                
+                if (isCorrect) {
+                    this.score += 10;
+                }
+                
+                // Highlight answers
+                const buttons = document.querySelectorAll('.answer-btn');
+                buttons.forEach((btn, index) => {
+                    if (index === question.correct) {
+                        btn.style.background = '#2ed573';
+                        btn.style.color = 'white';
+                    } else if (index === selectedIndex && !isCorrect) {
+                        btn.style.background = '#ff4757';
+                        btn.style.color = 'white';
+                    }
+                    btn.disabled = true;
+                });
+                
+                // Show feedback
+                const feedback = document.getElementById('questionFeedback');
+                feedback.textContent = isCorrect ? '✅ Correct!' : '❌ Wrong answer';
+                feedback.style.color = isCorrect ? '#2ed573' : '#ff4757';
+                
+                this.updateDisplay();
+                
+                // Move to next question after delay
+                setTimeout(() => {
+                    this.nextQuestion();
+                }, 2000);
+            },
+            
+            nextQuestion() {
+                this.currentQuestionIndex++;
+                this.displayQuestion();
+                this.updateDisplay();
+            },
+            
+            skipQuestion() {
+                if (!this.answered) {
+                    this.nextQuestion();
+                }
+            },
+            
+            startTimer() {
+                this.timer = 30;
+                this.updateTimer();
+                this.timerInterval = setInterval(() => {
+                    this.timer--;
+                    this.updateTimer();
+                    
+                    if (this.timer <= 0) {
+                        this.timeUp();
+                    }
+                }, 1000);
+            },
+            
+            resetTimer() {
+                this.stopTimer();
+                this.startTimer();
+            },
+            
+            stopTimer() {
+                if (this.timerInterval) {
+                    clearInterval(this.timerInterval);
+                    this.timerInterval = null;
+                }
+            },
+            
+            updateTimer() {
+                document.getElementById('timerDisplay').textContent = this.timer;
+                
+                // Change color based on time remaining
+                const timerElement = document.getElementById('timerDisplay');
+                if (this.timer <= 10) {
+                    timerElement.style.color = '#ff4757';
+                } else if (this.timer <= 20) {
+                    timerElement.style.color = '#ffa726';
+                } else {
+                    timerElement.style.color = '#333';
+                }
+            },
+            
+            timeUp() {
+                if (!this.answered) {
+                    const feedback = document.getElementById('questionFeedback');
+                    feedback.textContent = '⏰ Time\'s up!';
+                    feedback.style.color = '#ff4757';
+                    
+                    // Highlight correct answer
+                    const question = this.gameQuestions[this.currentQuestionIndex];
+                    const buttons = document.querySelectorAll('.answer-btn');
+                    buttons[question.correct].style.background = '#2ed573';
+                    buttons[question.correct].style.color = 'white';
+                    buttons.forEach(btn => btn.disabled = true);
+                    
+                    this.answered = true;
+                    
+                    setTimeout(() => {
+                        this.nextQuestion();
+                    }, 2000);
+                }
+            },
+            
+            updateDisplay() {
+                document.getElementById('scoreDisplay').textContent = this.score;
+                document.getElementById('questionNumber').textContent = this.currentQuestionIndex + 1;
+                
+                // Update progress bar
+                const progress = ((this.currentQuestionIndex + 1) / this.totalQuestions) * 100;
+                document.getElementById('progressFill').style.width = progress + '%';
+            },
+            
+            endGame() {
+                this.stopTimer();
+                
+                setTimeout(() => {
+                    const percentage = Math.round((this.score / (this.totalQuestions * 10)) * 100);
+                    let message = `Game Complete!\\n\\nScore: ${this.score}/${this.totalQuestions * 10}\\nAccuracy: ${percentage}%\\n\\n`;
+                    
+                    if (percentage >= 90) {
+                        message += '🏆 Excellent work!';
+                    } else if (percentage >= 70) {
+                        message += '👍 Good job!';
+                    } else if (percentage >= 50) {
+                        message += '👌 Not bad!';
+                    } else {
+                        message += '📚 Keep studying!';
+                    }
+                    
+                    alert(message);
+                }, 500);
+            }
+        };
+        
+        // Game control functions
+        function startNewGame() {
+            TriviaGame.stopTimer();
+            TriviaGame.init();
+        }
+        
+        function skipQuestion() {
+            TriviaGame.skipQuestion();
+        }
+        
+        function changeCategory() {
+            TriviaGame.currentCategory = document.getElementById('categorySelect').value;
+            startNewGame();
+        }
+        
+        // Initialize game
+        document.addEventListener('DOMContentLoaded', function() {
+            TriviaGame.init();
+        });
         // Add some interactivity
         document.querySelectorAll('.feature-card').forEach(card => {
             card.addEventListener('mouseenter', () => {
