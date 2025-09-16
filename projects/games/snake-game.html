@@ -1189,9 +1189,9 @@
         </div>
         
         <div class="actions">
-            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">🚀 Launch Application</a>
-            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">📖 View Documentation</a>
-            <a href="javascript:void(0)" onclick="handleActionClick(this)" class="btn">💾 Download Source</a>
+            <button class="btn" onclick="launchFullscreen()">🚀 Launch Application</button>
+            <button class="btn" onclick="showDocumentation()">📖 View Documentation</button>
+            <button class="btn" onclick="downloadProject()">💾 Download Source</button>
         </div>
     </div>
     
@@ -1591,6 +1591,104 @@
                         URL.revokeObjectURL(url);
                     }
                 }
+
+        // Project button functions
+        function launchFullscreen() {
+            const gameArea = document.querySelector('.game-area');
+            if (gameArea.requestFullscreen) {
+                gameArea.requestFullscreen();
+            } else if (gameArea.webkitRequestFullscreen) {
+                gameArea.webkitRequestFullscreen();
+            } else if (gameArea.msRequestFullscreen) {
+                gameArea.msRequestFullscreen();
+            }
+            updateGameStatus('Launched in fullscreen mode! Press ESC to exit fullscreen.');
+        }
+
+        function showDocumentation() {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.8); z-index: 10000; display: flex; 
+                align-items: center; justify-content: center; padding: 20px;
+            `;
+            
+            modal.innerHTML = `
+                <div style="background: white; border-radius: 15px; padding: 30px; max-width: 600px; max-height: 80vh; overflow-y: auto;">
+                    <h2 style="color: #2d3436; margin-bottom: 20px;">🐍 Snake Game Documentation</h2>
+                    <h3>Features:</h3>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li>Classic snake gameplay with modern graphics</li>
+                        <li>Progressive difficulty levels</li>
+                        <li>High score tracking with localStorage</li>
+                        <li>Keyboard controls (Arrow keys or WASD)</li>
+                        <li>Pause/Resume functionality</li>
+                        <li>Mobile-responsive design</li>
+                    </ul>
+                    <h3>Controls:</h3>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li>Arrow Keys or WASD - Move snake</li>
+                        <li>Space - Start/Pause game</li>
+                        <li>R - Reset game</li>
+                    </ul>
+                    <h3>Technical Details:</h3>
+                    <ul style="margin: 10px 0; padding-left: 20px;">
+                        <li>Built with HTML5 Canvas and JavaScript</li>
+                        <li>Real-time collision detection</li>
+                        <li>Responsive game loop with variable speed</li>
+                        <li>Local storage for persistent high scores</li>
+                    </ul>
+                    <button onclick="this.parentElement.parentElement.remove()" 
+                            style="background: #e74c3c; color: white; border: none; padding: 10px 20px; 
+                                   border-radius: 5px; cursor: pointer; margin-top: 20px;">Close</button>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) modal.remove();
+            });
+        }
+
+        function downloadProject() {
+            const projectData = {
+                name: "Snake Game",
+                version: "2.0.0",
+                description: "Classic Snake game built with HTML5 Canvas",
+                features: [
+                    "Progressive difficulty levels",
+                    "High score tracking",
+                    "Mobile responsive controls",
+                    "Pause/Resume functionality",
+                    "Canvas-based graphics"
+                ],
+                technologies: ["HTML5", "CSS3", "JavaScript", "Canvas API"],
+                controls: {
+                    movement: "Arrow keys or WASD",
+                    pause: "Space key",
+                    reset: "R key"
+                },
+                gameStats: {
+                    currentScore: score,
+                    highScore: highScore,
+                    currentLevel: level,
+                    snakeLength: snake.length
+                },
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'snake-game-project-info.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            updateGameStatus('Project information downloaded successfully!');
+        }
                 
         </script>
 </body>
