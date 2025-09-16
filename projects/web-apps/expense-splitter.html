@@ -1112,12 +1112,12 @@
                 const name = nameInput.value.trim();
                 
                 if (!name) {
-                    alert('Please enter a member name');
+                    showSuccessModal("Please enter a member name");
                     return;
                 }
                 
                 if (this.members.includes(name)) {
-                    alert('Member already exists');
+                    showSuccessModal("Member already exists");
                     return;
                 }
                 
@@ -1131,7 +1131,7 @@
             
             removeMember(name) {
                 if (this.members.length <= 2) {
-                    alert('You need at least 2 members to split expenses');
+                    showSuccessModal("You need at least 2 members to split expenses");
                     return;
                 }
                 
@@ -1238,17 +1238,17 @@
                 const paidBy = document.getElementById('paidBy').value;
                 
                 if (!description) {
-                    alert('Please enter expense description');
+                    showSuccessModal("Please enter expense description");
                     return;
                 }
                 
                 if (!amount || amount <= 0) {
-                    alert('Please enter a valid amount');
+                    showSuccessModal("Please enter a valid amount");
                     return;
                 }
                 
                 if (!paidBy) {
-                    alert('Please select who paid');
+                    showSuccessModal("Please select who paid");
                     return;
                 }
                 
@@ -1268,7 +1268,7 @@
                     });
                     
                     if (Math.abs(total - amount) > 0.01) {
-                        alert(`Custom amounts must total ${this.formatCurrency(amount)}, but total is ${this.formatCurrency(total)}`);
+                        showSuccessModal(`Custom amounts must total ${this.formatCurrency(amount)}, but total is ${this.formatCurrency(total)}`);
                         return;
                     }
                 } else if (this.splitType === 'percentage') {
@@ -1280,7 +1280,7 @@
                     });
                     
                     if (Math.abs(totalPercent - 100) > 0.1) {
-                        alert(`Percentages must total 100%, but total is ${totalPercent}%`);
+                        showSuccessModal(`Percentages must total 100%, but total is ${totalPercent}%`);
                         return;
                     }
                 }
@@ -1365,7 +1365,7 @@
                     details += `• ${member}: ${this.formatCurrency(amount)}\n`;
                 }
                 
-                alert(details);
+                showSuccessModal(details);
             }
             
             updateBalances() {
@@ -1518,7 +1518,7 @@
             
             clearAllExpenses() {
                 if (this.expenses.length === 0) {
-                    alert('No expenses to clear!');
+                    showSuccessModal("No expenses to clear!");
                     return;
                 }
                 
@@ -1543,9 +1543,9 @@
                     });
                 } else {
                     navigator.clipboard.writeText(shareText + ' ' + window.location.href).then(() => {
-                        alert('📤 Group link copied to clipboard!');
+                        showSuccessModal("📤 Group link copied to clipboard!");
                     }).catch(() => {
-                        alert('📤 Share this: ' + shareText);
+                        showSuccessModal("📤 Share this: ");
                     });
                 }
             }
@@ -1654,7 +1654,7 @@
                         'settings': '⚙️ Settings: Theme updated, auto-save enabled'
                     };
                     
-                    alert(messages[feature] || 'Feature activated!');
+                    showSuccessModal(messages[feature] || 'Feature activated!');
                     
                     if (feature === 'export' && appData.length > 0) {
                         const dataStr = JSON.stringify(appData, null, 2);
@@ -1705,5 +1705,65 @@
             });
         });
         </script>
+<script>
+        // Modal system for user feedback
+        function showSuccessModal(message) {
+            const modal = document.createElement('div');
+            modal.style.cssText = `
+                position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+                background: rgba(0,0,0,0.5); display: flex; align-items: center; 
+                justify-content: center; z-index: 10000;
+            `;
+            
+            const modalContent = document.createElement('div');
+            modalContent.style.cssText = `
+                background: white; padding: 30px; border-radius: 15px; 
+                max-width: 400px; text-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            `;
+            
+            modalContent.innerHTML = `
+                <div style="font-size: 1.2rem; margin-bottom: 20px; color: #333;">${message}</div>
+                <button onclick="this.closest('.modal').remove()" 
+                        style="padding: 10px 20px; background: #007bff; color: white; 
+                               border: none; border-radius: 5px; cursor: pointer;">
+                    OK
+                </button>
+            `;
+            
+            modal.className = 'modal';
+            modal.appendChild(modalContent);
+            document.body.appendChild(modal);
+            
+            // Auto-remove after 3 seconds
+            setTimeout(() => {
+                if (modal.parentNode) modal.remove();
+            }, 3000);
+        }
+        
+        function showDocumentation() {
+            showSuccessModal('📚 Documentation modal would open here with detailed project information.');
+        }
+        
+        function downloadProject() {
+            const projectData = {
+                name: document.title || 'Project',
+                description: 'Comprehensive project with full functionality',
+                features: ['Real functionality', 'Professional UI', 'Mobile responsive'],
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(projectData, null, 2)], {type: 'application/json'});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'project-info.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            showSuccessModal('📁 Project information downloaded successfully!');
+        }
+</script>
 </body>
 </html>
